@@ -1,0 +1,15 @@
+#container {
+  flex: 1;
+  height: 100%;
+}
+html,
+body,
+.container {
+  height: 100%;
+}
+div#root {
+  height: 100%;
+}
+#mapContainer {
+  height: 100%;
+}
