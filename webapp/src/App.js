@@ -1,49 +1,68 @@
 import "./App.css";
 import { MapContainer, TileLayer } from "react-leaflet";
-import { useState } from "react";
-import * as topojson from "topojson-client";
+import { useEffect, useState, useMemo } from "react";
 import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
-import regions from "./static/boundaries/limits_IT_regions.topo.json";
-import provinces from "./static/boundaries/limits_IT_provinces.topo.json";
+
+import {
+  fillDataFromProperties,
+  makeItalianTree,
+  defaultFeature,
+  geoRegions,
+  getMunicipalitiesForProvinceIstatCode,
+} from "./helpers";
+
 const italyCoords = [42, 12.5];
 
-const geoRegions = topojson.feature(regions, "regions");
-const geoProvinces = topojson.feature(provinces, "provinces");
-
-const makeItalianTree = (provinces) => {
-  const italyTree = {
-    name: "Italy",
-    toggled: true,
-    children: {},
-  };
-
-  provinces.objects.provinces.geometries.forEach(
-    ({ properties: { reg_name, prov_name } }) => {
-      const previousChildren = italyTree.children[reg_name]?.children || [];
-      italyTree.children[reg_name] = {
-        name: reg_name,
-        children: [...previousChildren, { name: prov_name }],
-      };
-    }
-  );
-
-  italyTree.children = Object.values(italyTree.children);
-  return italyTree;
-};
-
 function App() {
-  const italyTree = makeItalianTree(provinces);
+  const italyTree = useMemo(() => makeItalianTree(), []);
   const [currentGeoJSON, setCurrentGeoJSON] = useState(geoRegions);
-  const [selectedFeature, setSelectedFeature] = useState({
-    state: { index: 1, name: "Italy", feature: geoRegions },
-    region: { index: 2, name: "", feature: null },
-    province: { index: 3, name: "", feature: null },
-    municipality: { index: 4, name: "", feature: null },
-  });
+  const [selectedFeature, setSelectedFeature] = useState(defaultFeature);
   const [featureIndex, setFeatureIndex] = useState(1);
-  const [selected, setSelected] = useState(null); // TODO: connect sidemenu
+  const [selectedIstatProperties, setSelectedIstatProperties] = useState(null);
+
+  useEffect(() => {
+    if (!selectedIstatProperties) {
+      return;
+    }
+
+    if (selectedIstatProperties.prov_istat_code_num) {
+      getMunicipalitiesForProvinceIstatCode(
+        selectedIstatProperties.prov_istat_code_num
+      ).then((featureGeometry) => {
+        const feature = {
+          properties: selectedIstatProperties,
+          feature: featureGeometry,
+        };
+        fillDataFromProperties(
+          feature,
+          selectedFeature,
+          setSelectedFeature,
+          setCurrentGeoJSON,
+          setFeatureIndex
+        );
+      });
+    } else if (selectedIstatProperties.com_istat_code_num) {
+      let selectedFeature = currentGeoJSON.features.find(
+        ({ properties }) =>
+          properties.com_istat_code_num ===
+          selectedIstatProperties.com_istat_code_num
+      );
+
+      const feature = {
+        properties: selectedIstatProperties,
+        ...selectedFeature,
+      };
+      fillDataFromProperties(
+        feature,
+        selectedFeature,
+        setSelectedFeature,
+        setCurrentGeoJSON,
+        setFeatureIndex
+      );
+    }
+  }, [selectedIstatProperties]);
 
   return (
     <div className="container">
@@ -65,7 +84,6 @@ function App() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <Italy
-            provinces={geoProvinces}
             currentGeoJSON={currentGeoJSON}
             setCurrentGeoJSON={setCurrentGeoJSON}
             selectedFeature={selectedFeature}
@@ -73,7 +91,10 @@ function App() {
             setFeatureIndex={setFeatureIndex}
           />
         </MapContainer>
-        <SideMenu italyTree={italyTree} setSelected={setSelected} />
+        <SideMenu
+          italyTree={italyTree}
+          setSelectedIstatProperties={setSelectedIstatProperties}
+        />
       </div>
     </div>
   );

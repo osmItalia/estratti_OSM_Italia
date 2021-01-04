@@ -3,7 +3,7 @@ import { useState } from "react";
 import style from "./style";
 import * as filters from "./filter";
 
-const SideMenu = ({ italyTree, setSelected }) => {
+const SideMenu = ({ italyTree, setSelectedIstatProperties }) => {
   const [data, setData] = useState(italyTree);
   const [cursor, setCursor] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -29,7 +29,12 @@ const SideMenu = ({ italyTree, setSelected }) => {
     setCursor(node);
     setData(Object.assign({}, data));
     setSelectedItem(node.name);
-    setSelected(node.name);
+    setSelectedIstatProperties({
+      prov_istat_code_num: node.prov_istat_code_num,
+      reg_istat_code: node.reg_istat_code,
+      com_istat_code_num: node.com_istat_code_num,
+      name: node.name,
+    });
   };
   return (
     <div className="sideMenu">
