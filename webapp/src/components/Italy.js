@@ -34,7 +34,8 @@ const Italy = ({
             selectedFeature,
             setSelectedFeature,
             setCurrentGeoJSON,
-            setFeatureIndex
+            setFeatureIndex,
+            true
           );
         },
       }}

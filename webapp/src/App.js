@@ -5,13 +5,7 @@ import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
 
-import {
-  fillDataFromProperties,
-  makeItalianTree,
-  defaultFeature,
-  geoRegions,
-  getMunicipalitiesForProvinceIstatCode,
-} from "./helpers";
+import { makeItalianTree, defaultFeature, geoRegions } from "./helpers";
 
 const italyCoords = [42, 12.5];
 
@@ -20,57 +14,16 @@ function App() {
   const [currentGeoJSON, setCurrentGeoJSON] = useState(geoRegions);
   const [selectedFeature, setSelectedFeature] = useState(defaultFeature);
   const [featureIndex, setFeatureIndex] = useState(1);
-  const [selectedIstatProperties, setSelectedIstatProperties] = useState(null);
-
-  useEffect(() => {
-    if (!selectedIstatProperties) {
-      return;
-    }
-
-    if (selectedIstatProperties.prov_istat_code_num) {
-      getMunicipalitiesForProvinceIstatCode(
-        selectedIstatProperties.prov_istat_code_num
-      ).then((featureGeometry) => {
-        const feature = {
-          properties: selectedIstatProperties,
-          feature: featureGeometry,
-        };
-        fillDataFromProperties(
-          feature,
-          selectedFeature,
-          setSelectedFeature,
-          setCurrentGeoJSON,
-          setFeatureIndex
-        );
-      });
-    } else if (selectedIstatProperties.com_istat_code_num) {
-      let selectedFeature = currentGeoJSON.features.find(
-        ({ properties }) =>
-          properties.com_istat_code_num ===
-          selectedIstatProperties.com_istat_code_num
-      );
-
-      const feature = {
-        properties: selectedIstatProperties,
-        ...selectedFeature,
-      };
-      fillDataFromProperties(
-        feature,
-        selectedFeature,
-        setSelectedFeature,
-        setCurrentGeoJSON,
-        setFeatureIndex
-      );
-    }
-  }, [selectedIstatProperties]);
 
   return (
     <div className="container">
       <Breadcrumb
+        currentGeoJSON={currentGeoJSON}
+        setCurrentGeoJSON={setCurrentGeoJSON}
         selectedFeature={selectedFeature}
-        selectFeature={setCurrentGeoJSON}
-        featureIndex={featureIndex}
+        setSelectedFeature={setSelectedFeature}
         setFeatureIndex={setFeatureIndex}
+        featureIndex={featureIndex}
       />
       <div className="content">
         <MapContainer
@@ -93,7 +46,11 @@ function App() {
         </MapContainer>
         <SideMenu
           italyTree={italyTree}
-          setSelectedIstatProperties={setSelectedIstatProperties}
+          currentGeoJSON={currentGeoJSON}
+          selectedFeature={selectedFeature}
+          setSelectedFeature={setSelectedFeature}
+          setCurrentGeoJSON={setCurrentGeoJSON}
+          setFeatureIndex={setFeatureIndex}
         />
       </div>
     </div>

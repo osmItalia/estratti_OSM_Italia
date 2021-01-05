@@ -1,24 +1,89 @@
 import { Treebeard } from "react-treebeard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import style from "./style";
 import * as filters from "./filter";
+import {
+  fillDataFromProperties,
+  getMunicipalitiesForProvinceIstatCode,
+} from "../../helpers";
 
-const SideMenu = ({ italyTree, setSelectedIstatProperties }) => {
+const SideMenu = ({
+  italyTree,
+  selectedFeature,
+  setSelectedFeature,
+  currentGeoJSON,
+  setCurrentGeoJSON,
+  setFeatureIndex,
+}) => {
   const [data, setData] = useState(italyTree);
   const [cursor, setCursor] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const onFilterMouseUp = ({ target: { value } }) => {
-    const filter = value.trim();
-    if (!filter) {
-      return setData(italyTree);
+  const setSelectedIstatProperties = async (selectedIstatProperties) => {
+    if (!selectedIstatProperties) {
+      return;
     }
-    let filtered = filters.filterTree(italyTree, filter);
-    filtered = filters.expandFilteredNodes(filtered, filter);
-    setData(filtered);
+
+    let feature = {
+      properties: selectedIstatProperties,
+      feature: null,
+    };
+
+    if (selectedIstatProperties.prov_istat_code_num) {
+      const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
+        selectedIstatProperties.prov_istat_code_num
+      );
+      feature.feature = featureGeometry;
+    } else if (selectedIstatProperties.com_istat_code_num) {
+      let municipalityFeature;
+      if (currentGeoJSON.features) {
+        municipalityFeature = currentGeoJSON.features.find(
+          ({ properties }) =>
+            properties.com_istat_code_num ===
+            selectedIstatProperties.com_istat_code_num
+        );
+      } else {
+        municipalityFeature = currentGeoJSON;
+      }
+      feature = { ...feature, ...municipalityFeature };
+    }
+
+    fillDataFromProperties(
+      feature,
+      selectedFeature,
+      setSelectedFeature,
+      setCurrentGeoJSON,
+      setFeatureIndex,
+      false
+    );
   };
+  useEffect(() => {
+    console.log(selectedFeature);
+    if (!selectedFeature.selectionFromMap) {
+      return;
+    }
+
+    const currentName =
+      selectedFeature.municipality.name ||
+      selectedFeature.province.name ||
+      selectedFeature.region.name ||
+      "Italy";
+
+    const limitFilter = !selectedFeature.municipality.name;
+    const filter = currentName;
+
+    let filtered = filters.filterTree(italyTree, filter, undefined, false);
+    filtered = filters.expandFilteredNodes(
+      filtered,
+      filter,
+      undefined,
+      limitFilter
+    );
+    setData(filtered);
+  }, [selectedFeature]);
 
   const onToggle = (node, toggled) => {
+    console.log(node);
     if (cursor) {
       cursor.active = false;
     }
@@ -38,12 +103,6 @@ const SideMenu = ({ italyTree, setSelectedIstatProperties }) => {
   };
   return (
     <div className="sideMenu">
-      <input
-        className="form-control"
-        onKeyUp={onFilterMouseUp}
-        placeholder="Search the tree..."
-        type="text"
-      />
       <Treebeard style={style} data={data} onToggle={onToggle} />
       {selectedItem && (
         <div className="resultItem">

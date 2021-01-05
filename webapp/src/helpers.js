@@ -38,9 +38,11 @@ export const fillDataFromProperties = async (
   selectedFeature,
   setSelectedFeature,
   setCurrentGeoJSON,
-  setFeatureIndex
+  setFeatureIndex,
+  selectionFromMap
 ) => {
   const properties = feature.properties;
+  console.log("selectionFromMap", selectionFromMap);
   switch (true) {
     case !!properties.com_istat_code_num:
       setSelectedFeature({
@@ -50,13 +52,13 @@ export const fillDataFromProperties = async (
           name: properties.name,
           feature: feature,
         },
+        selectionFromMap,
       });
-      console.log(feature);
-
       setCurrentGeoJSON(feature);
       setFeatureIndex(4);
       break;
     case !!properties.prov_istat_code_num:
+      console.log("prov");
       const provIstatCode = properties.prov_istat_code_num;
       const municipalitiesForIstatCode = await getMunicipalitiesForProvinceIstatCode(
         provIstatCode
@@ -73,6 +75,7 @@ export const fillDataFromProperties = async (
           name: null,
           feature: null,
         },
+        selectionFromMap,
       });
       setCurrentGeoJSON(municipalitiesForIstatCode);
       setFeatureIndex(3);
@@ -100,11 +103,13 @@ export const fillDataFromProperties = async (
           name: null,
           feature: null,
         },
+        selectionFromMap,
       });
       setFeatureIndex(2);
       break;
     default:
       setCurrentGeoJSON(geoRegions);
+      defaultFeature.selectionFromMap = selectionFromMap;
       setSelectedFeature(defaultFeature);
       setFeatureIndex(1);
       break;
