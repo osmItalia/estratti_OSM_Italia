@@ -57,7 +57,6 @@ export const fillDataFromProperties = async (
       setFeatureIndex(4);
       break;
     case !!properties.prov_istat_code_num:
-      console.log("prov");
       const provIstatCode = properties.prov_istat_code_num;
       const municipalitiesForIstatCode = await getMunicipalitiesForProvinceIstatCode(
         provIstatCode

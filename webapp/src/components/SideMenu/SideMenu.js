@@ -52,8 +52,6 @@ const SideMenu = ({
       }
       feature = { ...feature, ...municipalityFeature };
     }
-    console.log("feature", feature);
-    console.log("selectedFeature", selectedFeature);
 
     fillDataFromProperties(
       feature,
@@ -74,11 +72,6 @@ const SideMenu = ({
 
     let filtered = filters.filterTree(italyTree, filter, undefined, false);
 
-    // filtered.children.forEach((child) => {
-    //   console.log(child);
-    //   child.toggled = false;
-    // });
-    console.log("closing EFFECT", filtered);
     closeChildren(filtered);
 
     filtered = filters.expandFilteredNodes(
@@ -87,14 +80,14 @@ const SideMenu = ({
       undefined,
       limitFilter
     );
-    console.log("closing children", filtered);
-
+    console.log(filtered);
     setData(filtered);
   }, [selectedFeature]);
 
   const closeChildren = (node) => {
     node.children.forEach((child) => {
       child.toggled = false;
+      child.active = false;
       if (child.children) {
         closeChildren(child);
       }
@@ -102,6 +95,8 @@ const SideMenu = ({
   };
 
   const onToggle = (node, toggled) => {
+    console.log(node);
+    console.log(toggled);
     setData(italyTree);
 
     let filtered;
@@ -110,6 +105,7 @@ const SideMenu = ({
 
     filtered = filters.filterTree(italyTree, node.name, undefined, false);
 
+    console.log(filtered);
     if (!opening) {
       closeChildren(filtered);
     }
@@ -124,7 +120,7 @@ const SideMenu = ({
     }
 
     setCursor(node);
-    if (opening) {
+    if (opening && !node.com_istat_code_num) {
       setData(filtered);
     } else {
       setData(Object.assign({}, data));

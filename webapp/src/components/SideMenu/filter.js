@@ -60,7 +60,7 @@ export const expandFilteredNodes = (
   const childrenWithMatches = node.children.filter((child) =>
     findNode(child, filter, matcher, limitFilter)
   );
-  console.log(childrenWithMatches);
+
   const shouldExpand = childrenWithMatches.length > 0;
   // If im going to expand, go through all the matches and see if thier children need to expand
   if (shouldExpand) {
@@ -71,5 +71,6 @@ export const expandFilteredNodes = (
   return Object.assign({}, node, {
     children: children,
     toggled: shouldExpand,
+    active: true,
   });
 };
