@@ -2,7 +2,15 @@ import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
 import { fillDataFromProperties } from "../helpers";
 
+const pathColors = ["#4a40c3", "#5d53dc", "#6b62ee", "#9287f7"];
+
+const getPathColor = (featureIndex) => {
+  console.log("fe", featureIndex);
+  return pathColors[featureIndex - 1];
+};
+
 const Italy = ({
+  featureIndex,
   selectedFeature,
   setSelectedFeature,
   setCurrentGeoJSON,
@@ -39,7 +47,7 @@ const Italy = ({
           );
         },
       }}
-      pathOptions={{ color: "red" }}
+      pathOptions={{ color: getPathColor(featureIndex) }}
       key={currentGeoJSON && JSON.stringify(currentGeoJSON).substring(0, 100)}
       data={currentGeoJSON}
     />

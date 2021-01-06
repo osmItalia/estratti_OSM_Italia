@@ -1,3 +1,9 @@
+:root {
+  --blue1: #4a40c3;
+  --blue2: #5d53dc;
+  --blue3: #6b62ee;
+  --blue4: #9287f7;
+}
 #container {
   flex: 1;
   height: 100%;
@@ -25,4 +31,42 @@ div#root {
 .content {
   width: 100%;
   height: 100%;
+}
+.breadcrumb {
+  height: 50px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  background: var(--blue1);
+}
+
+p.breadItem {
+  display: flex;
+  margin: 0px;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  transition: all 0.4s;
+}
+
+p.breadItem::after {
+  content: "➤";
+  margin-left: 8px;
+}
+p.breadItem:last-child:after {
+  content: "";
+}
+p.breadItem.state {
+  background: var(--blue1);
+}
+
+p.breadItem.region {
+  background: var(--blue2);
+}
+
+p.breadItem.province {
+  background: var(--blue3);
+}
+p.breadItem.municipality {
+  background: var(--blue4);
 }

@@ -37,6 +37,7 @@ function App() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <Italy
+            featureIndex={featureIndex}
             currentGeoJSON={currentGeoJSON}
             setCurrentGeoJSON={setCurrentGeoJSON}
             selectedFeature={selectedFeature}
