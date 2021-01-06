@@ -5,7 +5,6 @@ import { fillDataFromProperties } from "../helpers";
 const pathColors = ["#4a40c3", "#5d53dc", "#6b62ee", "#9287f7"];
 
 const getPathColor = (featureIndex) => {
-  console.log("fe", featureIndex);
   return pathColors[featureIndex - 1];
 };
 

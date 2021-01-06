@@ -42,7 +42,6 @@ export const fillDataFromProperties = async (
   selectionFromMap
 ) => {
   const properties = feature.properties;
-  console.log("selectionFromMap", selectionFromMap);
   switch (true) {
     case !!properties.com_istat_code_num:
       setSelectedFeature({

@@ -46,6 +46,7 @@ p.breadItem {
   align-items: center;
   color: white;
   font-weight: bold;
+  justify-content: space-around;
   transition: all 0.4s;
 }
 

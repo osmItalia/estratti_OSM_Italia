@@ -17,7 +17,12 @@ const SideMenu = ({
 }) => {
   const [data, setData] = useState(italyTree);
   const [cursor, setCursor] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+
+  const currentName =
+    selectedFeature.municipality.name ||
+    selectedFeature.province.name ||
+    selectedFeature.region.name ||
+    "Italy";
 
   const setSelectedIstatProperties = async (selectedIstatProperties) => {
     if (!selectedIstatProperties) {
@@ -47,6 +52,8 @@ const SideMenu = ({
       }
       feature = { ...feature, ...municipalityFeature };
     }
+    console.log("feature", feature);
+    console.log("selectedFeature", selectedFeature);
 
     fillDataFromProperties(
       feature,
@@ -58,42 +65,71 @@ const SideMenu = ({
     );
   };
   useEffect(() => {
-    console.log(selectedFeature);
     if (!selectedFeature.selectionFromMap) {
       return;
     }
-
-    const currentName =
-      selectedFeature.municipality.name ||
-      selectedFeature.province.name ||
-      selectedFeature.region.name ||
-      "Italy";
 
     const limitFilter = !selectedFeature.municipality.name;
     const filter = currentName;
 
     let filtered = filters.filterTree(italyTree, filter, undefined, false);
+
+    // filtered.children.forEach((child) => {
+    //   console.log(child);
+    //   child.toggled = false;
+    // });
+    console.log("closing EFFECT", filtered);
+    closeChildren(filtered);
+
     filtered = filters.expandFilteredNodes(
       filtered,
       filter,
       undefined,
       limitFilter
     );
+    console.log("closing children", filtered);
+
     setData(filtered);
   }, [selectedFeature]);
 
+  const closeChildren = (node) => {
+    node.children.forEach((child) => {
+      child.toggled = false;
+      if (child.children) {
+        closeChildren(child);
+      }
+    });
+  };
+
   const onToggle = (node, toggled) => {
-    console.log(node);
+    setData(italyTree);
+
+    let filtered;
+
+    const opening = !node.toggled;
+
+    filtered = filters.filterTree(italyTree, node.name, undefined, false);
+
+    if (!opening) {
+      closeChildren(filtered);
+    }
+
     if (cursor) {
       cursor.active = false;
     }
     node.active = true;
+
     if (node.children) {
       node.toggled = toggled;
     }
+
     setCursor(node);
-    setData(Object.assign({}, data));
-    setSelectedItem(node.name);
+    if (opening) {
+      setData(filtered);
+    } else {
+      setData(Object.assign({}, data));
+    }
+
     setSelectedIstatProperties({
       prov_istat_code_num: node.prov_istat_code_num,
       reg_istat_code: node.reg_istat_code,
@@ -104,9 +140,9 @@ const SideMenu = ({
   return (
     <div className="sideMenu">
       <Treebeard style={style} data={data} onToggle={onToggle} />
-      {selectedItem && (
+      {currentName && (
         <div className="resultItem">
-          <p>Download: {selectedItem}</p>
+          <p>Download: {currentName}</p>
         </div>
       )}
     </div>
