@@ -1,12 +1,23 @@
-import { Treebeard } from "react-treebeard";
+/* eslint-disable no-unused-expressions */
+import { makeStyles } from '@material-ui/core/styles';
+import TreeView from '@material-ui/lab/TreeView';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TreeItem from '@material-ui/lab/TreeItem';
+
 import { useEffect, useState } from "react";
-import style from "./style";
-import * as filters from "./filter";
+
 import {
   fillDataFromProperties,
   getMunicipalitiesForProvinceIstatCode,
 } from "../../helpers";
 
+const useStyles = makeStyles({
+  root: {
+    flexGrow: 1,
+    maxWidth: 500,
+  },
+});
 const SideMenu = ({
   italyTree,
   selectedFeature,
@@ -15,8 +26,16 @@ const SideMenu = ({
   setCurrentGeoJSON,
   setFeatureIndex,
 }) => {
-  const [data, setData] = useState(italyTree);
-  const [cursor, setCursor] = useState(false);
+
+
+  const classes = useStyles();
+  const [expanded, setExpanded] = useState([]);
+  const [selected, setSelected] = useState([]);
+
+  const handleSelect = (event, nodeIds) => {
+    setSelected(nodeIds);
+  };
+
 
   const currentName =
     selectedFeature.municipality.name ||
@@ -25,21 +44,11 @@ const SideMenu = ({
     "Italy";
 
   const setSelectedIstatProperties = async (selectedIstatProperties) => {
-    if (!selectedIstatProperties) {
-      return;
-    }
-
     let feature = {
       properties: selectedIstatProperties,
       feature: null,
     };
-
-    if (selectedIstatProperties.prov_istat_code_num) {
-      const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
-        selectedIstatProperties.prov_istat_code_num
-      );
-      feature.feature = featureGeometry;
-    } else if (selectedIstatProperties.com_istat_code_num) {
+    if (selectedIstatProperties.com_istat_code_num) {
       let municipalityFeature;
       if (currentGeoJSON.features) {
         municipalityFeature = currentGeoJSON.features.find(
@@ -51,7 +60,12 @@ const SideMenu = ({
         municipalityFeature = currentGeoJSON;
       }
       feature = { ...feature, ...municipalityFeature };
-    }
+    }else if (selectedIstatProperties.prov_istat_code_num) {
+      const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
+        selectedIstatProperties.prov_istat_code_num
+      );
+      feature.feature = featureGeometry;
+    }  
 
     fillDataFromProperties(
       feature,
@@ -66,76 +80,55 @@ const SideMenu = ({
     if (!selectedFeature.selectionFromMap) {
       return;
     }
+    const toExpand = [
+      ...(selectedFeature.municipality.com_istat_code_num ? [selectedFeature.municipality.com_istat_code_num]: []),
+      ...(selectedFeature.province.prov_istat_code_num ? [selectedFeature.province.prov_istat_code_num]: []),
+      ...(selectedFeature.region.reg_istat_code ? [selectedFeature.region.reg_istat_code]: []),
+      'Italy',
+    ]
+    setExpanded(toExpand);
+    setSelected(toExpand[0]);
 
-    const limitFilter = !selectedFeature.municipality.name;
-    const filter = currentName;
-
-    let filtered = filters.filterTree(italyTree, filter, undefined, false);
-
-    closeChildren(filtered);
-
-    filtered = filters.expandFilteredNodes(
-      filtered,
-      filter,
-      undefined,
-      limitFilter
-    );
-    console.log(filtered);
-    setData(filtered);
   }, [selectedFeature]);
 
-  const closeChildren = (node) => {
-    node.children.forEach((child) => {
-      child.toggled = false;
-      child.active = false;
-      if (child.children) {
-        closeChildren(child);
-      }
-    });
-  };
 
-  const onToggle = (node, toggled) => {
-    console.log(node);
-    console.log(toggled);
-    setData(italyTree);
 
-    let filtered;
 
-    const opening = !node.toggled;
-
-    filtered = filters.filterTree(italyTree, node.name, undefined, false);
-
-    console.log(filtered);
-    if (!opening) {
-      closeChildren(filtered);
-    }
-
-    if (cursor) {
-      cursor.active = false;
-    }
-    node.active = true;
-
-    if (node.children) {
-      node.toggled = toggled;
-    }
-
-    setCursor(node);
-    if (opening && !node.com_istat_code_num) {
-      setData(filtered);
-    } else {
-      setData(Object.assign({}, data));
-    }
-
-    setSelectedIstatProperties({
-      prov_istat_code_num: node.prov_istat_code_num,
-      reg_istat_code: node.reg_istat_code,
-      com_istat_code_num: node.com_istat_code_num,
-      name: node.name,
-    });
-  };
+  const mapTree = ({name, children, ...node})=>{
+    const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || name;
+    
+  return (<TreeItem nodeId={id} label={name} onLabelClick={(event)=>{
+    const toExpand = [
+      ...(node.com_istat_code_num ? [node.com_istat_code_num]: []),
+      ...(node.prov_istat_code_num ? [node.prov_istat_code_num]: []),
+      ...(node.reg_istat_code ? [node.reg_istat_code]: []),
+      'Italy',
+     ]
+    setExpanded(toExpand);
+      setSelectedIstatProperties({
+        reg_istat_code: node.reg_istat_code,
+        prov_istat_code_num: node.prov_istat_code_num,
+        com_istat_code_num: node.com_istat_code_num,
+        name: name,
+      });
+  }}>
+    {children && children.map(mapTree)}
+  </TreeItem>)
+  }
+  
   return (
     <div className="sideMenu">
-      <Treebeard style={style} data={data} onToggle={onToggle} />
+    <TreeView
+      className={classes.root}
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpandIcon={<ChevronRightIcon />}
+      expanded={expanded}
+      selected={selected}
+      onNodeSelect={handleSelect}
+    >
+   {mapTree(italyTree)}
+      
+    </TreeView>
       {currentName && (
         <div className="resultItem">
           <p>Download: {currentName}</p>

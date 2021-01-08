@@ -50,9 +50,11 @@ export const fillDataFromProperties = async (
           ...selectedFeature.municipality,
           name: properties.name,
           feature: feature,
+          com_istat_code_num: properties.com_istat_code_num,
         },
         selectionFromMap,
       });
+      console.log(feature.feature)
       setCurrentGeoJSON(feature);
       setFeatureIndex(4);
       break;
@@ -67,14 +69,17 @@ export const fillDataFromProperties = async (
           ...selectedFeature.province,
           name: properties.prov_name || properties.name,
           feature: municipalitiesForIstatCode,
+          prov_istat_code_num: provIstatCode,
         },
         municipality: {
           ...selectedFeature.municipality,
           name: null,
           feature: null,
+          com_istat_code_num: null,
         },
         selectionFromMap,
       });
+      console.log(municipalitiesForIstatCode)
       setCurrentGeoJSON(municipalitiesForIstatCode);
       setFeatureIndex(3);
       break;
@@ -90,16 +95,19 @@ export const fillDataFromProperties = async (
           ...selectedFeature.region,
           name: properties.reg_name || properties.name,
           feature: provincesForIstatCode,
+          reg_istat_code: regionIstatCode,
         },
         province: {
           ...selectedFeature.province,
           name: null,
           feature: null,
+          prov_istat_code_num: null,
         },
         municipality: {
           ...selectedFeature.municipality,
           name: null,
           feature: null,
+          com_istat_code_num: null,
         },
         selectionFromMap,
       });
@@ -143,7 +151,6 @@ export const fillDataFromProperties = async (
 export const makeItalianTree = () => {
   let italyTree = {
     name: "Italy",
-    toggled: true,
     children: [],
   };
 
@@ -168,26 +175,30 @@ export const makeItalianTree = () => {
         //insert municipalities
         previousProvinces.children.push({
           name: name,
-          com_istat_code_num: com_istat_code_num,
+          com_istat_code_num,
+          prov_istat_code_num,
+          reg_istat_code,
         });
       } else if (previousRegions) {
         //insert provinces
         previousRegions.children.push({
           name: prov_name,
-          prov_istat_code_num: prov_istat_code_num,
-          children: [{ name: name, com_istat_code_num: com_istat_code_num }],
+          prov_istat_code_num,
+          reg_istat_code,
+          children: [{ name: name, com_istat_code_num, prov_istat_code_num, reg_istat_code }],
         });
       } else {
         //insert regions
         italyTree.children.push({
           name: reg_name,
-          reg_istat_code: reg_istat_code,
+          reg_istat_code,
           children: [
             {
               name: prov_name,
               prov_istat_code_num,
+              reg_istat_code,
               children: [
-                { name: name, com_istat_code_num: com_istat_code_num },
+                { name: name,  com_istat_code_num,  prov_istat_code_num, reg_istat_code },
               ],
             },
           ],
