@@ -4,7 +4,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
-
+import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useState } from "react";
 
 import {
@@ -60,7 +60,7 @@ const SideMenu = ({
         municipalityFeature = currentGeoJSON;
       }
       feature = { ...feature, ...municipalityFeature };
-    }else if (selectedIstatProperties.prov_istat_code_num) {
+    } else if (selectedIstatProperties.prov_istat_code_num) {
       const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
         selectedIstatProperties.prov_istat_code_num
       );
@@ -76,6 +76,7 @@ const SideMenu = ({
       false
     );
   };
+
   useEffect(() => {
     if (!selectedFeature.selectionFromMap) {
       return;
@@ -91,8 +92,32 @@ const SideMenu = ({
 
   }, [selectedFeature]);
 
-
-
+  const dfs= (node, term, foundIDS)=> {
+    let isMatching = term.length >2 && node.name && node.name.indexOf(term) > -1;
+    if (Array.isArray(node.children)) {
+      node.children.forEach((child) => {
+        const hasMatchingChild = dfs(child, term, foundIDS);
+        isMatching = isMatching || hasMatchingChild;
+      });
+    }
+  
+    // We will add any item if it matches our search term or if it has a children that matches our term
+    if (isMatching && node.name) {
+      const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || node.name;
+      foundIDS.push(id);
+    }
+    return isMatching;
+  }
+  
+  const searchNode= term=> {
+    const dataNode = {
+      children: italyTree.children,
+    };
+    const matchedIDS = ['Italy'];
+   dfs(dataNode, term, matchedIDS);
+  setExpanded(matchedIDS)
+  setSelected(matchedIDS);
+  }
 
   const mapTree = ({name, children, ...node})=>{
     const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || name;
@@ -115,9 +140,11 @@ const SideMenu = ({
     {children && children.map(mapTree)}
   </TreeItem>)
   }
-  
+  const searchDebounced = useDebouncedCallback((value) => { searchNode(value) }, 500);
+
   return (
     <div className="sideMenu">
+      <input type='text'onChange={(e) => searchDebounced.callback(e.target.value)} />
     <TreeView
       className={classes.root}
       defaultCollapseIcon={<ExpandMoreIcon />}
