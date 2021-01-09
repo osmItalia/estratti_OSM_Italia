@@ -6,7 +6,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useState } from "react";
-
+import {search} from './filter';
 import {
   fillDataFromProperties,
   getMunicipalitiesForProvinceIstatCode,
@@ -22,20 +22,24 @@ const SideMenu = ({
   italyTree,
   selectedFeature,
   setSelectedFeature,
-  currentGeoJSON,
   setCurrentGeoJSON,
   setFeatureIndex,
 }) => {
 
-
   const classes = useStyles();
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [searchFilter, setSearchFilter] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
 
-  const handleSelect = (event, nodeIds) => {
+
+  const resetFilter = ()=>{
+    setSearchFilter([]);
+    setSearchValue('');
+  }
+  const handleSelect = (_, nodeIds) => {
     setSelected(nodeIds);
   };
-
 
   const currentName =
     selectedFeature.municipality.name ||
@@ -43,22 +47,24 @@ const SideMenu = ({
     selectedFeature.region.name ||
     "Italy";
 
+const findMunicipalityInProvince = (currentGeoJSON,com_istat_code_num ) =>
+currentGeoJSON.features.find(
+  ({ properties }) =>
+    properties.com_istat_code_num ===
+    com_istat_code_num
+);
   const setSelectedIstatProperties = async (selectedIstatProperties) => {
+   resetFilter()
     let feature = {
       properties: selectedIstatProperties,
       feature: null,
     };
     if (selectedIstatProperties.com_istat_code_num) {
       let municipalityFeature;
-      if (currentGeoJSON.features) {
-        municipalityFeature = currentGeoJSON.features.find(
-          ({ properties }) =>
-            properties.com_istat_code_num ===
-            selectedIstatProperties.com_istat_code_num
+        const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
+          selectedIstatProperties.prov_istat_code_num
         );
-      } else {
-        municipalityFeature = currentGeoJSON;
-      }
+        municipalityFeature = findMunicipalityInProvince(featureGeometry, selectedIstatProperties.com_istat_code_num)
       feature = { ...feature, ...municipalityFeature };
     } else if (selectedIstatProperties.prov_istat_code_num) {
       const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
@@ -81,6 +87,7 @@ const SideMenu = ({
     if (!selectedFeature.selectionFromMap) {
       return;
     }
+   resetFilter();
     const toExpand = [
       ...(selectedFeature.municipality.com_istat_code_num ? [selectedFeature.municipality.com_istat_code_num]: []),
       ...(selectedFeature.province.prov_istat_code_num ? [selectedFeature.province.prov_istat_code_num]: []),
@@ -92,37 +99,29 @@ const SideMenu = ({
 
   }, [selectedFeature]);
 
-  const dfs= (node, term, foundIDS)=> {
-    let isMatching = term.length >2 && node.name && node.name.indexOf(term) > -1;
-    if (Array.isArray(node.children)) {
-      node.children.forEach((child) => {
-        const hasMatchingChild = dfs(child, term, foundIDS);
-        isMatching = isMatching || hasMatchingChild;
-      });
-    }
+
   
-    // We will add any item if it matches our search term or if it has a children that matches our term
-    if (isMatching && node.name) {
-      const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || node.name;
-      foundIDS.push(id);
-    }
-    return isMatching;
-  }
-  
-  const searchNode= term=> {
+  const searchNode= term => {
     const dataNode = {
       children: italyTree.children,
     };
     const matchedIDS = ['Italy'];
-   dfs(dataNode, term, matchedIDS);
-  setExpanded(matchedIDS)
-  setSelected(matchedIDS);
+    search(dataNode, term, matchedIDS);
+    if(matchedIDS.length >1){
+    setSearchFilter(matchedIDS)
+    } else {
+     resetFilter()
+    }
+    setExpanded(matchedIDS)
+    setSelected(matchedIDS);
   }
 
   const mapTree = ({name, children, ...node})=>{
     const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || name;
-    
-  return (<TreeItem nodeId={id} label={name} onLabelClick={(event)=>{
+    if(searchFilter.length && !searchFilter.includes(id)){
+      return null;
+    }
+  return (<TreeItem nodeId={id} label={name} onLabelClick={(_)=>{
     const toExpand = [
       ...(node.com_istat_code_num ? [node.com_istat_code_num]: []),
       ...(node.prov_istat_code_num ? [node.prov_istat_code_num]: []),
@@ -131,6 +130,8 @@ const SideMenu = ({
      ]
     setExpanded(toExpand);
       setSelectedIstatProperties({
+        reg_name: node.reg_name,
+        prov_name: node.prov_name,
         reg_istat_code: node.reg_istat_code,
         prov_istat_code_num: node.prov_istat_code_num,
         com_istat_code_num: node.com_istat_code_num,
@@ -144,7 +145,10 @@ const SideMenu = ({
 
   return (
     <div className="sideMenu">
-      <input type='text'onChange={(e) => searchDebounced.callback(e.target.value)} />
+      <input type='text' value={searchValue} onChange={(e) => {
+        setSearchValue(e.target.value);
+        searchDebounced.callback(e.target.value);
+      }} />
     <TreeView
       className={classes.root}
       defaultCollapseIcon={<ExpandMoreIcon />}

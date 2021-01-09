@@ -42,75 +42,48 @@ export const fillDataFromProperties = async (
   selectionFromMap
 ) => {
   const properties = feature.properties;
+
+const provincesInRegion = properties.reg_istat_code ? getProvincesFromRegionIstatCode(properties.reg_istat_code): null;
+const municipalitiesInRegion = properties.prov_istat_code_num ? await getMunicipalitiesForProvinceIstatCode(
+  properties.prov_istat_code_num
+) : null;
+
+const newFeature = {
+  ...selectedFeature,
+  region: {
+    ...selectedFeature.region,
+    name: properties.reg_name? (properties.reg_name|| properties.name):null,
+    feature: provincesInRegion,
+    reg_istat_code: properties.reg_istat_code || null,
+  },
+  province: {
+    ...selectedFeature.province,
+    name: properties.prov_name?(properties.prov_name||properties.name):null,
+    feature: municipalitiesInRegion,
+    prov_istat_code_num: properties.prov_istat_code_num || null,
+  },
+  municipality: {
+    ...selectedFeature.municipality,
+    name:  properties.com_istat_code_num?properties.name: null,
+    feature: properties.com_istat_code_num?feature:null,
+    com_istat_code_num: properties.com_istat_code_num || null,
+  },
+  selectionFromMap,
+}
+  setSelectedFeature(newFeature);
+
+
   switch (true) {
     case !!properties.com_istat_code_num:
-      setSelectedFeature({
-        ...selectedFeature,
-        municipality: {
-          ...selectedFeature.municipality,
-          name: properties.name,
-          feature: feature,
-          com_istat_code_num: properties.com_istat_code_num,
-        },
-        selectionFromMap,
-      });
-      console.log(feature.feature)
       setCurrentGeoJSON(feature);
       setFeatureIndex(4);
       break;
     case !!properties.prov_istat_code_num:
-      const provIstatCode = properties.prov_istat_code_num;
-      const municipalitiesForIstatCode = await getMunicipalitiesForProvinceIstatCode(
-        provIstatCode
-      );
-      setSelectedFeature({
-        ...selectedFeature,
-        province: {
-          ...selectedFeature.province,
-          name: properties.prov_name || properties.name,
-          feature: municipalitiesForIstatCode,
-          prov_istat_code_num: provIstatCode,
-        },
-        municipality: {
-          ...selectedFeature.municipality,
-          name: null,
-          feature: null,
-          com_istat_code_num: null,
-        },
-        selectionFromMap,
-      });
-      console.log(municipalitiesForIstatCode)
-      setCurrentGeoJSON(municipalitiesForIstatCode);
+      setCurrentGeoJSON(municipalitiesInRegion);
       setFeatureIndex(3);
       break;
     case !!properties.reg_istat_code:
-      const regionIstatCode = properties.reg_istat_code;
-      const provincesForIstatCode = getProvincesFromRegionIstatCode(
-        regionIstatCode
-      );
-      setCurrentGeoJSON(provincesForIstatCode);
-      setSelectedFeature({
-        ...selectedFeature,
-        region: {
-          ...selectedFeature.region,
-          name: properties.reg_name || properties.name,
-          feature: provincesForIstatCode,
-          reg_istat_code: regionIstatCode,
-        },
-        province: {
-          ...selectedFeature.province,
-          name: null,
-          feature: null,
-          prov_istat_code_num: null,
-        },
-        municipality: {
-          ...selectedFeature.municipality,
-          name: null,
-          feature: null,
-          com_istat_code_num: null,
-        },
-        selectionFromMap,
-      });
+      setCurrentGeoJSON(provincesInRegion);
       setFeatureIndex(2);
       break;
     default:
@@ -121,33 +94,7 @@ export const fillDataFromProperties = async (
       break;
   }
 };
-//IN Case we don't have municipalities
-// export const makeItalianTree = (provinces) => {
-//   const italyTree = {
-//     name: "Italy",
-//     toggled: true,
-//     children: {},
-//   };
 
-//   provinces.objects.provinces.geometries.forEach(
-//     ({
-//       properties: { reg_name, prov_name, prov_istat_code_num, reg_istat_code },
-//     }) => {
-//       const previousChildren = italyTree.children[reg_name]?.children || [];
-//       italyTree.children[reg_name] = {
-//         name: reg_name,
-//         reg_istat_code: reg_istat_code,
-//         children: [
-//           ...previousChildren,
-//           { name: prov_name, prov_istat_code_num: prov_istat_code_num },
-//         ],
-//       };
-//     }
-//   );
-
-//   italyTree.children = Object.values(italyTree.children);
-//   return italyTree;
-// };
 export const makeItalianTree = () => {
   let italyTree = {
     name: "Italy",
@@ -175,6 +122,8 @@ export const makeItalianTree = () => {
         //insert municipalities
         previousProvinces.children.push({
           name: name,
+          reg_name,
+          prov_name,
           com_istat_code_num,
           prov_istat_code_num,
           reg_istat_code,
@@ -183,6 +132,8 @@ export const makeItalianTree = () => {
         //insert provinces
         previousRegions.children.push({
           name: prov_name,
+          prov_name,
+          reg_name,
           prov_istat_code_num,
           reg_istat_code,
           children: [{ name: name, com_istat_code_num, prov_istat_code_num, reg_istat_code }],
@@ -191,14 +142,16 @@ export const makeItalianTree = () => {
         //insert regions
         italyTree.children.push({
           name: reg_name,
+          reg_name,
           reg_istat_code,
           children: [
             {
               name: prov_name,
+              prov_name,
               prov_istat_code_num,
               reg_istat_code,
               children: [
-                { name: name,  com_istat_code_num,  prov_istat_code_num, reg_istat_code },
+                { name: name, com_istat_code_num, prov_istat_code_num, reg_istat_code },
               ],
             },
           ],

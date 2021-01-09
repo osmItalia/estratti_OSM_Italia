@@ -28,7 +28,7 @@ const Italy = ({
       return;
     }
     map.fitBounds(bounds);
-  }, [currentGeoJSON, geoJSONref.current]);
+  }, [currentGeoJSON, geoJSONref, map]);
 
   return (
     <GeoJSON
