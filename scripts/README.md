@@ -82,15 +82,12 @@ SELECT ST_ValidateTopoGeo('topology');
 SELECT * FROM TEMP.topology_validate_topogeo;
 SELECT TopoGeo_UpdateSeeds('topology');
 
-SELECT TopoGeo_ToGeoTableGeneralize('topology', 'admin', 'comuni', 'Geometry', 'comuni_simplified_100m', 100);
+SELECT TopoGeo_ToGeoTableGeneralize('topology', NULL, 'comuni', 'Geometry', 'comuni_simplified_100m', 0.001);
 
-SELECT TopoGeo_ToGeoTable('topology', 'admin', 'comuni', 'Geometry', 'comuni_from_topo');
-
+SELECT TopoGeo_ToGeoTable('topology', NULL, 'comuni', 'Geometry', 'comuni_from_topo');
 ```
 
-Failure, empty geometry column.
-
-Third take:
+Alternative solution:
 
 ```sh
 find . -name '*.geojson' -path '*/poly/comuni/*' -type f |
