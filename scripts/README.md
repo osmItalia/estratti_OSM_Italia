@@ -102,3 +102,37 @@ geo2topo comuni.geojson |
     topo2geo -i - comuni
 mv comuni comuni-simplified.geojson
 ```
+
+Add properties:
+
+```
+(
+find . -name '*.geojson' -path '*/poly/regioni/*' -type f |
+while read file_path
+do
+    title=$(basename "$file_path" .geojson)
+    jq -c \
+        --arg ric "${title%_*}" \
+        --arg rn "${title##*_}" \
+        '.properties |= [{"reg_istat_code": $ric, "reg_name": $rn}]' "$file_path"
+done
+find . -name '*.geojson' -path '*/poly/province/*' -type f |
+while read file_path
+do
+    title=$(basename "$t" .geojson)
+    jq -c \
+        --arg pic "${title%_*}" \
+        --arg pn "${title##*_}" \
+        '.properties |= [{"prov_istat_code": $pic, "prov_name": $pn}]' "$file_path"
+done
+find . -name '*.geojson' -path '*/poly/comuni/*' -type f |
+while read file_path
+do
+    title=$(basename "$t" .geojson)
+    jq -c \
+        --arg name "${title##*_}" \
+        '.properties |= [{"name": $name}]' "$file_path"
+done
+) |
+jq -cs > comuni.geojson
+```
