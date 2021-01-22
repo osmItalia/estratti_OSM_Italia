@@ -114,7 +114,7 @@ do
     jq -c \
         --arg ric "${title%_*}" \
         --arg rn "${title##*_}" \
-        '.properties |= [{"reg_istat_code": $ric, "reg_name": $rn}]' "$file_path"
+        '.properties |= [{"ente": "regione", "reg_istat_code": $ric, "reg_name": $rn}]' "$file_path"
 done
 find . -name '*.geojson' -path '*/poly/province/*' -type f |
 while read file_path
@@ -123,7 +123,7 @@ do
     jq -c \
         --arg pic "${title%_*}" \
         --arg pn "${title##*_}" \
-        '.properties |= [{"prov_istat_code": $pic, "prov_name": $pn}]' "$file_path"
+        '.properties |= [{"ente": "provincia", "prov_istat_code": $pic, "prov_name": $pn}]' "$file_path"
 done
 find . -name '*.geojson' -path '*/poly/comuni/*' -type f |
 while read file_path
@@ -131,8 +131,168 @@ do
     title=$(basename "$t" .geojson)
     jq -c \
         --arg name "${title##*_}" \
-        '.properties |= [{"name": $name}]' "$file_path"
+        '.properties |= [{"ente": "comune", "name": $name}]' "$file_path"
 done
 ) |
-jq -cs > comuni.geojson
+jq -cs |
+geo2topo comuni.geojson |
+    toposimplify -s 10 - | gzip > confini.json
+```
+
+Final solution:
+
+```
+(set -ex
+conn_str="postgres://osm:osm@127.0.0.1/osm"
+basedir="/srv/estratti/output/dati/poly"
+
+(cd "$basedir"
+
+cat << EOF | psql -qAtX "$conn_str"
+drop materialized view if exists files_agg;
+drop table if exists files;
+create table files (istat varchar, extension varchar, path varchar);
+EOF
+
+find . -type f -not -name '*.log' | cut -b3- |
+while read path
+do
+    filename=$(basename "$path")
+    istat=${filename%%_*}
+    extension=".${filename#*.}"
+    echo "$istat;$extension;$path"
+done | psql -qAtX "$conn_str" -c "\copy files FROM STDIN WITH DELIMITER ';'"
+
+psql -qAtX "$conn_str" -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
+)
+
+
+# generate regions
+cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_IT_regions.json
+select jsonb_build_object(
+        'type', 'FeatureCollection',
+        'features', jsonb_agg(jsonb_build_object(
+            'type', 'feature',
+            'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+            'properties', jsonb_build_object(
+                'name', b.name,
+                'osm', b.id_osm,
+                'istat', b.istat,
+                'adm', b.id_adm))))
+  from boundaries b
+ where b.id_adm = 4
+ group by true;
+EOF
+
+# generate provinces for each region
+(cat << EOF | psql -qAtX "$conn_str"
+select distinct p.istat
+  from boundaries b
+  join boundaries p
+    on b.id_parent = p.id_osm
+ where b.id_adm = 6 and p.id_adm = 4;
+EOF
+) |
+while read istat
+do
+    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_R_${istat}_provinces.json
+        select jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(jsonb_build_object(
+                'type', 'feature',
+                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'properties', jsonb_build_object(
+                    'name', b.name,
+                    'osm', b.id_osm,
+                    'istat', b.istat,
+                    'adm', b.id_adm,
+                    'parent_name', p.name,
+                    'parent_osm', p.id_osm,
+                    'parent_istat', p.istat,
+                    'parent_adm', p.id_adm) || f.downloads)))
+      from boundaries b
+      join boundaries p
+        on b.id_parent = p.id_osm
+      join files_agg f
+        on b.istat = f.istat
+     where b.id_adm = 6 and p.id_adm = 4
+       and p.istat::int = '$istat'::int
+     group by true;
+EOF
+done
+
+# generate municipalities for each province
+(cat << EOF | psql -qAtX "$conn_str"
+select distinct p.istat
+  from boundaries b
+  join boundaries p
+    on b.id_parent = p.id_osm
+ where b.id_adm = 8 and p.id_adm = 6;
+EOF
+) |
+while read istat
+do
+    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_P_${istat}_municipalities.json
+        select jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(jsonb_build_object(
+                'type', 'feature',
+                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'properties', jsonb_build_object(
+                    'name', b.name,
+                    'osm', b.id_osm,
+                    'istat', b.istat,
+                    'adm', b.id_adm,
+                    'parent_name', p.name,
+                    'parent_osm', p.id_osm,
+                    'parent_istat', p.istat,
+                    'parent_adm', p.id_adm) || f.downloads)))
+      from boundaries b
+      join boundaries p
+        on b.id_parent = p.id_osm
+      join files_agg f
+        on b.istat = f.istat
+     where b.id_adm = 8 and p.id_adm = 6
+       and p.istat::int = '$istat'::int
+     group by true;
+EOF
+done
+
+# generate municipalities for each region without provinces
+(cat << EOF | psql -qAtX "$conn_str"
+select distinct p.istat
+  from boundaries b
+  join boundaries p
+    on b.id_parent = p.id_osm
+ where b.id_adm = 8 and p.id_adm = 4;
+EOF
+) |
+while read istat
+do
+    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_R_${istat}_municipalities.json
+        select jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(jsonb_build_object(
+                'type', 'feature',
+                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'properties', jsonb_build_object(
+                    'name', b.name,
+                    'osm', b.id_osm,
+                    'istat', b.istat,
+                    'adm', b.id_adm,
+                    'parent_name', p.name,
+                    'parent_osm', p.id_osm,
+                    'parent_istat', p.istat,
+                    'parent_adm', p.id_adm) || f.downloads)))
+      from boundaries b
+      join boundaries p
+        on b.id_parent = p.id_osm
+      join files_agg f
+        on b.istat = f.istat
+     where b.id_adm = 8 and p.id_adm = 4
+       and p.istat::int = '$istat'::int
+     group by true;
+EOF
+done
+)
 ```
