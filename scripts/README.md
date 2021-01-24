@@ -146,7 +146,9 @@ Final solution:
 conn_str="postgres://osm:osm@127.0.0.1/osm"
 basedir="/srv/estratti/output/dati/poly"
 
-(cd "$basedir"
+# Match entires - files
+
+cd "$basedir"
 
 cat << EOF | psql -qAtX "$conn_str"
 drop materialized view if exists files_agg;
@@ -164,16 +166,18 @@ do
 done | psql -qAtX "$conn_str" -c "\copy files FROM STDIN WITH DELIMITER ';'"
 
 psql -qAtX "$conn_str" -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
-)
+
+cd -
 
 
-# generate regions
-cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_IT_regions.json
+# Generate regions
+
+cat << EOF | psql -qAtX "$conn_str" > limits_IT_regions.json
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
             'type', 'feature',
-            'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+            'geometry', st_asgeojson(ST_CollectionExtract(st_geomfromgeojson(b.geojson), 3)),
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -184,7 +188,34 @@ select jsonb_build_object(
  group by true;
 EOF
 
-# generate provinces for each region
+geo2topo limits_IT_regions.json | toposimplify -s 0.1 -o limits_IT_regions_topo.json
+mv limits_IT_regions{_topo,}.json
+
+
+# Generate provinces
+
+cat << EOF | psql -qAtX "$conn_str" > limits_IT_provinces.json
+select jsonb_build_object(
+        'type', 'FeatureCollection',
+        'features', jsonb_agg(jsonb_build_object(
+            'type', 'feature',
+            'geometry', st_asgeojson(ST_CollectionExtract(st_geomfromgeojson(b.geojson), 3)),
+            'properties', jsonb_build_object(
+                'name', b.name,
+                'osm', b.id_osm,
+                'istat', b.istat,
+                'adm', b.id_adm))))
+  from boundaries b
+ where b.id_adm = 6
+ group by true;
+EOF
+
+geo2topo limits_IT_provinces.json | toposimplify -s 0.1 -o limits_IT_provinces_topo.json
+mv limits_IT_provinces{_topo,}.json
+
+
+# Generate provinces for each region
+
 (cat << EOF | psql -qAtX "$conn_str"
 select distinct p.istat
   from boundaries b
@@ -195,21 +226,17 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_R_${istat}_provinces.json
+    cat << EOF | psql -qAtX "$conn_str" > limits_R_${istat}_provinces.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
                 'type', 'feature',
-                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'geometry', st_asgeojson(ST_CollectionExtract(st_geomfromgeojson(b.geojson), 3)),
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
                     'istat', b.istat,
-                    'adm', b.id_adm,
-                    'parent_name', p.name,
-                    'parent_osm', p.id_osm,
-                    'parent_istat', p.istat,
-                    'parent_adm', p.id_adm) || f.downloads)))
+                    'adm', b.id_adm) || f.downloads)))
       from boundaries b
       join boundaries p
         on b.id_parent = p.id_osm
@@ -219,9 +246,13 @@ do
        and p.istat::int = '$istat'::int
      group by true;
 EOF
+    geo2topo limits_R_${istat}_provinces.json | toposimplify -s 0.1 -o limits_R_${istat}_provinces_topo.json
+    mv limits_R_${istat}_provinces{_topo,}.json
 done
 
-# generate municipalities for each province
+
+# Generate municipalities for each province
+
 (cat << EOF | psql -qAtX "$conn_str"
 select distinct p.istat
   from boundaries b
@@ -232,21 +263,17 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_P_${istat}_municipalities.json
+    cat << EOF | psql -qAtX "$conn_str" > limits_P_${istat}_municipalities.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
                 'type', 'feature',
-                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'geometry', st_asgeojson(ST_CollectionExtract(st_geomfromgeojson(b.geojson), 3)),
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
                     'istat', b.istat,
-                    'adm', b.id_adm,
-                    'parent_name', p.name,
-                    'parent_osm', p.id_osm,
-                    'parent_istat', p.istat,
-                    'parent_adm', p.id_adm) || f.downloads)))
+                    'adm', b.id_adm) || f.downloads)))
       from boundaries b
       join boundaries p
         on b.id_parent = p.id_osm
@@ -256,9 +283,13 @@ do
        and p.istat::int = '$istat'::int
      group by true;
 EOF
+    geo2topo limits_P_${istat}_municipalities.json | toposimplify -s 0.1 -o limits_P_${istat}_municipalities_topo.json
+    mv limits_P_${istat}_municipalities{_topo,}.json
 done
 
-# generate municipalities for each region without provinces
+
+# Generate municipalities for each region without provinces
+
 (cat << EOF | psql -qAtX "$conn_str"
 select distinct p.istat
   from boundaries b
@@ -269,21 +300,17 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | geo2topo | toposimplify -s 1 - > limits_R_${istat}_municipalities.json
+    cat << EOF | psql -qAtX "$conn_str" > limits_R_${istat}_municipalities.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
                 'type', 'feature',
-                'geometry', b.geojson::jsonb -> 'geometries' -> 0,
+                'geometry', st_asgeojson(ST_CollectionExtract(st_geomfromgeojson(b.geojson), 3)),
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
                     'istat', b.istat,
-                    'adm', b.id_adm,
-                    'parent_name', p.name,
-                    'parent_osm', p.id_osm,
-                    'parent_istat', p.istat,
-                    'parent_adm', p.id_adm) || f.downloads)))
+                    'adm', b.id_adm) || f.downloads)))
       from boundaries b
       join boundaries p
         on b.id_parent = p.id_osm
@@ -293,6 +320,8 @@ do
        and p.istat::int = '$istat'::int
      group by true;
 EOF
+    geo2topo limits_R_${istat}_municipalities.json | toposimplify -s 0.1 -o limits_P_${istat}_municipalities_topo.json
+    mv limits_R_${istat}_municipalities{_topo,}.json
 done
 )
 ```
