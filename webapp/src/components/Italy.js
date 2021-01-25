@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
 import { fillDataFromProperties } from "../helpers";
 
-const pathColors = ["#4a40c3", "#5d53dc", "#6b62ee", "#9287f7"];
+const pathColors = ["#2196f3", "#42a5f5", "#57b1fa", "#6ec6ff"];
 
 const getPathColor = (featureIndex) => {
   return pathColors[featureIndex - 1];
@@ -35,6 +35,7 @@ const Italy = ({
       ref={geoJSONref}
       eventHandlers={{
         click: (e) => {
+          console.log(e)
           const feature = e.layer.feature;
           fillDataFromProperties(
             feature,
