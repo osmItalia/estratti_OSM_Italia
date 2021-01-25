@@ -9,16 +9,16 @@ const Breadcrumb = ({
 }) => {
   return (
     <div className="breadcrumb">
-      {Object.entries(selectedFeature)
+      {console.log(selectedFeature) || Object.entries(selectedFeature)
         .filter(([, { name }]) => !!name)
-        .map(([type, { name, feature, index }]) => {
+        .map(([type, { name, index }]) => {
           const visible = name && index <= featureIndex;
           return (
             <p
               key={type}
               style={{
                 transform: `translateX(${visible ? "0%" : "-100%"})`,
-                "min-width": `${visible ? "100px" : "0px"}`,
+                "minWidth": `${visible ? "100px" : "0px"}`,
                 padding: `${visible ? "6px" : "0px"}`,
                 zIndex: 4 - index,
               }}
@@ -27,6 +27,8 @@ const Breadcrumb = ({
                 const parent = Object.entries(selectedFeature).filter(
                   ([, { index: mappedIndex }]) => mappedIndex === index - 1
                 );
+                console.log(index)
+                console.log('parent', parent)
                 let currentFeature;
                 if (!parent.length) {
                   currentFeature = selectedFeature.state.feature;
@@ -34,10 +36,7 @@ const Breadcrumb = ({
                 } else {
                   currentFeature = parent[0][1].feature.features.find(
                     ({ properties }) =>
-                      name ===
-                      (properties.name ||
-                        properties.prov_name ||
-                        properties.reg_name)
+                      (properties.prov_name === name) || (properties.reg_name===name) 
                   );
                 }
                 fillDataFromProperties(

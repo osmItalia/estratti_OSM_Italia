@@ -1,13 +1,13 @@
 import "./App.css";
+import 'fontsource-roboto';
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useState, useMemo } from "react";
 import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
+import { defaultFeature, geoRegions, makeItalianTree } from "./helpers";
 
-import { makeItalianTree, defaultFeature, geoRegions } from "./helpers";
-
-const italyCoords = [42, 12.5];
+const italyBounds = [[36.6199872, 6.74995527 ], [47.11539317, 18.48024702 ]];
 
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
@@ -28,9 +28,12 @@ function App() {
       <div className="content">
         <MapContainer
           id="mapContainer"
-          center={italyCoords}
           zoom={6}
-          scrollWheelZoom={false}
+          minZoom={6}
+          bounds={italyBounds}
+          maxBounds={italyBounds}
+          maxBoundsViscosity={1}
+          scrollWheelZoom={true}
         >
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

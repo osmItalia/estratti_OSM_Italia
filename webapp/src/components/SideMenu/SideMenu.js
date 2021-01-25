@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import { makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import ArrowDropDownIcon from '@material-ui/icons/ExpandMore';
+import ArrowRightIcon from '@material-ui/icons/ChevronRight';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useState } from "react";
 import {search} from './filter';
@@ -12,12 +13,7 @@ import {
   getMunicipalitiesForProvinceIstatCode,
 } from "../../helpers";
 
-const useStyles = makeStyles({
-  root: {
-    flexGrow: 1,
-    maxWidth: 500,
-  },
-});
+
 const SideMenu = ({
   italyTree,
   selectedFeature,
@@ -26,8 +22,7 @@ const SideMenu = ({
   setFeatureIndex,
 }) => {
 
-  const classes = useStyles();
-  const [expanded, setExpanded] = useState([]);
+  const [expanded, setExpanded] = useState(['Italy']);
   const [selected, setSelected] = useState([]);
   const [searchFilter, setSearchFilter] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -46,12 +41,13 @@ const SideMenu = ({
     selectedFeature.province.name ||
     selectedFeature.region.name ||
     "Italy";
+    console.log(selectedFeature)
+    const downloadLinks = [{format: 'gpks', url: 'http://google.com'}]
 
-const findMunicipalityInProvince = (currentGeoJSON,com_istat_code_num ) =>
+const findMunicipalityInProvince = (currentGeoJSON, com_istat ) =>
 currentGeoJSON.features.find(
   ({ properties }) =>
-    properties.com_istat_code_num ===
-    com_istat_code_num
+    properties.istat === com_istat
 );
   const setSelectedIstatProperties = async (selectedIstatProperties) => {
    resetFilter()
@@ -59,16 +55,15 @@ currentGeoJSON.features.find(
       properties: selectedIstatProperties,
       feature: null,
     };
-    if (selectedIstatProperties.com_istat_code_num) {
+
+    if (selectedIstatProperties.com_istat) {
       let municipalityFeature;
-        const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
-          selectedIstatProperties.prov_istat_code_num
-        );
-        municipalityFeature = findMunicipalityInProvince(featureGeometry, selectedIstatProperties.com_istat_code_num)
-      feature = { ...feature, ...municipalityFeature };
-    } else if (selectedIstatProperties.prov_istat_code_num) {
+        const featureGeometry = await getMunicipalitiesForProvinceIstatCode(selectedIstatProperties.prov_istat);
+        municipalityFeature = findMunicipalityInProvince(featureGeometry, selectedIstatProperties.com_istat)
+      feature = { ...municipalityFeature, properties: selectedIstatProperties };
+    } else if (selectedIstatProperties.prov_istat) {
       const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
-        selectedIstatProperties.prov_istat_code_num
+        selectedIstatProperties.prov_istat
       );
       feature.feature = featureGeometry;
     }  
@@ -88,17 +83,17 @@ currentGeoJSON.features.find(
       return;
     }
    resetFilter();
+
     const toExpand = [
-      ...(selectedFeature.municipality.com_istat_code_num ? [selectedFeature.municipality.com_istat_code_num]: []),
-      ...(selectedFeature.province.prov_istat_code_num ? [selectedFeature.province.prov_istat_code_num]: []),
-      ...(selectedFeature.region.reg_istat_code ? [selectedFeature.region.reg_istat_code]: []),
+      ...(selectedFeature.municipality.com_istat ? [selectedFeature.municipality.com_istat]: []),
+      ...(selectedFeature.province.prov_istat ? [selectedFeature.province.prov_istat]: []),
+      ...(selectedFeature.region.reg_istat ? [selectedFeature.region.reg_istat]: []),
       'Italy',
     ]
     setExpanded(toExpand);
     setSelected(toExpand[0]);
 
   }, [selectedFeature]);
-
 
   
   const searchNode= term => {
@@ -107,36 +102,49 @@ currentGeoJSON.features.find(
     };
     const matchedIDS = ['Italy'];
     search(dataNode, term, matchedIDS);
+    console.log(dataNode)
+    console.log(matchedIDS)
     if(matchedIDS.length >1){
     setSearchFilter(matchedIDS)
     } else {
-     resetFilter()
+      setSearchFilter([]);
     }
     setExpanded(matchedIDS)
     setSelected(matchedIDS);
   }
 
-  const mapTree = ({name, children, ...node})=>{
-    const id = node.com_istat_code_num || node.prov_istat_code_num || node.reg_istat_code || name;
+
+  const mapTree = ({children, ...node})=>{
+    const id = node.com_istat || node.prov_istat || node.reg_istat || 'Italy';
+    const name = node.com_name || node.prov_name || node.reg_name || 'Italy';
     if(searchFilter.length && !searchFilter.includes(id)){
       return null;
     }
-  return (<TreeItem nodeId={id} label={name} onLabelClick={(_)=>{
+  return (
+  <TreeItem 
+    key={id} 
+    nodeId={id} 
+    label={name} 
+    onLabelClick={(_)=>{
+
+    console.log(node)
+
     const toExpand = [
-      ...(node.com_istat_code_num ? [node.com_istat_code_num]: []),
-      ...(node.prov_istat_code_num ? [node.prov_istat_code_num]: []),
-      ...(node.reg_istat_code ? [node.reg_istat_code]: []),
+      ...(node.com_istat ? [node.com_istat]: []),
+      ...(node.prov_istat ? [node.prov_istat]: []),
+      ...(node.reg_istat ? [node.reg_istat]: []),
       'Italy',
      ]
     setExpanded(toExpand);
-      setSelectedIstatProperties({
-        reg_name: node.reg_name,
-        prov_name: node.prov_name,
-        reg_istat_code: node.reg_istat_code,
-        prov_istat_code_num: node.prov_istat_code_num,
-        com_istat_code_num: node.com_istat_code_num,
-        name: name,
-      });
+
+    setSelectedIstatProperties({
+      reg_name: node.reg_name,
+      prov_name: node.prov_name,
+      reg_istat: node.reg_istat,
+      prov_istat: node.prov_istat,
+      com_istat: node.com_istat,
+      com_name: node.com_name,
+    });
   }}>
     {children && children.map(mapTree)}
   </TreeItem>)
@@ -145,28 +153,42 @@ currentGeoJSON.features.find(
 
   return (
     <div className="sideMenu">
-      <input type='text' value={searchValue} onChange={(e) => {
+      <TextField 
+      label="Cerca" 
+      type="search"
+      value={searchValue} onChange={(e) => {
         setSearchValue(e.target.value);
         searchDebounced.callback(e.target.value);
-      }} />
-    <TreeView
-      className={classes.root}
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-      expanded={expanded}
-      selected={selected}
-      onNodeSelect={handleSelect}
-    >
-   {mapTree(italyTree)}
-      
-    </TreeView>
-      {currentName && (
-        <div className="resultItem">
-          <p>Download: {currentName}</p>
-        </div>
-      )}
+      }} 
+       />
+  
+      <TreeView
+        defaultCollapseIcon={<ArrowDropDownIcon />}
+        defaultExpandIcon={<ArrowRightIcon />}
+        expanded={expanded}
+        selected={selected}
+        onNodeSelect={handleSelect}
+      >
+        {mapTree(italyTree)}
+      </TreeView>
+      <DownloadItems links={downloadLinks} name={currentName} />
     </div>
   );
 };
 
+const DownloadItems = ({name, links}) =>{
+
+  if(!name || !links.length){return null}
+
+  return  (
+  <div className="resultItem">
+    <p>Estratti disponibili per {name}</p>
+    {links.map( ({format, url}) =>(
+      <a key={url} href={url}><Button variant="contained">{format}</Button></a>
+
+    ))}
+  </div>
+)
+
+}
 export default SideMenu;
