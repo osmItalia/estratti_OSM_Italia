@@ -13,7 +13,7 @@ import {
   getMunicipalitiesForProvinceIstatCode,
 } from "../../helpers";
 
-
+const scrollToElement = element =>  element.scrollIntoView({behavior: "smooth", block: "center", inline: "start"});
 const SideMenu = ({
   italyTree,
   selectedFeature,
@@ -22,11 +22,10 @@ const SideMenu = ({
   setFeatureIndex,
 }) => {
 
-  const [expanded, setExpanded] = useState(['Italy']);
-  const [selected, setSelected] = useState([]);
+  const [expanded, setExpanded] = useState(['Italia']);
+  const [selected, setSelected] = useState(['Italia']);
   const [searchFilter, setSearchFilter] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-
 
   const resetFilter = ()=>{
     setSearchFilter([]);
@@ -40,8 +39,8 @@ const SideMenu = ({
     selectedFeature.municipality.name ||
     selectedFeature.province.name ||
     selectedFeature.region.name ||
-    "Italy";
-    console.log(selectedFeature)
+    "Italia";
+    // console.log(selectedFeature)
     const downloadLinks = [{format: 'gpks', url: 'http://google.com'}]
 
 const findMunicipalityInProvince = (currentGeoJSON, com_istat ) =>
@@ -74,7 +73,8 @@ currentGeoJSON.features.find(
       setSelectedFeature,
       setCurrentGeoJSON,
       setFeatureIndex,
-      false
+      false, 
+      italyTree
     );
   };
 
@@ -88,8 +88,9 @@ currentGeoJSON.features.find(
       ...(selectedFeature.municipality.com_istat ? [selectedFeature.municipality.com_istat]: []),
       ...(selectedFeature.province.prov_istat ? [selectedFeature.province.prov_istat]: []),
       ...(selectedFeature.region.reg_istat ? [selectedFeature.region.reg_istat]: []),
-      'Italy',
+      'Italia',
     ]
+    console.log('toExpand',toExpand)
     setExpanded(toExpand);
     setSelected(toExpand[0]);
 
@@ -100,10 +101,10 @@ currentGeoJSON.features.find(
     const dataNode = {
       children: italyTree.children,
     };
-    const matchedIDS = ['Italy'];
+    const matchedIDS = ['Italia'];
     search(dataNode, term, matchedIDS);
-    console.log(dataNode)
-    console.log(matchedIDS)
+    // console.log(dataNode)
+    // console.log(matchedIDS)
     if(matchedIDS.length >1){
     setSearchFilter(matchedIDS)
     } else {
@@ -115,8 +116,8 @@ currentGeoJSON.features.find(
 
 
   const mapTree = ({children, ...node})=>{
-    const id = node.com_istat || node.prov_istat || node.reg_istat || 'Italy';
-    const name = node.com_name || node.prov_name || node.reg_name || 'Italy';
+    const id = node.com_istat || node.prov_istat || node.reg_istat || 'Italia';
+    const name = node.com_name || node.prov_name || node.reg_name || 'Italia';
     if(searchFilter.length && !searchFilter.includes(id)){
       return null;
     }
@@ -125,16 +126,21 @@ currentGeoJSON.features.find(
     key={id} 
     nodeId={id} 
     label={name} 
-    onLabelClick={(_)=>{
-
-    console.log(node)
+    onLabelClick={(event)=>{
+    //close on tap on selected node
+    if((node.reg_istat===expanded[0] && !node.prov_istat) || 
+      (node.prov_istat===expanded[0] && !node.com_istat)){
+      setExpanded([...expanded.slice(1,expanded.length)])
+      scrollToElement(event.target)
+      return
+    }
 
     const toExpand = [
       ...(node.com_istat ? [node.com_istat]: []),
       ...(node.prov_istat ? [node.prov_istat]: []),
       ...(node.reg_istat ? [node.reg_istat]: []),
-      'Italy',
-     ]
+      'Italia',
+    ]
     setExpanded(toExpand);
 
     setSelectedIstatProperties({
@@ -145,6 +151,9 @@ currentGeoJSON.features.find(
       com_istat: node.com_istat,
       com_name: node.com_name,
     });
+    setTimeout(()=>{
+      scrollToElement(event.target)
+    },200)
   }}>
     {children && children.map(mapTree)}
   </TreeItem>)

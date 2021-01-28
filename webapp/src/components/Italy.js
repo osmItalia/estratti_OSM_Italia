@@ -2,7 +2,13 @@ import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
 import { fillDataFromProperties } from "../helpers";
 
-const pathColors = ["#2196f3", "#42a5f5", "#57b1fa", "#6ec6ff"];
+
+const pathColors = [
+  getComputedStyle(document.documentElement).getPropertyValue('--mainColor1'),
+  getComputedStyle(document.documentElement).getPropertyValue('--mainColor2'),
+  getComputedStyle(document.documentElement).getPropertyValue('--mainColor3'),
+  getComputedStyle(document.documentElement).getPropertyValue('--mainColor4'),
+];
 
 const getPathColor = (featureIndex) => {
   return pathColors[featureIndex - 1];
@@ -15,6 +21,7 @@ const Italy = ({
   setCurrentGeoJSON,
   currentGeoJSON,
   setFeatureIndex,
+  italyTree,
 }) => {
   const geoJSONref = useRef();
   const map = useMap();
@@ -29,7 +36,7 @@ const Italy = ({
     }
     map.fitBounds(bounds);
   }, [currentGeoJSON, geoJSONref, map]);
-
+console.log(currentGeoJSON)
   return (
     <GeoJSON
       ref={geoJSONref}
@@ -43,12 +50,22 @@ const Italy = ({
             setSelectedFeature,
             setCurrentGeoJSON,
             setFeatureIndex,
-            true
+            true,
+            italyTree,
           );
         },
       }}
       pathOptions={{ color: getPathColor(featureIndex) }}
-      key={currentGeoJSON && JSON.stringify(currentGeoJSON).substring(0, 100)}
+      key={currentGeoJSON && currentGeoJSON.properties
+         ? (
+           currentGeoJSON.properties.com_istat
+           ||
+           currentGeoJSON.properties.prov_istat
+           ||
+           currentGeoJSON.properties.reg_istat
+         ) : JSON.stringify(currentGeoJSON).substring(0, 100)
+        }
+      
       data={currentGeoJSON}
     />
   );

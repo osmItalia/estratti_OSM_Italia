@@ -11,6 +11,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "fontsource-roboto": "^4.0.0",
+    "jsonpack": "^1.1.5",
     "leaflet": "^1.7.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -21,8 +22,9 @@
     "use-debounce": "^5.2.0"
   },
   "scripts": {
+    "build-map": "node ./scripts/buildMap",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build-map; react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -48,6 +50,7 @@
   },
   "devDependencies": {
     "@types/leaflet": "^1.5.19",
+    "fs-extra": "^9.1.0",
     "gh-pages": "^3.1.0",
     "prettier": "2.2.1"
   }
