@@ -1,8 +1,8 @@
 :root {
-  --blue1: #2196f3;
-  --blue2: #42a5f5;
-  --blue3: #57b1fa;
-  --blue4: #6ec6ff;
+  --mainColor1: #d73f3f;
+  --mainColor2: #d85151;
+  --mainColor3: #d76161;
+  --mainColor4: #ff726a;
   --headerHeight: 50px;
 }
 #container {
@@ -16,7 +16,7 @@ html,
 body,
 .container {
   height: 100%;
-  font-family: 'Roboto';
+  font-family: 'Barlow Condensed', sans-serif;
 }
 div#root {
   height: 100%;
@@ -24,11 +24,13 @@ div#root {
 #mapContainer {
   height: 100%;
   float: left;
-  width: 70%;
+  width: 65%;
 }
 .sideMenu {
   float: left;
-  width: 30%;
+  width: 35%;
+  max-height: calc(100vh - var(--headerHeight));
+  overflow: hidden;
 }
 .content {
   width: 100%;
@@ -40,18 +42,9 @@ div#root {
   overflow: hidden;
   display: flex;
   flex-direction: row;
-  background: var(--blue1);
+  /* background: var(--mainColor1); */
 }
 
-p.breadItem {
-  display: flex;
-  margin: 0px;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  justify-content: space-around;
-  transition: all 0.4s;
-}
 
 p.breadItem::after {
   content: "→";
@@ -60,25 +53,43 @@ p.breadItem::after {
 p.breadItem:last-child:after {
   content: "";
 }
+
+
+p.breadItem{
+  display: flex;
+  margin: 0px;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  justify-content: space-around;
+  transition: all 0.4s;
+  color: #2c3038;
+  background: #f8f8f8;
+  box-sizing: border-box;
+  border-bottom: 3px solid;
+  border-right: 2px solid #f6f6f6;
+  border-left: 2px solid #f6f6f6;
+  border-bottom-color: var(--mainColor3);
+}
+
+
+p.breadItem:hover {
+  color: white;
+  cursor: pointer;
+  border-bottom-color: white !important;
+  background-color: var(--mainColor1);
+}
+
+
 p.breadItem.state {
-  background: var(--blue1);
-}
-
-p.breadItem.region {
-  background: var(--blue2);
-}
-
-p.breadItem.province {
-  background: var(--blue3);
-}
-p.breadItem.municipality {
-  background: var(--blue4);
+  padding-left:72px;
 }
 
 
 .MuiTreeItem-root.Mui-selected > .MuiTreeItem-content .MuiTreeItem-label {
   background-color:  rgb(41 149 243 / 15%) !important;
   font-weight: bold;
+  font-family: 'Barlow Condensed', sans-serif;
 }
 
 .MuiTreeItem-label {
@@ -91,6 +102,7 @@ p.breadItem.municipality {
 }
 .MuiTypography-root.MuiTreeItem-label.MuiTypography-body1 {
   font-size: 18px;
+  font-family: 'Barlow Condensed', sans-serif;
 }
 .MuiFormControl-root.MuiTextField-root {
    width: 90%;
@@ -99,8 +111,12 @@ p.breadItem.municipality {
 
 ul.MuiTreeView-root{
   overflow-y: scroll;
-  max-height: 70vh;
-  margin-left: 16px;
+  background: #f8f8f8;
+  max-height: 60vh;
+  margin-left: 8px;
+  padding: 8px;
+  border-bottom: 1px solid #dedede;
+  border-top: 1px solid #dedede;
 }
 
 ::-webkit-scrollbar {
@@ -112,10 +128,22 @@ ul.MuiTreeView-root{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--blue3);
+  background: #999
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #888;
+  background: #aaa;
+}
+
+h1 {
+  font-size: 20px;
+  align-self: center;
+}
+
+.appTitle {
+  padding-left: 12px;
+  padding-right: 12px;
+  border-right: 1px solid #f8f8f8;
+  color: var(--mainColor1);
 }

@@ -1,5 +1,4 @@
 import "./App.css";
-import 'fontsource-roboto';
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useState, useMemo } from "react";
 import Italy from "./components/Italy";
@@ -24,6 +23,7 @@ function App() {
         setSelectedFeature={setSelectedFeature}
         setFeatureIndex={setFeatureIndex}
         featureIndex={featureIndex}
+        italyTree={italyTree}
       />
       <div className="content">
         <MapContainer
@@ -46,6 +46,7 @@ function App() {
             selectedFeature={selectedFeature}
             setSelectedFeature={setSelectedFeature}
             setFeatureIndex={setFeatureIndex}
+            italyTree={italyTree}
           />
         </MapContainer>
         <SideMenu

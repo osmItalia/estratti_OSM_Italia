@@ -3,27 +3,59 @@ import provinces from "./static/boundaries/limits_IT_provinces.json";
 import regions from "./static/boundaries/limits_IT_regions.json";
 import municipalities from "./static/boundaries/municipalitiesMap.json";
 // import municipalities1 from "./static/boundaries/limits_IT_municipalities.topo.json";
+// import jsonpack from 'jsonpack';
 
-console.log(regions)
-console.log(provinces)
+// // console.log(regions)
+// // console.log(provinces)
+
+// var encoded = jsonpack.pack(municipalities);
+
+// console.log(encoded)
+// document.write(encoded)
+// var decoded = jsonpack.unpack(encoded);
+
+// console.log(decoded)
+
 export const geoRegions = topojson.feature(regions, "limits_IT_regions");
 const geoProvinces = topojson.feature(provinces, "limits_IT_provinces");
 
 export const defaultFeature = {
-  state: { index: 1, name: "Italy", feature: geoRegions },
+  state: { index: 1, name: "Italia", feature: geoRegions },
   region: { index: 2, name: "", feature: null },
   province: { index: 3, name: "", feature: null },
   municipality: { index: 4, name: "", feature: null },
 };
 
-const getProvincesFromRegionIstatCode = (istatCode) => {
+export const getParentForFeature = (feature, selectedFeature) =>{
+  if(feature.properties.adm===6){
+    return {
+      ...feature,
+      properties: {
+        ...feature.properties,
+        reg_name: selectedFeature.region.name,
+        reg_istat: selectedFeature.region.reg_istat
+      }
+    }
+  }
+  return feature
+}
+const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
+
+  const region = italyTree.children.find(({reg_istat})=>reg_istat === istatCode)
+console.log('region',region)
+  const provincesIstatCodes = region.children.map(({prov_istat})=>prov_istat)
+
+  console.log('provincesIstatCodes',provincesIstatCodes)
   const filteredProvinces = geoProvinces.features.filter(
-    ({ properties }) => properties.reg_istat_code === istatCode
+    ({ properties }) => provincesIstatCodes.includes(properties.istat)
   );
 
   return {
     features: filteredProvinces,
     type: "FeatureCollection",
+    properties: {
+      reg_istat: region.reg_istat
+    }
   };
 };
 
@@ -33,7 +65,7 @@ export const getMunicipalitiesForProvinceIstatCode = async (
   const fileName = `estratti_OSM_Italia/static/boundaries/limits_P_${provinceIstatCode}_municipalities.json`;
   const fileFetched = await fetch(fileName);
   const municipalities = await fileFetched.json();
-  return topojson.feature(municipalities, "-");
+  return topojson.feature(municipalities, `limits_P_${provinceIstatCode}_municipalities`);
 };
 
 const getRegion = properties => ({
@@ -55,18 +87,24 @@ export const fillDataFromProperties = async (
   setSelectedFeature,
   setCurrentGeoJSON,
   setFeatureIndex,
-  selectionFromMap
-) => {
+  selectionFromMap,
+  italyTree,
+  ) => {
   const properties = feature.properties;
-  console.log(properties)
 
   const region = getRegion(properties)
-  const provincesInRegion = region.istat? getProvincesFromRegionIstatCode(region.istat): null;
-  
+  console.log('properties',properties)
+  console.log('region', region)
+ 
+  const provincesInRegion = region.istat? getProvincesFromRegionIstatCode(italyTree, region.istat): null;
+
+  console.log('provincesInRegion',provincesInRegion)
   const province = getProvince(properties)
+
   const municipalitiesInRegion = province.istat ? await getMunicipalitiesForProvinceIstatCode(province.istat) : null;
 
-  const municipality = getMunicipality(properties)   
+  const municipality = getMunicipality(properties)  
+  
 
   const newFeature = {
     ...selectedFeature,
@@ -91,22 +129,28 @@ export const fillDataFromProperties = async (
     selectionFromMap,
   }
   setSelectedFeature(newFeature);
+  console.log('setSelectedFeature',newFeature)
 
-
+console.log('switch',properties )
+console.log('region',region )
   switch (true) {
-    case !!properties.com_istat:
+    case !!properties.com_istat || !!municipality.istat: //todo check
+    console.log('isMuni')
       setCurrentGeoJSON(feature);
       setFeatureIndex(4);
       break;
-    case !!properties.prov_istat:
+    case !!properties.prov_istat || !!province.istat:
+      console.log('isProvince')
       setCurrentGeoJSON(municipalitiesInRegion);
       setFeatureIndex(3);
       break;
-    case !!properties.reg_istat:
+    case !!properties.reg_istat || !!region.istat:
+      console.log('isRegion')
       setCurrentGeoJSON(provincesInRegion);
       setFeatureIndex(2);
       break;
     default:
+      console.log('itItaly')
       setCurrentGeoJSON(geoRegions);
       defaultFeature.selectionFromMap = selectionFromMap;
       setSelectedFeature(defaultFeature);
@@ -194,6 +238,6 @@ export const makeItalianTree = () => {
       }
     }
   );
-console.log(italyTree)
+console.log('console.log(italyTree)',italyTree)
   return italyTree;
 };
