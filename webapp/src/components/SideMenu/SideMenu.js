@@ -20,6 +20,8 @@ const SideMenu = ({
   setSelectedFeature,
   setCurrentGeoJSON,
   setFeatureIndex,
+  selectedTreeItem,
+  setSelectedTreeItem,
 }) => {
 
   const [expanded, setExpanded] = useState(['Italia']);
@@ -48,35 +50,35 @@ currentGeoJSON.features.find(
   ({ properties }) =>
     properties.istat === com_istat
 );
-  const setSelectedIstatProperties = async (selectedIstatProperties) => {
-   resetFilter()
-    let feature = {
-      properties: selectedIstatProperties,
-      feature: null,
-    };
+  // const setSelectedIstatProperties = async (selectedIstatProperties) => {
+  //  resetFilter()
+  //   let feature = {
+  //     properties: selectedIstatProperties,
+  //     feature: null,
+  //   };
 
-    if (selectedIstatProperties.com_istat) {
-      let municipalityFeature;
-        const featureGeometry = await getMunicipalitiesForProvinceIstatCode(selectedIstatProperties.prov_istat);
-        municipalityFeature = findMunicipalityInProvince(featureGeometry, selectedIstatProperties.com_istat)
-      feature = { ...municipalityFeature, properties: selectedIstatProperties };
-    } else if (selectedIstatProperties.prov_istat) {
-      const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
-        selectedIstatProperties.prov_istat
-      );
-      feature.feature = featureGeometry;
-    }  
+  //   if (selectedIstatProperties.com_istat) {
+  //     let municipalityFeature;
+  //       const featureGeometry = await getMunicipalitiesForProvinceIstatCode(selectedIstatProperties.prov_istat);
+  //       municipalityFeature = findMunicipalityInProvince(featureGeometry, selectedIstatProperties.com_istat)
+  //     feature = { ...municipalityFeature, properties: selectedIstatProperties };
+  //   } else if (selectedIstatProperties.prov_istat) {
+  //     const featureGeometry = await getMunicipalitiesForProvinceIstatCode(
+  //       selectedIstatProperties.prov_istat
+  //     );
+  //     feature.feature = featureGeometry;
+  //   }  
 
-    fillDataFromProperties(
-      feature,
-      selectedFeature,
-      setSelectedFeature,
-      setCurrentGeoJSON,
-      setFeatureIndex,
-      false, 
-      italyTree
-    );
-  };
+  //   fillDataFromProperties(
+  //     feature,
+  //     selectedFeature,
+  //     setSelectedFeature,
+  //     setCurrentGeoJSON,
+  //     setFeatureIndex,
+  //     false, 
+  //     italyTree
+  //   );
+  // };
 
   useEffect(() => {
     if (!selectedFeature.selectionFromMap) {
@@ -103,8 +105,6 @@ currentGeoJSON.features.find(
     };
     const matchedIDS = ['Italia'];
     search(dataNode, term, matchedIDS);
-    // console.log(dataNode)
-    // console.log(matchedIDS)
     if(matchedIDS.length >1){
     setSearchFilter(matchedIDS)
     } else {
@@ -126,7 +126,8 @@ currentGeoJSON.features.find(
     key={id} 
     nodeId={id} 
     label={name} 
-    onLabelClick={(event)=>{
+    onLabelClick={async (event)=>{
+
     //close on tap on selected node
     if((node.reg_istat===expanded[0] && !node.prov_istat) || 
       (node.prov_istat===expanded[0] && !node.com_istat)){
@@ -142,15 +143,19 @@ currentGeoJSON.features.find(
       'Italia',
     ]
     setExpanded(toExpand);
+    setSelectedTreeItem(node)
 
-    setSelectedIstatProperties({
-      reg_name: node.reg_name,
-      prov_name: node.prov_name,
-      reg_istat: node.reg_istat,
-      prov_istat: node.prov_istat,
-      com_istat: node.com_istat,
-      com_name: node.com_name,
-    });
+
+    const geo = await node.getChildFeatures()
+    setCurrentGeoJSON(geo)
+    // setSelectedIstatProperties({
+    //   reg_name: node.reg_name,
+    //   prov_name: node.prov_name,
+    //   reg_istat: node.reg_istat,
+    //   prov_istat: node.prov_istat,
+    //   com_istat: node.com_istat,
+    //   com_name: node.com_name,
+    // });
     setTimeout(()=>{
       scrollToElement(event.target)
     },200)

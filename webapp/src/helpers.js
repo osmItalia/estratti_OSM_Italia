@@ -158,10 +158,16 @@ console.log('region',region )
       break;
   }
 };
-
+const findMunicipalityInProvince = (currentGeoJSON, com_istat ) =>
+currentGeoJSON.features.find(
+  ({ properties }) =>
+    properties.istat === com_istat
+);
 export const makeItalianTree = () => {
   let italyTree = {
     name: "Italy",
+    type:2,
+    getChildFeatures: () => geoRegions,
     children: [],
   };
 
@@ -177,62 +183,59 @@ export const makeItalianTree = () => {
       let previousRegions = italyTree.children.find(
         ({ reg_name: name }) => name === reg_name
       );
-
       let previousProvinces = previousRegions
         ? previousRegions?.children.find(({ prov_name: name }) => name === prov_name)
         : null;
-    
-      if (previousProvinces) {
-        //insert municipalities
-        previousProvinces.children.push({
-          com_name: name,
-          type:8,
-          com_istat: com_istat_code,
-          prov_istat: prov_istat_code,
+        const region = {
+          reg_name: reg_name,
           reg_istat: reg_istat_code,
-          reg_name,
-          prov_name,
-        });
-      } else if (previousRegions) {
-        //insert provinces
-        previousRegions.children.push({
+          type:4,
+          parent: italyTree,
+          getChildFeatures: ()=> getProvincesFromRegionIstatCode(italyTree, reg_istat_code)
+        }
+        const province = {
           prov_name: prov_name,
           prov_istat: prov_istat_code,
           reg_istat: reg_istat_code,
           reg_name: reg_name,
           type:6,
-          children: [{ com_name: name, 
-            com_istat: com_istat_code,
-             type:8, 
-             prov_istat: prov_istat_code,
-             reg_istat: reg_istat_code,
-             reg_name,
-             prov_name,
-            }],
-        });
+          parent: region,
+          getChildFeatures: async()=> await getMunicipalitiesForProvinceIstatCode(prov_istat_code)
+        }
+        const commonMunicipalityProperties={
+          com_name: name,
+          com_istat: com_istat_code,
+          type: 8,
+          prov_istat: prov_istat_code,
+          reg_istat: reg_istat_code,
+          reg_name,
+          prov_name,
+        }
+        const municipality={ 
+         ...commonMunicipalityProperties,
+          parent: province,
+          getChildFeatures: async ()=>{
+            const featureGeometry = await province.getChildFeatures()
+            const municipalityFeature = findMunicipalityInProvince(featureGeometry, com_istat_code)
+            return { ...municipalityFeature, properties: commonMunicipalityProperties};
+          }
+        }
+
+      if (previousProvinces) {
+        //insert municipalities
+        previousProvinces.children.push(municipality);
+      } else if (previousRegions) {
+        //insert provinces
+        previousRegions.children.push({ ...province,children: [municipality]});
       } else {
         //insert regions
         italyTree.children.push({
           reg_name: reg_name,
           reg_istat: reg_istat_code,
           type:4,
+          ...region,
           children: [
-            {
-              prov_name: prov_name,
-              prov_istat: prov_istat_code,
-              reg_istat: reg_istat_code,
-              reg_name: reg_name,
-              type:6,
-              children: [
-                { com_name: name,
-                  com_istat: com_istat_code,
-                  type: 8,
-                  prov_istat: prov_istat_code,
-                  reg_istat: reg_istat_code,
-                  reg_name,
-                  prov_name,},
-              ],
-            },
+            {...province,children: [municipality]},
           ],
         });
       }

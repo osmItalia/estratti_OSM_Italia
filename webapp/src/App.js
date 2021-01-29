@@ -11,19 +11,16 @@ const italyBounds = [[36.6199872, 6.74995527 ], [47.11539317, 18.48024702 ]];
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
   const [currentGeoJSON, setCurrentGeoJSON] = useState(geoRegions);
+  const [selectedTreeItem, setSelectedTreeItem]= useState(italyTree)
   const [selectedFeature, setSelectedFeature] = useState(defaultFeature);
   const [featureIndex, setFeatureIndex] = useState(1);
 
   return (
     <div className="container">
       <Breadcrumb
-        currentGeoJSON={currentGeoJSON}
         setCurrentGeoJSON={setCurrentGeoJSON}
-        selectedFeature={selectedFeature}
-        setSelectedFeature={setSelectedFeature}
-        setFeatureIndex={setFeatureIndex}
-        featureIndex={featureIndex}
-        italyTree={italyTree}
+        selectedTreeItem={selectedTreeItem}
+        setSelectedTreeItem={setSelectedTreeItem}
       />
       <div className="content">
         <MapContainer
@@ -56,6 +53,8 @@ function App() {
           setSelectedFeature={setSelectedFeature}
           setCurrentGeoJSON={setCurrentGeoJSON}
           setFeatureIndex={setFeatureIndex}
+          selectedTreeItem={selectedTreeItem}
+          setSelectedTreeItem={setSelectedTreeItem}
         />
       </div>
     </div>
