@@ -65,6 +65,8 @@ p.breadItem{
   transition: all 0.4s;
   color: #2c3038;
   background: #f8f8f8;
+  padding:6px;
+  min-width: 50px;
   box-sizing: border-box;
   border-bottom: 3px solid;
   border-right: 2px solid #f6f6f6;
