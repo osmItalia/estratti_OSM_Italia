@@ -1,7 +1,5 @@
 import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
-import { fillDataFromProperties } from "../helpers";
-
 
 const pathColors = [
   getComputedStyle(document.documentElement).getPropertyValue('--mainColor1'),
@@ -10,18 +8,15 @@ const pathColors = [
   getComputedStyle(document.documentElement).getPropertyValue('--mainColor4'),
 ];
 
-const getPathColor = (featureIndex) => {
-  return pathColors[featureIndex - 1];
+const getPathColor = (type) => {
+  return pathColors[type/2 - 1];
 };
 
 const Italy = ({
-  featureIndex,
-  selectedFeature,
-  setSelectedFeature,
-  setCurrentGeoJSON,
   currentGeoJSON,
-  setFeatureIndex,
   italyTree,
+  selectedTreeItem,
+  setSelectedTreeItem,
 }) => {
   const geoJSONref = useRef();
   const map = useMap();
@@ -36,34 +31,48 @@ const Italy = ({
     }
     map.fitBounds(bounds);
   }, [currentGeoJSON, geoJSONref, map]);
-console.log(currentGeoJSON)
+
   return (
     <GeoJSON
       ref={geoJSONref}
       eventHandlers={{
-        click: (e) => {
-          console.log(e)
+        click: async(e) => {
           const feature = e.layer.feature;
-          fillDataFromProperties(
-            feature,
-            selectedFeature,
-            setSelectedFeature,
-            setCurrentGeoJSON,
-            setFeatureIndex,
-            true,
-            italyTree,
-          );
+          const geo_reg_istat = currentGeoJSON.reg_istat
+          const region= italyTree.children.find( ({reg_istat})=>reg_istat===geo_reg_istat);
+
+          let item=null
+
+          if(feature.properties.adm === 4){
+            item = italyTree.children.find( ({reg_istat})=>reg_istat===feature.properties.istat);
+            }
+
+          if(feature.properties.adm === 6){
+            const geo_prov_istat = feature.properties.istat
+            item = region.children.find( ({prov_istat})=>prov_istat===geo_prov_istat);
+          }
+
+          if(feature.properties.adm === 8){
+            const geo_prov_istat = currentGeoJSON.prov_istat
+            const geo_com_istat = feature.properties.istat
+            const province =region.children.find( ({prov_istat})=>prov_istat===geo_prov_istat);
+            item = province.children.find( ({com_istat})=>com_istat===geo_com_istat);
+          }
+
+          if(item){
+          setSelectedTreeItem(item)
+          }
         },
       }}
-      pathOptions={{ color: getPathColor(featureIndex) }}
-      key={currentGeoJSON && currentGeoJSON.properties
+      pathOptions={{ color: getPathColor(selectedTreeItem.type) }}
+      key={currentGeoJSON
          ? (
-           currentGeoJSON.properties.com_istat
+           currentGeoJSON.com_istat
            ||
-           currentGeoJSON.properties.prov_istat
+           currentGeoJSON.prov_istat
            ||
-           currentGeoJSON.properties.reg_istat
-         ) : JSON.stringify(currentGeoJSON).substring(0, 100)
+           currentGeoJSON.reg_istat
+         ) : 'state'
         }
       
       data={currentGeoJSON}

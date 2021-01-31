@@ -74,7 +74,6 @@ p.breadItem{
   border-bottom-color: var(--mainColor3);
 }
 
-
 p.breadItem:hover {
   color: white;
   cursor: pointer;
