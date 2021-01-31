@@ -1,12 +1,9 @@
 const Breadcrumb = ({
-  setCurrentGeoJSON,
   selectedTreeItem,
   setSelectedTreeItem,
 }) => {
     const getParentData = (item, allData) => {
-      console.log('item', item)
-    const data = item
-    allData.push(data)
+    allData.push(item)
     if(item.parent){
     return getParentData(item.parent, allData)
     }
@@ -24,11 +21,7 @@ const Breadcrumb = ({
               key={node.type}
               style={{zIndex: 4 - index }}
               className={`breadItem ${node.type}`}
-              onClick={async() => {
-                setSelectedTreeItem(node)
-                const geo = await node.getChildFeatures()
-                setCurrentGeoJSON(geo)
-              }}
+              onClick={() => setSelectedTreeItem(node)}
             >
               {node.com_name || node.prov_name || node.reg_name || node.name}
             </p>

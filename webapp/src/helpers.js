@@ -2,29 +2,14 @@ import * as topojson from "topojson-client";
 import provinces from "./static/boundaries/limits_IT_provinces.json";
 import regions from "./static/boundaries/limits_IT_regions.json";
 import municipalities from "./static/boundaries/municipalitiesMap.json";
-// import municipalities1 from "./static/boundaries/limits_IT_municipalities.topo.json";
-// import jsonpack from 'jsonpack';
-
-// // console.log(regions)
-// // console.log(provinces)
-
-// var encoded = jsonpack.pack(municipalities);
-
-// console.log(encoded)
-// document.write(encoded)
-// var decoded = jsonpack.unpack(encoded);
-
-// console.log(decoded)
-
+import newLimits from "./static/boundaries/newlimits.json";
+export const italyBounds = [[36.6199872, 6.74995527 ], [47.11539317, 18.48024702 ]];
 export const geoRegions = topojson.feature(regions, "limits_IT_regions");
 const geoProvinces = topojson.feature(provinces, "limits_IT_provinces");
+const newLimitsGEO = topojson.feature(newLimits, "limits_IT_municipalities");
+export const parentItem = "Italia"
 
-export const defaultFeature = {
-  state: { index: 1, name: "Italia", feature: geoRegions },
-  region: { index: 2, name: "", feature: null },
-  province: { index: 3, name: "", feature: null },
-  municipality: { index: 4, name: "", feature: null },
-};
+console.log(newLimitsGEO)
 
 export const getParentForFeature = (feature, selectedFeature) =>{
   if(feature.properties.adm===6){
@@ -39,13 +24,11 @@ export const getParentForFeature = (feature, selectedFeature) =>{
   }
   return feature
 }
-const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
 
+const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
   const region = italyTree.children.find(({reg_istat})=>reg_istat === istatCode)
-console.log('region',region)
   const provincesIstatCodes = region.children.map(({prov_istat})=>prov_istat)
 
-  console.log('provincesIstatCodes',provincesIstatCodes)
   const filteredProvinces = geoProvinces.features.filter(
     ({ properties }) => provincesIstatCodes.includes(properties.istat)
   );
@@ -68,96 +51,6 @@ export const getMunicipalitiesForProvinceIstatCode = async (
   return topojson.feature(municipalities, `limits_P_${provinceIstatCode}_municipalities`);
 };
 
-const getRegion = properties => ({
-  istat: properties.reg_istat || (properties.adm === 4 ? properties.istat : null),
-  name: properties.reg_name || (properties.adm === 4 ? properties.name : null),
-})
-const getProvince = properties => ({
-  istat: properties.prov_istat || (properties.adm === 6 ? properties.istat : null),
-  name: properties.prov_name || (properties.adm === 6 ? properties.name : null),
-})
-const getMunicipality = properties => ({
-  istat: properties.com_istat || (properties.adm === 8 ? properties.istat : null),
-  name: properties.com_name || (properties.adm === 8 ? properties.name : null),
-})
-
-export const fillDataFromProperties = async (
-  feature,
-  selectedFeature,
-  setSelectedFeature,
-  setCurrentGeoJSON,
-  setFeatureIndex,
-  selectionFromMap,
-  italyTree,
-  ) => {
-  const properties = feature.properties;
-
-  const region = getRegion(properties)
-  console.log('properties',properties)
-  console.log('region', region)
- 
-  const provincesInRegion = region.istat? getProvincesFromRegionIstatCode(italyTree, region.istat): null;
-
-  console.log('provincesInRegion',provincesInRegion)
-  const province = getProvince(properties)
-
-  const municipalitiesInRegion = province.istat ? await getMunicipalitiesForProvinceIstatCode(province.istat) : null;
-
-  const municipality = getMunicipality(properties)  
-  
-
-  const newFeature = {
-    ...selectedFeature,
-    region: {
-      ...selectedFeature.region,
-      name: region.name,
-      feature: provincesInRegion,
-      reg_istat: region.istat,
-    },
-    province: {
-      ...selectedFeature.province,
-      name: province.name,
-      feature: municipalitiesInRegion,
-      prov_istat: province.istat,
-    },
-    municipality: {
-      ...selectedFeature.municipality,
-      name:  municipality.name,
-      feature: municipality.istat?feature:null,
-      com_istat: municipality.istat,
-    },
-    selectionFromMap,
-  }
-  setSelectedFeature(newFeature);
-  console.log('setSelectedFeature',newFeature)
-
-console.log('switch',properties )
-console.log('region',region )
-  switch (true) {
-    case !!properties.com_istat || !!municipality.istat: //todo check
-    console.log('isMuni')
-      setCurrentGeoJSON(feature);
-      setFeatureIndex(4);
-      break;
-    case !!properties.prov_istat || !!province.istat:
-      console.log('isProvince')
-      setCurrentGeoJSON(municipalitiesInRegion);
-      setFeatureIndex(3);
-      break;
-    case !!properties.reg_istat || !!region.istat:
-      console.log('isRegion')
-      setCurrentGeoJSON(provincesInRegion);
-      setFeatureIndex(2);
-      break;
-    default:
-      console.log('itItaly')
-      setCurrentGeoJSON(geoRegions);
-      defaultFeature.selectionFromMap = selectionFromMap;
-      setSelectedFeature(defaultFeature);
-      setFeatureIndex(1);
-      break;
-  }
-};
 const findMunicipalityInProvince = (currentGeoJSON, com_istat ) =>
 currentGeoJSON.features.find(
   ({ properties }) =>
@@ -165,9 +58,9 @@ currentGeoJSON.features.find(
 );
 export const makeItalianTree = () => {
   let italyTree = {
-    name: "Italy",
+    name: parentItem,
     type:2,
-    getChildFeatures: () => geoRegions,
+    getChildFeatures: async () => geoRegions,
     children: [],
   };
 
@@ -191,7 +84,8 @@ export const makeItalianTree = () => {
           reg_istat: reg_istat_code,
           type:4,
           parent: italyTree,
-          getChildFeatures: ()=> getProvincesFromRegionIstatCode(italyTree, reg_istat_code)
+          getChildFeatures: async()=> { const provinces = getProvincesFromRegionIstatCode(italyTree, reg_istat_code); 
+            return {...provinces, parent:italyTree,  reg_istat: reg_istat_code,}}
         }
         const province = {
           prov_name: prov_name,
@@ -200,7 +94,8 @@ export const makeItalianTree = () => {
           reg_name: reg_name,
           type:6,
           parent: region,
-          getChildFeatures: async()=> await getMunicipalitiesForProvinceIstatCode(prov_istat_code)
+          getChildFeatures: async()=> { const municipalities = await getMunicipalitiesForProvinceIstatCode(prov_istat_code); 
+            return {...municipalities, parent:region, prov_istat: prov_istat_code, reg_istat: reg_istat_code}}
         }
         const commonMunicipalityProperties={
           com_name: name,
@@ -217,7 +112,11 @@ export const makeItalianTree = () => {
           getChildFeatures: async ()=>{
             const featureGeometry = await province.getChildFeatures()
             const municipalityFeature = findMunicipalityInProvince(featureGeometry, com_istat_code)
-            return { ...municipalityFeature, properties: commonMunicipalityProperties};
+            return { ...municipalityFeature, 
+              com_istat: com_istat_code,
+              prov_istat: prov_istat_code,
+              reg_istat: reg_istat_code,
+            };
           }
         }
 

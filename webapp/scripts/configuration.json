@@ -1,0 +1,4 @@
+{
+    "basePath": "https://osmit-estratti.wmcloud.org/topojson/",
+    "municipalities": "limits_IT_municipalities.json"
+}
