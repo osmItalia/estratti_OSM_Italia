@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
-const configuration = require('./configuration.json');
+const configuration = require("./../src/configuration.json");
 
 const fetchServerFiles = async({basePath, municipalities, provinces, regions}) => {
 

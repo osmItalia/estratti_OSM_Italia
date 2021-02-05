@@ -9,11 +9,11 @@ import { italyBounds, geoRegions, makeItalianTree } from "./helpers";
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
   const [currentGeoJSON, setCurrentGeoJSON] = useState(geoRegions);
-  const [selectedTreeItem, setSelectedTreeItem]= useState(italyTree)
+  const [selectedTreeItem, setSelectedTreeItem] = useState(italyTree);
 
-  useEffect(()=>{
-    selectedTreeItem.getChildFeatures().then(setCurrentGeoJSON)
-  },[selectedTreeItem])
+  useEffect(() => {
+    selectedTreeItem.getChildFeatures().then(setCurrentGeoJSON);
+  }, [selectedTreeItem]);
 
   return (
     <div className="container">
