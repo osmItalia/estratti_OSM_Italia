@@ -1,0 +1,49 @@
+.breadcrumb {
+  font-size: 18px;
+  height: var(--headerHeight);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+p.breadItem::after {
+  content: "→";
+  margin-left: 8px;
+}
+p.breadItem:last-child:after {
+  content: "";
+}
+
+p.breadItem {
+  display: flex;
+  margin: 0px;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  justify-content: space-around;
+  transition: all 0.4s;
+  color: #2c3038;
+  background: #f8f8f8;
+  padding: 6px;
+  min-width: 50px;
+  box-sizing: border-box;
+  border-bottom: 3px solid;
+  border-right: 2px solid #f6f6f6;
+  border-left: 2px solid #f6f6f6;
+  border-bottom-color: var(--mainColor3);
+}
+
+p.breadItem:hover {
+  color: white;
+  cursor: pointer;
+  border-bottom-color: white !important;
+  background-color: var(--mainColor1);
+}
+
+.appTitle {
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-right: 72px;
+  border-right: 1px solid #f8f8f8;
+  color: var(--mainColor1);
+}

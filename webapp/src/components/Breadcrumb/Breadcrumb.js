@@ -1,3 +1,5 @@
+import styles from "./Breadcrumb.module.css";
+
 const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
   const getParentData = (item, allData) => {
     allData.push(item);
@@ -9,8 +11,8 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
   const breadcrumbData = getParentData(selectedTreeItem, []).reverse();
 
   return (
-    <div className="breadcrumb">
-      <div className="appTitle">
+    <div className={styles.breadcrumb}>
+      <div className={styles.appTitle}>
         <h1>Estratti OpenStreetMap Italia</h1>
       </div>
       {breadcrumbData.map((node, index) => {
@@ -18,7 +20,7 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
           <p
             key={node.type}
             style={{ zIndex: 4 - index }}
-            className={`breadItem ${node.type}`}
+            className={styles.breadItem}
             onClick={() => setSelectedTreeItem(node)}
           >
             {node.com_name || node.prov_name || node.reg_name || node.name}

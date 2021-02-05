@@ -8,6 +8,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ExpandMore";
 import ArrowRightIcon from "@material-ui/icons/ChevronRight";
 import { useDebouncedCallback } from "use-debounce";
 import { search } from "./filter";
+import styles from "./SideMenu.module.css";
 import { parentItem } from "../../helpers";
 
 const scrollToElement = (element) =>
@@ -134,7 +135,7 @@ const SideMenu = ({ italyTree, selectedTreeItem, setSelectedTreeItem }) => {
   }, 500);
 
   return (
-    <div className="sideMenu">
+    <div className={styles.sideMenu}>
       <TextField
         label="Cerca"
         type="search"
@@ -171,7 +172,7 @@ const DownloadItems = ({ selectedFeature }) => {
   }
 
   return (
-    <div className="resultItem">
+    <div className={styles.resultItem}>
       <p>Estratti disponibili per {name}</p>
       {links.map(({ format, url }) => (
         <a key={url} href={url}>

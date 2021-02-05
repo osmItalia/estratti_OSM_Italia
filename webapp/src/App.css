@@ -16,7 +16,7 @@ html,
 body,
 .container {
   height: 100%;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: "Barlow Condensed", sans-serif;
 }
 div#root {
   height: 100%;
@@ -26,71 +26,16 @@ div#root {
   float: left;
   width: 65%;
 }
-.sideMenu {
-  float: left;
-  width: 35%;
-  max-height: calc(100vh - var(--headerHeight));
-  overflow: hidden;
-}
+
 .content {
   width: 100%;
   height: calc(100% - var(--headerHeight));
 }
-.breadcrumb {
-  font-size: 18px;
-  height: var(--headerHeight);
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  /* background: var(--mainColor1); */
-}
-
-
-p.breadItem::after {
-  content: "→";
-  margin-left: 8px;
-}
-p.breadItem:last-child:after {
-  content: "";
-}
-
-
-p.breadItem{
-  display: flex;
-  margin: 0px;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  justify-content: space-around;
-  transition: all 0.4s;
-  color: #2c3038;
-  background: #f8f8f8;
-  padding:6px;
-  min-width: 50px;
-  box-sizing: border-box;
-  border-bottom: 3px solid;
-  border-right: 2px solid #f6f6f6;
-  border-left: 2px solid #f6f6f6;
-  border-bottom-color: var(--mainColor3);
-}
-
-p.breadItem:hover {
-  color: white;
-  cursor: pointer;
-  border-bottom-color: white !important;
-  background-color: var(--mainColor1);
-}
-
-
-p.breadItem.state {
-  padding-left:72px;
-}
-
 
 .MuiTreeItem-root.Mui-selected > .MuiTreeItem-content .MuiTreeItem-label {
-  background-color:  rgb(41 149 243 / 15%) !important;
+  background-color: rgb(41 149 243 / 15%) !important;
   font-weight: bold;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: "Barlow Condensed", sans-serif;
 }
 
 .MuiTreeItem-label {
@@ -98,19 +43,17 @@ p.breadItem.state {
   position: relative;
   padding-left: 4px;
 }
-.resultItem{
-  margin:20px;
-}
+
 .MuiTypography-root.MuiTreeItem-label.MuiTypography-body1 {
   font-size: 18px;
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: "Barlow Condensed", sans-serif;
 }
 .MuiFormControl-root.MuiTextField-root {
-   width: 90%;
-   margin: 20px;
+  width: 90%;
+  margin: 20px;
 }
 
-ul.MuiTreeView-root{
+ul.MuiTreeView-root {
   overflow-y: scroll;
   background: #f8f8f8;
   max-height: 60vh;
@@ -129,7 +72,7 @@ ul.MuiTreeView-root{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #999
+  background: #999;
 }
 
 /* Handle on hover */
@@ -140,11 +83,4 @@ ul.MuiTreeView-root{
 h1 {
   font-size: 20px;
   align-self: center;
-}
-
-.appTitle {
-  padding-left: 12px;
-  padding-right: 12px;
-  border-right: 1px solid #f8f8f8;
-  color: var(--mainColor1);
 }
