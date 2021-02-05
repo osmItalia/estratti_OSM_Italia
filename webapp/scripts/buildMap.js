@@ -1,17 +1,22 @@
 const fs = require('fs-extra');
-const path = require('path');
 const fetch = require('node-fetch');
 const configuration = require('./configuration.json');
 
-const fetchServerFiles = async(basePath, municipalities) => {
-    const filePath = path.resolve(__dirname, `./data/${municipalities}`)
-    const municipalitiesFile = await fetch(basePath+municipalities);
-    const municipalitiesFileJson = await municipalitiesFile.json()
+const fetchServerFiles = async({basePath, municipalities, provinces, regions}) => {
 
-    console.log(municipalitiesFileJson);
-    fs.writeJSONSync('./src/static/boundaries/newlimits.json', municipalitiesFileJson);
+    const municipalitiesPromise = fetchAndWrite(basePath, regions, 'municipalities')
+    //todo add mapping to make 'municipalitiesMap.json'
+    const provincesPromise = fetchAndWrite(basePath, provinces, 'provinces')
+    const regionsPromise = fetchAndWrite(basePath, regions, 'regions')
+
+    await Promise.all([municipalitiesPromise, provincesPromise, regionsPromise])
 }
-//todo add mapping to make 'municipalitiesMap.json'
+
+const fetchAndWrite = async (basePath, level, name)=>{
+    const file = await fetch(basePath+level);
+    const fileJSON = await file.json()
+    fs.writeJSONSync(`./src/static/boundaries/limits_IT_${name}.json`, fileJSON);
+}
 
 const convertFiles = async()=>{
     // const output = file.objects.comuni
@@ -19,8 +24,8 @@ const convertFiles = async()=>{
 }
 
 const main = async () =>{
-    const { basePath, municipalities } = configuration;
-    await fetchServerFiles(basePath, municipalities);
+    const { basePath, municipalities, provinces, regions } = configuration;
+    await fetchServerFiles({basePath, municipalities, provinces, regions});
     await convertFiles()
 }
 
