@@ -4,6 +4,3 @@
   max-height: calc(100vh - var(--headerHeight));
   overflow: hidden;
 }
-:local(.resultItem) {
-  margin: 20px;
-}

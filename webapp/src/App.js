@@ -5,14 +5,20 @@ import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
 import { italyBounds, geoRegions, makeItalianTree } from "./helpers";
+import { feature } from "topojson-client";
 
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
   const [currentGeoJSON, setCurrentGeoJSON] = useState(geoRegions);
   const [selectedTreeItem, setSelectedTreeItem] = useState(italyTree);
+  const [selectedFeature, setSelectedFeature] = useState(null);
 
   useEffect(() => {
-    selectedTreeItem.getChildFeatures().then(setCurrentGeoJSON);
+    selectedTreeItem.getChildFeatures().then((feature) => {
+      setCurrentGeoJSON(feature);
+      console.log("feature", feature);
+      setSelectedFeature(feature);
+    });
   }, [selectedTreeItem]);
 
   return (
@@ -46,6 +52,7 @@ function App() {
           italyTree={italyTree}
           selectedTreeItem={selectedTreeItem}
           setSelectedTreeItem={setSelectedTreeItem}
+          selectedFeature={selectedFeature}
         />
       </div>
     </div>

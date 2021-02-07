@@ -2,8 +2,8 @@ import * as topojson from "topojson-client";
 import provinces from "./static/boundaries/limits_IT_provinces.json";
 import regions from "./static/boundaries/limits_IT_regions.json";
 import municipalities from "./static/boundaries/municipalitiesMap.json";
-
 import config from "./configuration.json";
+
 export const italyBounds = [
   [36.6199872, 6.74995527],
   [47.11539317, 18.48024702],
@@ -52,7 +52,7 @@ export const getMunicipalitiesForProvinceIstatCode = async (
   provinceIstatCode
 ) => {
   const fileName = `${
-    config.basePath
+    config.basePath+config.inputFilesPath
   }limits_P_${provinceIstatCode}_municipalities.json`;
   const fileFetched = await fetch(fileName);
   const municipalities = await fileFetched.json();

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
 import ArrowDropDownIcon from "@material-ui/icons/ExpandMore";
 import ArrowRightIcon from "@material-ui/icons/ChevronRight";
 import { useDebouncedCallback } from "use-debounce";
 import { search } from "./filter";
+import DownloadItems from "./DownloadItems";
 import styles from "./SideMenu.module.css";
 import { parentItem } from "../../helpers";
 
@@ -17,13 +17,12 @@ const scrollToElement = (element) =>
     block: "center",
     inline: "start",
   });
-const SideMenu = ({ italyTree, selectedTreeItem, setSelectedTreeItem }) => {
-  const [selectedFeature, setSelectedFeature] = useState(null);
-
-  useEffect(() => {
-    selectedTreeItem.getChildFeatures().then(setSelectedFeature);
-  }, [selectedTreeItem]);
-
+const SideMenu = ({
+  italyTree,
+  selectedTreeItem,
+  setSelectedTreeItem,
+  selectedFeature,
+}) => {
   const [expanded, setExpanded] = useState([parentItem]);
   const [selected, setSelected] = useState([parentItem]);
   const [searchFilter, setSearchFilter] = useState([]);
@@ -105,7 +104,6 @@ const SideMenu = ({ italyTree, selectedTreeItem, setSelectedTreeItem }) => {
             (node.prov_istat === expanded[0] && !node.com_istat)
           ) {
             setExpanded([...expanded.slice(1, expanded.length)]);
-            console.log(event.target);
             scrollToElement(event.target);
             return;
           }
@@ -156,29 +154,6 @@ const SideMenu = ({ italyTree, selectedTreeItem, setSelectedTreeItem }) => {
         {mapTree(italyTree)}
       </TreeView>
       <DownloadItems selectedFeature={selectedFeature} />
-    </div>
-  );
-};
-
-const DownloadItems = ({ selectedFeature }) => {
-  if (!selectedFeature) {
-    return null;
-  }
-
-  const { name, links } = selectedFeature;
-
-  if (!name || !links?.length) {
-    return null;
-  }
-
-  return (
-    <div className={styles.resultItem}>
-      <p>Estratti disponibili per {name}</p>
-      {links.map(({ format, url }) => (
-        <a key={url} href={url}>
-          <Button variant="contained">{format}</Button>
-        </a>
-      ))}
     </div>
   );
 };

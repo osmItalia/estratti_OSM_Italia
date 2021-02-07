@@ -1,0 +1,6 @@
+:local(.resultItem) {
+  margin: 20px;
+}
+:local(.button) {
+  margin: 10px !important;
+}
