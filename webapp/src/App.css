@@ -17,6 +17,7 @@ body,
 .container {
   height: 100%;
   font-family: "Barlow Condensed", sans-serif;
+  margin: 0;
 }
 div#root {
   height: 100%;
