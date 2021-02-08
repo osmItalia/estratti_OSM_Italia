@@ -1,7 +1,6 @@
 {
     "basePathRemote": "https://osmit-estratti.wmcloud.org",
-    "basePath": "http://localhost:3000/estratti_OSM_Italia",
-    "inputFilesPathRemote": "old/topojson/",
+    "inputFilesPathRemote_TBD": "old/topojson/",
     "inputFilesPath": "/static/boundaries/",
     "outputFilesPath": "/output/dati/poly/",
     "municipalities": "limits_IT_municipalities.json",

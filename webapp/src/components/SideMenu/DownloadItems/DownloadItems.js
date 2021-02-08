@@ -43,7 +43,9 @@ const DownloadItems = ({ selectedFeature }) => {
       {properties[".osm.pbf"] && (
         <ToolTipButton
           tooltip="Protocolbuffer binary format"
-          href={config.basePath + config.outputFilesPath + properties[".osm.pbf"]}
+          href={
+            config.basePath + config.outputFilesPath + properties[".osm.pbf"]
+          }
           title="PBF"
         />
       )}

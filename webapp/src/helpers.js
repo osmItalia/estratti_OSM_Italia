@@ -51,9 +51,8 @@ const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
 export const getMunicipalitiesForProvinceIstatCode = async (
   provinceIstatCode
 ) => {
-  const fileName = `${
-    config.basePath+config.inputFilesPath
-  }limits_P_${provinceIstatCode}_municipalities.json`;
+  const fileName = `${config.basePath +
+    config.inputFilesPath}limits_P_${provinceIstatCode}_municipalities.json`;
   const fileFetched = await fetch(fileName);
   const municipalities = await fileFetched.json();
   return topojson.feature(
