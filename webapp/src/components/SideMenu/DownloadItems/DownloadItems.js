@@ -36,7 +36,9 @@ const DownloadItems = ({ selectedFeature }) => {
       {properties[".gpkg"] && (
         <ToolTipButton
           tooltip="OGC GeoPackage"
-          href={config.basePath + config.outputFilesPath + properties[".gpkg"]}
+          href={
+            config.basePathFiles + config.outputFilesPath + properties[".gpkg"]
+          }
           title="GPKG"
         />
       )}
@@ -44,7 +46,9 @@ const DownloadItems = ({ selectedFeature }) => {
         <ToolTipButton
           tooltip="Protocolbuffer binary format"
           href={
-            config.basePath + config.outputFilesPath + properties[".osm.pbf"]
+            config.basePathFiles +
+            config.outputFilesPath +
+            properties[".osm.pbf"]
           }
           title="PBF"
         />

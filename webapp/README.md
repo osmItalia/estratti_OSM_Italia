@@ -25,7 +25,8 @@ Questo processo avviene tramite uno script node.js presente nella directory `scr
 Lo script si basa su un file di configurazione: `configuration.json` presente nella cartella `src`. Questo permette di impostare
 i parametri necessari per la corretta configurazione:
 
-`basePath`: URL che indica il server contente i file per le regioni, province e comuni
+`basePathApp`: URL che indica il basepath dove è hostata l'applicazione e
+`basePathFiles`: URL che indica il basepbath del server contente i file per le regioni, province e comuni e gli estratti da scaricare
 `regions`: nome del file GeoJSON contenente tutte le informazioni relative alle regioni
 "provinces": nome del file GeoJSON contenente tutte le informazioni relative alle province
 `municipalities`: nome del file GeoJSON contenente tutte le informazioni relative ai comuni

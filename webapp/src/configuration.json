@@ -1,6 +1,7 @@
 {
-    "basePathRemote": "https://osmit-estratti.wmcloud.org",
-    "inputFilesPathRemote_TBD": "old/topojson/",
+    "basePathFiles": "https://osmit-estratti.wmcloud.org",
+    "basePathApp": "https://GISdevio.github.io/estratti_OSM_Italia",
+    "inputFilesPathRemote": "old/topojson/",
     "inputFilesPath": "/static/boundaries/",
     "outputFilesPath": "/output/dati/poly/",
     "municipalities": "limits_IT_municipalities.json",

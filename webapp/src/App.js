@@ -5,7 +5,6 @@ import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
 import { italyBounds, geoRegions, makeItalianTree } from "./helpers";
-import { feature } from "topojson-client";
 
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);

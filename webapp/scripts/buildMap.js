@@ -1,37 +1,64 @@
-const fs = require('fs-extra');
-const fetch = require('node-fetch');
+const fs = require("fs-extra");
+const fetch = require("node-fetch");
 const configuration = require("./../src/configuration.json");
 
-const fetchServerFiles = async({basePath, inputFilesPath, municipalities, provinces, regions}) => {
+const fetchServerFiles = async ({
+  basePath,
+  inputFilesPath,
+  municipalities,
+  provinces,
+  regions,
+}) => {
+  const file = await fetch(basePath + inputFilesPath + municipalities);
+  const fileJSON = await file.json();
+  const mapped = fileJSON; //map data to municipalitiesMap.json
+  fs.writeJSONSync(
+    `./src/static/boundaries/limits_IT_municipalities.json`,
+    mapped
+  );
 
+  //todo add mapping to make 'municipalitiesMap.json'
+  const provincesPromise = fetchAndWrite(
+    basePath + inputFilesPath,
+    provinces,
+    "provinces"
+  );
+  const regionsPromise = fetchAndWrite(
+    basePath + inputFilesPath,
+    regions,
+    "regions"
+  );
 
-    const file = await fetch(basePath+inputFilesPath+municipalities);
-    const fileJSON = await file.json()
-    const mapped = fileJSON; //map data to municipalitiesMap.json
-    fs.writeJSONSync(`./src/static/boundaries/limits_IT_municipalities.json`, mapped);
+  await Promise.all([provincesPromise, regionsPromise]);
+};
 
-    //todo add mapping to make 'municipalitiesMap.json'
-    const provincesPromise = fetchAndWrite(basePath+inputFilesPath, provinces, 'provinces')
-    const regionsPromise = fetchAndWrite(basePath+inputFilesPath, regions, 'regions')
+const fetchAndWrite = async (path, level, name) => {
+  const file = await fetch(path + level);
+  const fileJSON = await file.json();
+  fs.writeJSONSync(`./src/static/boundaries/limits_IT_${name}.json`, fileJSON);
+};
 
-    await Promise.all([provincesPromise, regionsPromise])
-}
+const convertFiles = async () => {
+  // const output = file.objects.comuni
+  // fs.writeJSONSync('./src/static/boundaries/newlimits.json', output);
+};
 
-const fetchAndWrite = async (path, level, name)=>{
-    const file = await fetch(path+level);
-    const fileJSON = await file.json()
-    fs.writeJSONSync(`./src/static/boundaries/limits_IT_${name}.json`, fileJSON);
-}
+const main = async () => {
+  const {
+    basePathFiles,
+    inputFilesPath,
+    municipalities,
+    provinces,
+    regions,
+  } = configuration;
+  await fetchServerFiles({
+    basePath: basePathFiles,
+    inputFilesPath,
+    municipalities,
+    provinces,
+    regions,
+  });
+  await convertFiles();
+};
 
-const convertFiles = async()=>{
-    // const output = file.objects.comuni
-    // fs.writeJSONSync('./src/static/boundaries/newlimits.json', output);
-}
-
-const main = async () =>{
-    const { basePath, inputFilesPath, municipalities, provinces, regions } = configuration;
-    await fetchServerFiles({basePath, inputFilesPath, municipalities, provinces, regions});
-    await convertFiles()
-}
-
-main().catch(console.error)
+main().catch(console.error);
