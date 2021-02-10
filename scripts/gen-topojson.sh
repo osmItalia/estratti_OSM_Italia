@@ -54,6 +54,7 @@ select jsonb_build_object(
                 'name', name,
                 'osm', id_osm,
                 'istat', istat,
+                'reg_istat_code', istat,
                 'adm', id_adm) || f.downloads)))
   from boundaries b
   join files_agg f using (istat)
@@ -65,7 +66,7 @@ geo2topo limits_IT_regions.json -o limits_IT_regions_topo.json
 mv limits_IT_regions{_topo,}.json
 
 
-# Generate provinces (including fake ones)
+# Generate provinces
 
 cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
 select jsonb_build_object(
@@ -77,10 +78,13 @@ select jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
                 'istat', b.istat,
+                'prov_istat_code', b.istat,
+                'reg_istat_code', b.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
- where b.id_adm = 6 or b.istat::int = 2 or b.istat::int = 6
+      join files_agg f
+        on f.istat = substring(b.istat, 0, 3)
+ where b.id_adm = 6
  group by true;
 EOF
 
@@ -94,15 +98,20 @@ cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_I
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
-            'type', geojson -> 'type',
-            'geometry', geojson -> 'geometry',
+            'type', b.geojson -> 'type',
+            'geometry', b.geojson -> 'geometry',
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
                 'istat', b.istat,
+                'com_istat_code', b.istat,
+                'prov_istat_code', b.id_parent_istat,
+                'reg_istat_code', p.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
   join files_agg f using (istat)
+  join boundaries p
+    on b.id_parent_istat = p.istat
  where b.id_adm = 8
  group by true;
 EOF
@@ -111,15 +120,14 @@ geo2topo limits_IT_municipalities.json -o limits_IT_municipalities_topo.json
 mv limits_IT_municipalities{_topo,}.json
 
 
-# Generate provinces for each region (including fake ones)
+# Generate provinces for each region
 
 (cat << EOF | psql -qAtX "$conn_str"
 select distinct p.istat
   from boundaries b
   join boundaries p
     on b.id_parent_istat = p.istat
- where b.id_adm = 6 and p.id_adm = 4
-    or p.istat = '2' or p.istat = '6';
+ where b.id_adm = 6 and p.id_adm = 4 and p.istat != '02' and p.istat != '06';
 EOF
 ) |
 while read istat
@@ -134,13 +142,42 @@ do
                     'name', b.name,
                     'osm', b.id_osm,
                     'istat', b.istat,
+                    'prov_istat_code', b.istat,
+                    'reg_istat_code', p.istat,
+                    'adm', b.id_adm) || f.downloads)))
+      from boundaries b
+      join files_agg f
+        on f.istat = b.istat
+      join boundaries p
+        on b.id_parent_istat = p.istat
+     where p.istat = '$istat'
+     group by true;
+EOF
+    geo2topo limits_R_${istat}_provinces.json -o limits_R_${istat}_provinces_topo.json
+    mv limits_R_${istat}_provinces{_topo,}.json
+done
+
+for istat in 02 06
+do
+    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
+        select jsonb_build_object(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(jsonb_build_object(
+                'type', b.geojson -> 'type',
+                'geometry', b.geojson -> 'geometry',
+                'properties', jsonb_build_object(
+                    'name', b.name,
+                    'osm', b.id_osm,
+                    'istat', b.istat,
+                    'prov_istat_code', b.istat,
+                    'reg_istat_code', p.istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
       join boundaries p
         on b.id_parent_istat = p.istat
       join files_agg f
-        on b.istat = f.istat
-     where p.istat::int = '$istat'::int
+        on f.istat = p.istat
+     where p.istat = '$istat'
      group by true;
 EOF
     geo2topo limits_R_${istat}_provinces.json -o limits_R_${istat}_provinces_topo.json
@@ -170,85 +207,16 @@ do
                     'name', b.name,
                     'osm', b.id_osm,
                     'istat', b.istat,
+                    'com_istat_code', b.istat,
+                    'prov_istat_code', p.istat,
+                    'reg_istat_code', p.id_parent_istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
+      join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
-      join files_agg f
-        on b.istat = f.istat
      where b.id_adm = 8 and p.id_adm = 6
-       and p.istat::int = '$istat'::int
-     group by true;
-EOF
-    geo2topo limits_P_${istat}_municipalities.json -o limits_P_${istat}_municipalities_topo.json
-    mv limits_P_${istat}_municipalities{_topo,}.json
-done
-
-
-# Generate fake provinces
-
-(cat << EOF | psql -qAtX "$conn_str"
-select distinct p.istat
-  from boundaries b
-  join boundaries p
-    on b.id_parent_istat = p.istat
- where b.id_adm = 8 and p.id_adm = 4;
-EOF
-) |
-while read istat
-do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
-        select jsonb_build_object(
-            'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
-                'properties', jsonb_build_object(
-                    'name', b.name,
-                    'osm', b.id_osm,
-                    'istat', b.istat,
-                    'adm', b.id_adm) || f.downloads)))
-      from boundaries b
-      join files_agg f
-        on b.istat = f.istat
-     where b.istat = '$istat'
-     group by true;
-EOF
-    geo2topo limits_R_${istat}_provinces.json -o limits_R_${istat}_provinces_topo.json
-    mv limits_R_${istat}_provinces{_topo,}.json
-done
-
-
-# Generate municipalities for fake provinces
-
-(cat << EOF | psql -qAtX "$conn_str"
-select distinct p.istat
-  from boundaries b
-  join boundaries p
-    on b.id_parent_istat = p.istat
- where b.id_adm = 8 and p.id_adm = 4;
-EOF
-) |
-while read istat
-do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_P_${istat}_municipalities.json
-        select jsonb_build_object(
-            'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
-                'properties', jsonb_build_object(
-                    'name', b.name,
-                    'osm', b.id_osm,
-                    'istat', b.istat,
-                    'adm', b.id_adm) || f.downloads)))
-      from boundaries b
-      join boundaries p
-        on b.id_parent_istat = p.istat
-      join files_agg f
-        on b.istat = f.istat
-     where b.id_adm = 8 and p.id_adm = 4
-       and p.istat::int = '$istat'::int
+       and p.istat = '$istat'
      group by true;
 EOF
     geo2topo limits_P_${istat}_municipalities.json -o limits_P_${istat}_municipalities_topo.json

@@ -144,7 +144,7 @@ Final solution: see gen-topojson.sh
 How to recreate the boundaries table from the files (inverse procedure):
 
 ```
-psql -qAtX "$conn_str" -c "create table boundaries (id_adm int, id_osm int unique, name text, istat text primary key, id_parent_istat text, geojson jsonb);"
+psql -qAtX "$conn_str" -c "create table boundaries (id_adm int, id_osm int, name text, istat text primary key, id_parent_istat text, geojson jsonb);"
 for file in topojson/limits_IT_regions.json topojson/limits_{P,R}_*.json
 do
     level=$(echo "$file" | cut -d_ -f 4)
@@ -158,7 +158,7 @@ do
         level="4"
     fi
     parent=$(echo "$file" | cut -d_ -f 3)
-    if [ "$parent" = "regions" ]
+    if [ "$parent" = "regions.json" ]
     then
         parent=""
     fi
@@ -171,4 +171,14 @@ do
             echo -e "$csv\t$parent\t$geojson"
         done | psql -qAtX "$conn_str" -c "\copy boundaries FROM STDIN WITH CSV DELIMITER E'\t' QUOTE '@'"
 done
+```
+
+Fake provinces:
+
+```
+insert INTO boundaries (select 6 as id_adm, p.id_osm, p.name, substring(b.istat, 0, 4) as istat, p.istat, p.geojson from boundaries b join boundaries p on b.id_parent_istat = p.istat where p.istat = '02' limit 1);
+update boundaries set id_parent_istat = substring(istat, 0, 4) where id_adm = 8 and id_parent_istat = '02';
+
+insert INTO boundaries (select 6 as id_adm, p.id_osm, p.name, substring(b.istat, 0, 4) as istat, p.istat, p.geojson from boundaries b join boundaries p on b.id_parent_istat = p.istat where p.istat = '06' limit 1);
+update boundaries set id_parent_istat = substring(istat, 0, 4) where id_adm = 8 and id_parent_istat = '06';
 ```
