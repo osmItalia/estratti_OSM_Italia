@@ -20,7 +20,6 @@ const ToolTipButton = ({ title, href, tooltip }) => (
 );
 
 const DownloadItems = ({ selectedFeature }) => {
-  console.log('selectedFeature',selectedFeature)
   if (!selectedFeature?.properties) {
     return null;
   }

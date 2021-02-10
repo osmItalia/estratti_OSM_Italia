@@ -56,6 +56,7 @@ const SideMenu = ({
     setSelected(toExpand[0]);
 
     const name = selectedFeature?.properties?.name;
+    try{
     var xpath = `(//div[text()='${name}'])[last()]`;
     const targetItem = document.evaluate(
       xpath,
@@ -67,6 +68,7 @@ const SideMenu = ({
     if (targetItem) {
       scrollToElement(targetItem);
     }
+  }catch(e){console.log(e)}
   }, [selectedFeature, selectedTreeItem]);
 
   const searchNode = (term) => {
