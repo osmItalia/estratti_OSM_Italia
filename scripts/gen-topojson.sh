@@ -36,6 +36,13 @@ do
     istat=${filename%%_*}
     extension=".${filename#*.}"
     echo "$istat;$extension;\"$path\""
+    if [ "$istat" = "02" ] # Valle d'Aosta
+    then
+        echo "007;$extension;\"$path\""
+    elif [ "$istat" = "06" ] # Valle d'Aosta
+    then
+        echo "030;$extension;\"$path\""
+    fi
 done | psql -qAtX "$conn_str" -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
 psql -qAtX "$conn_str" -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
@@ -82,8 +89,7 @@ select jsonb_build_object(
                 'reg_istat_code', b.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-      join files_agg f
-        on f.istat = substring(b.istat, 0, 3)
+  join files_agg f using (istat)
  where b.id_adm = 6
  group by true;
 EOF
@@ -127,7 +133,7 @@ select distinct p.istat
   from boundaries b
   join boundaries p
     on b.id_parent_istat = p.istat
- where b.id_adm = 6 and p.id_adm = 4 and p.istat != '02' and p.istat != '06';
+ where b.id_adm = 6 and p.id_adm = 4;
 EOF
 ) |
 while read istat
@@ -146,37 +152,9 @@ do
                     'reg_istat_code', p.istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
-      join files_agg f
-        on f.istat = b.istat
+      join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
-     where p.istat = '$istat'
-     group by true;
-EOF
-    geo2topo limits_R_${istat}_provinces.json -o limits_R_${istat}_provinces_topo.json
-    mv limits_R_${istat}_provinces{_topo,}.json
-done
-
-for istat in 02 06
-do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
-        select jsonb_build_object(
-            'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
-                'properties', jsonb_build_object(
-                    'name', b.name,
-                    'osm', b.id_osm,
-                    'istat', b.istat,
-                    'prov_istat_code', b.istat,
-                    'reg_istat_code', p.istat,
-                    'adm', b.id_adm) || f.downloads)))
-      from boundaries b
-      join boundaries p
-        on b.id_parent_istat = p.istat
-      join files_agg f
-        on f.istat = p.istat
      where p.istat = '$istat'
      group by true;
 EOF
@@ -197,7 +175,7 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_P_${istat}_municipalities.json
+    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.001 -o limits_P_${istat}_municipalities.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
