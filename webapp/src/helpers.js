@@ -27,7 +27,7 @@ export const getParentForFeature = (feature, selectedFeature) => {
   return feature;
 };
 
-const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
+const getProvincesFromRegionIstatCode = async (italyTree, istatCode) => {
   const region = italyTree.children.find(
     ({ reg_istat }) => reg_istat === istatCode
   );
@@ -38,11 +38,17 @@ const getProvincesFromRegionIstatCode = (italyTree, istatCode) => {
   const filteredProvinces = geoProvinces.features.filter(({ properties }) =>
     provincesIstatCodes.includes(properties.istat)
   );
+  
+  const regionsFeatures = await italyTree.getChildFeatures()
+  const regionFeature = regionsFeatures?.features.find(
+    ({ properties }) => properties.istat === istatCode
+    ) ?? {};
 
   return {
     features: filteredProvinces,
     type: "FeatureCollection",
     properties: {
+      ...regionFeature.properties,
       reg_istat: region.reg_istat,
     },
   };
@@ -97,7 +103,7 @@ export const makeItalianTree = () => {
         type: 4,
         parent: italyTree,
         getChildFeatures: async () => {
-          const provinces = getProvincesFromRegionIstatCode(
+          const provinces = await getProvincesFromRegionIstatCode(
             italyTree,
             reg_istat_code
           );
@@ -171,6 +177,6 @@ export const makeItalianTree = () => {
       }
     }
   );
-  console.log("console.log(italyTree)", italyTree);
+  console.log("italyTree", italyTree);
   return italyTree;
 };

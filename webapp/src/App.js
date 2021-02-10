@@ -15,7 +15,6 @@ function App() {
   useEffect(() => {
     selectedTreeItem.getChildFeatures().then((feature) => {
       setCurrentGeoJSON(feature);
-      console.log("feature", feature);
       setSelectedFeature(feature);
     });
   }, [selectedTreeItem]);

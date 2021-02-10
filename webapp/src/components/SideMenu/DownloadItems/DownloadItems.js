@@ -26,7 +26,7 @@ const DownloadItems = ({ selectedFeature }) => {
 
   const { properties } = selectedFeature;
 
-  if (!properties[".gpkg"] && !properties[".osm.pbf"]) {
+  if (!properties[".gpkg"] && !properties[".osm.pbf"] && !properties[".obf"]) {
     return null;
   }
 
@@ -36,21 +36,22 @@ const DownloadItems = ({ selectedFeature }) => {
       {properties[".gpkg"] && (
         <ToolTipButton
           tooltip="OGC GeoPackage"
-          href={
-            config.basePathFiles + config.outputFilesPath + properties[".gpkg"]
-          }
+          href={config.basePathFiles + "/" + properties[".gpkg"]}
           title="GPKG"
         />
       )}
       {properties[".osm.pbf"] && (
         <ToolTipButton
           tooltip="Protocolbuffer binary format"
-          href={
-            config.basePathFiles +
-            config.outputFilesPath +
-            properties[".osm.pbf"]
-          }
+          href={config.basePathFiles + "/" + properties[".osm.pbf"]}
           title="PBF"
+        />
+      )}
+       {properties[".obf"] && (
+        <ToolTipButton
+          tooltip="OsmAnd OBF Format"
+          href={config.basePathFiles + "/" + properties[".obf"]}
+          title="OBF"
         />
       )}
     </div>
