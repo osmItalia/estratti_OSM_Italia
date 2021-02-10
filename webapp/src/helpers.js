@@ -34,11 +34,9 @@ const getProvincesFromRegionIstatCode = async (italyTree, istatCode) => {
   const provincesIstatCodes = region.children.map(
     ({ prov_istat }) => prov_istat
   );
-
   const filteredProvinces = geoProvinces.features.filter(({ properties }) =>
     provincesIstatCodes.includes(properties.istat)
   );
-  
   const regionsFeatures = await italyTree.getChildFeatures()
   const regionFeature = regionsFeatures?.features.find(
     ({ properties }) => properties.istat === istatCode
@@ -57,14 +55,19 @@ const getProvincesFromRegionIstatCode = async (italyTree, istatCode) => {
 export const getMunicipalitiesForProvinceIstatCode = async (
   provinceIstatCode
 ) => {
+
+  const provinceFeature = geoProvinces?.features.find(
+    ({ properties }) => properties.istat === provinceIstatCode
+    ) ?? {};
+    
   const fileName = `${config.basePathApp +
     config.inputFilesPath}limits_P_${provinceIstatCode}_municipalities.json`;
   const fileFetched = await fetch(fileName);
   const municipalities = await fileFetched.json();
-  return topojson.feature(
+  return [topojson.feature(
     municipalities,
     `limits_P_${provinceIstatCode}_municipalities`
-  );
+  ), provinceFeature.properties]
 };
 
 const findMunicipalityInProvince = (currentGeoJSON, com_istat) =>
@@ -118,12 +121,13 @@ export const makeItalianTree = () => {
         type: 6,
         parent: region,
         getChildFeatures: async () => {
-          const municipalities = await getMunicipalitiesForProvinceIstatCode(
+          const [municipalities, properties] = await getMunicipalitiesForProvinceIstatCode(
             prov_istat_code
           );
           return {
             ...municipalities,
             parent: region,
+            properties,
             prov_istat: prov_istat_code,
             reg_istat: reg_istat_code,
           };

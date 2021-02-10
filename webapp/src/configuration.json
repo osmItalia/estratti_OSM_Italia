@@ -1,7 +1,7 @@
 {
     "basePathFiles": "https://osmit-estratti.wmcloud.org",
     "basePathApp": "https://osmit-estratti.wmcloud.org",
-    "inputFilesPath": "/www/boundaries/",
+    "inputFilesPath": "/www/boundaries.new/",
     "outputFilesPath": "/output/dati/poly/",
     "municipalities": "limits_IT_municipalities.json",
     "provinces": "limits_IT_provinces.json",
