@@ -56,19 +56,21 @@ const SideMenu = ({
     setSelected(toExpand[0]);
 
     const name = selectedFeature?.properties?.name;
-    try{
-    var xpath = `(//div[text()='${name}'])[last()]`;
-    const targetItem = document.evaluate(
-      xpath,
-      document,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null
-    ).singleNodeValue;
-    if (targetItem) {
-      scrollToElement(targetItem);
+    try {
+      var xpath = `(//div[text()="${name}"])[last()]`;
+      const targetItem = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+      if (targetItem) {
+        scrollToElement(targetItem);
+      }
+    } catch (e) {
+      console.log(e);
     }
-  }catch(e){console.log(e)}
   }, [selectedFeature, selectedTreeItem]);
 
   const searchNode = (term) => {
@@ -92,6 +94,11 @@ const SideMenu = ({
     const name = node.com_name || node.prov_name || node.reg_name || parentItem;
     if (searchFilter.length && !searchFilter.includes(id)) {
       return null;
+    }
+    if (children?.length) {
+      children.sort((n1, n2) => n1.reg_name?.localeCompare(n2.reg_name));
+      children.sort((n1, n2) => n1.prov_name?.localeCompare(n2.prov_name));
+      children.sort((n1, n2) => n1.com_name?.localeCompare(n2.com_name));
     }
 
     return (
