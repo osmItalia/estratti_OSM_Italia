@@ -2,7 +2,7 @@
   "name": "estratti_osm_italia",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://GISdevio.github.io/estratti_OSM_Italia",
+  "homepage": ".",
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
