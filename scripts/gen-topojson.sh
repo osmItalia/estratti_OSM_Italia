@@ -175,7 +175,7 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.001 -o limits_P_${istat}_municipalities.json
+    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
