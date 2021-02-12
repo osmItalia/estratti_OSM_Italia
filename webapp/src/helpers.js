@@ -1,10 +1,13 @@
 import * as topojson from "topojson-client";
 import provinces from "./static/boundaries/limits_IT_provinces.json";
 import regions from "./static/boundaries/limits_IT_regions.json";
-import municipalities from "./static/boundaries/municipalitiesMap.json";
+import municipalities from "./static/boundaries/municipalites.json";
 import config from "./configuration.json";
 
-export const italyBounds = [[37, 6.5], [47.11539317, 18.48024702]];
+export const italyBounds = [
+  [35, 6.5],
+  [47, 19.5],
+];
 export const geoRegions = topojson.feature(regions, "limits_IT_regions");
 const geoProvinces = topojson.feature(provinces, "limits_IT_provinces");
 

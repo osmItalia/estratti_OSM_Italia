@@ -31,7 +31,7 @@ function App() {
           zoom={6}
           minZoom={6}
           bounds={italyBounds}
-          // maxBounds={italyBounds}
+          maxBounds={italyBounds}
           maxBoundsViscosity={1}
           scrollWheelZoom={true}
         >
