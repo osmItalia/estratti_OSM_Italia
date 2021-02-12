@@ -32,3 +32,4 @@ i parametri necessari per la corretta configurazione:
 - `regions`: nome del file GeoJSON contenente tutte le informazioni relative alle regioni
 - `provinces`: nome del file GeoJSON contenente tutte le informazioni relative alle province
 - `municipalities`: nome del file GeoJSON contenente tutte le informazioni relative ai comuni
+- `mapAttribution`: codice `HTML` da visualizzare come attribuzione per la mappa
