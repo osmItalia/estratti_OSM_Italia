@@ -5,6 +5,7 @@ import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
 import { italyBounds, geoRegions, makeItalianTree } from "./helpers";
+import config from './configuration.json'
 
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
@@ -36,7 +37,7 @@ function App() {
           scrollWheelZoom={true}
         >
           <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            attribution={config.mapAttribution}
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <Italy
