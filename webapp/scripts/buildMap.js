@@ -47,7 +47,7 @@ const fetchServerFiles = async ({
   });
 
   fs.writeJSONSync(
-    `./src/static/boundaries/municipalites.json`,
+    `./src/static/boundaries/municipalities.json`,
     municipalitiesList
   );
 };
