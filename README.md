@@ -2,8 +2,8 @@
 Repository sul lavoro svolto per [Wikimedia Italia](https://www.wikimedia.it/) con l'obiettivo di sviluppare una webapp dedicata al download degli estratti italiani OpenStreetMap per ciascuna regione, provincia e comune.
 
 La repository include due directory:
-- [Scripts: script necessari per la generazione dei file di progetto](https://github.com/GISdevio/estratti_OSM_Italia/tree/main/scripts)
-- [Webapp: webapp per il download degli estratti](https://github.com/GISdevio/estratti_OSM_Italia/tree/main/webapp)
+- [scripts](https://github.com/GISdevio/estratti_OSM_Italia/tree/main/scripts): script necessari per la generazione dei file di progetto
+- [webapp](https://github.com/GISdevio/estratti_OSM_Italia/tree/main/webapp): webapp per il download degli estratti
 
 La versione di produzione dell'app è accessibile alla pagina [https://osmit-estratti.wmcloud.org](https://osmit-estratti.wmcloud.org)
 
