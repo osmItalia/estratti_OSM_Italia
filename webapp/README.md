@@ -1,6 +1,6 @@
 # Estratti OSM Italia
 
-Questa repository contiene il codice sorgente dell'applicazione web per visualizzare una mappa interattiva dell'italia e scaricare gli estratti OpenStreetMap dell'Italia per i livelli comunali, provinciali e regionali.
+Questa directory contiene il codice sorgente dell'applicazione web per visualizzare una mappa interattiva dell'Italia e scaricare gli estratti OpenStreetMap per ciascuna regione, provincia e comune.
 
 L'applicazione può essere riutilizzata e riconfigurata in alcune delle sue parti seguendo le informazioni architetturali riportate di seguito.
 
@@ -20,7 +20,7 @@ Il processo di build richiede `node.js` e si lancia tramite il comando `npm run 
 
 Il comando di build, inoltre, esegue il download dei file necessari all'applicazione per la corretta esecuzione.
 
-Questo processo avviene tramite uno script node.js presente nella directory `scripts/`
+Questo processo avviene tramite uno script node.js presente nella directory `scripts/`.
 
 Lo script si basa su un file di configurazione: `configuration.json` presente nella cartella `src`. Questo permette di impostare
 i parametri necessari per la corretta configurazione:
