@@ -55,7 +55,7 @@ const fetchServerFiles = async ({
 const fetchAndWrite = async (path, level, name) => {
   const file = await fetch(path + level);
   const fileJSON = await file.json();
-  fs.writeJSONSync(`./src/static/boundaries/limits_IT_${name}.json`, fileJSON);
+  fs.outputFileSync(`./src/static/boundaries/limits_IT_${name}.json`, JSON.stringify(fileJSON));
   return fileJSON;
 };
 
