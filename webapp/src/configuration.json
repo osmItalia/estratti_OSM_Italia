@@ -6,5 +6,5 @@
     "municipalities": "limits_IT_municipalities.json",
     "provinces": "limits_IT_provinces.json",
     "regions": "limits_IT_regions.json",
-    "mapAttribution": "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors. Realizzato da <a href='https: //gisdev.io'>GISdevio&nbsp; <img style='padding:1px' height='18' src='https://gisdev.io/img/logo_short.png'></a>"
+    "mapAttribution": "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors. Realizzato da <a href='https: //gisdev.io'>GISdevio&nbsp; <img style='margin-bottom:-2px' height='12' src='https://gisdev.io/img/logo_short.png'></a>"
 }
