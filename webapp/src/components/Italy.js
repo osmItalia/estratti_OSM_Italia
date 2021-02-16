@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
+import { italyBounds } from "../helpers";
 
 const pathColors = [
   getComputedStyle(document.documentElement).getPropertyValue("--mainColor1"),
@@ -29,7 +30,7 @@ const Italy = ({
     if (!Object.entries(bounds).length) {
       return;
     }
-    map.fitBounds(bounds);
+    map.fitBounds(selectedTreeItem.name == "Italia" ? italyBounds : bounds);
   }, [currentGeoJSON, geoJSONref, map]);
 
   return (
