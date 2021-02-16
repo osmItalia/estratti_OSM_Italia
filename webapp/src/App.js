@@ -5,7 +5,7 @@ import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
 import { italyBounds, geoRegions, makeItalianTree } from "./helpers";
-import config from './configuration.json'
+import config from "./configuration.json";
 
 function App() {
   const italyTree = useMemo(() => makeItalianTree(), []);
@@ -33,7 +33,7 @@ function App() {
           minZoom={6}
           bounds={italyBounds}
           maxBounds={italyBounds}
-          maxBoundsViscosity={1}
+          maxBoundsViscosity={0.5}
           scrollWheelZoom={true}
         >
           <TileLayer

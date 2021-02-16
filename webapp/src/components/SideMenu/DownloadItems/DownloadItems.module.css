@@ -1,5 +1,9 @@
 :local(.resultItem) {
-  margin: 20px;
+  margin: 0px 0px 0px 20px;
+  max-height: 20vh;
+}
+:local(.resultItem p) {
+  margin: 10px 0px 0px 10px;
 }
 :local(.button) {
   margin: 10px !important;

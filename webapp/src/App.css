@@ -3,7 +3,7 @@
   --mainColor2: #d85151;
   --mainColor3: #d76161;
   --mainColor4: #ff726a;
-  --headerHeight: 50px;
+  --headerHeight: 80px;
 }
 #container {
   flex: 1;
@@ -51,13 +51,13 @@ div#root {
 }
 .MuiFormControl-root.MuiTextField-root {
   width: 90%;
-  margin: 0px 20px 20px 20px;
+  margin: 0px 20px 10px 20px;
 }
 
 ul.MuiTreeView-root {
   overflow-y: scroll;
   background: #f8f8f8;
-  max-height: 55vh;
+  max-height: 65vh;
   margin-left: 8px;
   padding: 8px;
   border-bottom: 1px solid #dedede;

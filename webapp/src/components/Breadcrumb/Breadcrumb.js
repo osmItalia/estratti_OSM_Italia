@@ -1,4 +1,5 @@
 import styles from "./Breadcrumb.module.css";
+import logo from "../../static/assets/logo-wikimedia.png";
 
 const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
   const getParentData = (item, allData) => {
@@ -12,9 +13,17 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
 
   return (
     <div className={styles.breadcrumb}>
+      <a
+        className={styles.logo}
+        href="https://www.wikimedia.it/"
+        target="_blank"
+      >
+        <img src={logo} />
+      </a>
       <div className={styles.appTitle}>
         <h1>Estratti OpenStreetMap Italia</h1>
       </div>
+
       {breadcrumbData.map((node, index) => {
         return (
           <p

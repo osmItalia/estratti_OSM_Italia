@@ -42,8 +42,13 @@ p.breadItem:hover {
 
 .appTitle {
   padding-left: 12px;
-  padding-right: 12px;
   margin-right: 48px;
   border-right: 1px solid #f8f8f8;
   color: var(--mainColor1);
+  display: flex;
+}
+
+.logo img {
+  margin: 15px;
+  height: 50px;
 }
