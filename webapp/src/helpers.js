@@ -4,7 +4,7 @@ import regions from "./static/boundaries/limits_IT_regions.json";
 import municipalities from "./static/boundaries/municipalities.json";
 import config from "./configuration.json";
 
-export const italyBounds = [[35, 6.5], [48.5, 19.5]];
+export const italyBounds = [[35, 5], [48.5, 19.5]];
 export const geoRegions = topojson.feature(regions, "limits_IT_regions");
 const geoProvinces = topojson.feature(provinces, "limits_IT_provinces");
 

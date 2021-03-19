@@ -140,6 +140,7 @@ const SideMenu = ({
   const searchDebounced = useDebouncedCallback((value) => {
     searchNode(value);
   }, 500);
+  const showDownload = selectedFeature?.properties?.[".gpkg"];
 
   return (
     <div className={styles.sideMenu}>
@@ -154,6 +155,8 @@ const SideMenu = ({
       />
 
       <TreeView
+        className={styles.rootItem}
+        style={{ maxHeight: showDownload ? "50vh" : "80vh" }}
         defaultCollapseIcon={<ArrowDropDownIcon />}
         defaultExpandIcon={<ArrowRightIcon />}
         expanded={expanded}

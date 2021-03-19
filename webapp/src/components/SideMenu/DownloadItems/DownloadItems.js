@@ -47,11 +47,11 @@ const DownloadItems = ({ selectedFeature }) => {
           title="PBF"
         />
       )}
-       {properties[".obf"] && (
+      {properties[".obf"] && (
         <ToolTipButton
           tooltip="OsmAnd OBF Format"
           href={config.basePathFiles + "/" + properties[".obf"]}
-          title="OBF"
+          title="OsmAnd OBF"
         />
       )}
     </div>

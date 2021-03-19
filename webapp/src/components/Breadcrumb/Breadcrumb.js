@@ -18,11 +18,11 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
         href="https://www.wikimedia.it/"
         target="_blank"
       >
-        <img src={logo} />
+        <img src={logo} alt="wikimedia" />
       </a>
-      <div className={styles.appTitle}>
+      <a className={styles.appTitle} href=".">
         <h1>Estratti OpenStreetMap Italia</h1>
-      </div>
+      </a>
 
       {breadcrumbData.map((node, index) => {
         return (
