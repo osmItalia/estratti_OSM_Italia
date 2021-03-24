@@ -117,6 +117,10 @@ const SideMenu = ({
             return;
           }
 
+          setTimeout(() => {
+            scrollToElement(event.target);
+          }, 750);
+
           const toExpand = [
             ...(node.com_istat ? [node.com_istat] : []),
             ...(node.prov_istat ? [node.prov_istat] : []),
