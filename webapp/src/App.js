@@ -38,7 +38,7 @@ function App() {
         >
           <TileLayer
             attribution={config.mapAttribution}
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url="https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
           />
           <Italy
             currentGeoJSON={currentGeoJSON}
