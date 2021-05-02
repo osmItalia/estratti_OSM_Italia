@@ -31,7 +31,7 @@ const Italy = ({
       return;
     }
     map.fitBounds(selectedTreeItem.name === "Italia" ? italyBounds : bounds);
-  }, [currentGeoJSON, geoJSONref, map]);
+  }, [currentGeoJSON, geoJSONref, map, selectedTreeItem]);
 
   return (
     <GeoJSON
