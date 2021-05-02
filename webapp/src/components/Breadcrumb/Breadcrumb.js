@@ -30,6 +30,7 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
         className={styles.logo}
         href="https://www.wikimedia.it/"
         target="_blank"
+        rel="noreferrer"
       >
         <img src={logo} alt="wikimedia" />
       </a>
