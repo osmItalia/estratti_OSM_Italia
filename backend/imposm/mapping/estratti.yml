@@ -1,0 +1,25 @@
+tables:
+  admin:
+    type: relation
+    columns:
+    - name: osm_id
+      type: id
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    - key: admin_level
+      name: admin_level
+      type: integer
+    - key: ref:ISTAT
+      name: istat
+      type: string
+    - key: short_name
+      name: short_name
+      type: string
+    relation_types: [boundary]
+    mapping:
+      boundary: [administrative]
+    type: polygon
+

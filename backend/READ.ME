@@ -1,0 +1,16 @@
+
+Richiede di avere installato:
+postgresql,
+imposm,
+osmium
+
+la sequenza di script serve per creare una tantum tutti gli script per l'estrazione dei dati
+dopo l'esecuzione dello script 07_* e' necessario entrare nella cartella  WORK_DIR/output/script rendere eseguibili i vari file (chmod +x *.sh) ed eseguire quelli che servono.
+Chiaramente bisogna iniziare dalle regioni, per poi passare alle provincie ed infine ai comuni e a seconda delle necessita' va eseguito per i due possibili perimetri: bbox o poly
+
+
+per un'estrazione giornaliera e' necessario schedulare un download giornaliero del pbf.
+I vari script provvedono innanzitutto a creare i pbf di regioni, province e comuni
+poi a convertire i singoli pbf negli altri formati
+
+
