@@ -1,6 +1,8 @@
 import "./App.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useState, useMemo, useEffect } from "react";
+import { useMatomo } from '@datapunt/matomo-tracker-react'
+
 import Italy from "./components/Italy";
 import Breadcrumb from "./components/Breadcrumb";
 import SideMenu from "./components/SideMenu";
@@ -19,6 +21,12 @@ function App() {
       setSelectedFeature(feature);
     });
   }, [selectedTreeItem]);
+
+  const { trackPageView } = useMatomo()
+
+  useEffect(() => {
+    trackPageView({});
+  }, [trackPageView]);
 
   return (
     <div className="container">

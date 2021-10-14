@@ -4,15 +4,25 @@ import logo from "../../static/assets/logo-wikimedia.png";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import InfoIcon from "@material-ui/icons/Info";
+import {useMatomo} from "@datapunt/matomo-tracker-react";
 
 const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
   const [openModal, setOpenModal] = useState(false);
+  const { trackEvent } = useMatomo();
 
   const handleOpen = () => {
+    trackEvent({
+      category: 'Breadcrumb',
+      action: 'open',
+    })
     setOpenModal(true);
   };
 
   const handleClose = () => {
+    trackEvent({
+      category: 'Breadcrumb',
+      action: 'close',
+    })
     setOpenModal(false);
   };
   const getParentData = (item, allData) => {
@@ -44,7 +54,14 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
             key={node.type}
             style={{ zIndex: 4 - index }}
             className={styles.breadItem}
-            onClick={() => setSelectedTreeItem(node)}
+            onClick={() => {
+              trackEvent({
+                category: 'Breadcrumb',
+                action: 'click',
+                name: node.com_name || node.prov_name || node.reg_name || node.name
+              })
+              setSelectedTreeItem(node)
+            }}
           >
             {node.com_name || node.prov_name || node.reg_name || node.name}
           </p>
