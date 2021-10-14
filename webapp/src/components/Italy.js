@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { GeoJSON, useMap } from "react-leaflet";
 import { italyBounds } from "../helpers";
+import {useMatomo} from "@datapunt/matomo-tracker-react";
 
 const pathColors = [
   getComputedStyle(document.documentElement).getPropertyValue("--mainColor1"),
@@ -21,6 +22,7 @@ const Italy = ({
 }) => {
   const geoJSONref = useRef();
   const map = useMap();
+  const { trackEvent } = useMatomo();
 
   useEffect(() => {
     if (!geoJSONref.current) {
@@ -50,6 +52,12 @@ const Italy = ({
             item = italyTree.children.find(
               ({ reg_istat }) => reg_istat === feature.properties.istat
             );
+            trackEvent({
+              category: 'Mappa',
+              action: 'click',
+              name: 'Regione',
+              value: feature.properties.istat,
+            })
           }
 
           if (feature.properties.adm === 6) {
@@ -57,6 +65,12 @@ const Italy = ({
             item = region.children.find(
               ({ prov_istat }) => prov_istat === geo_prov_istat
             );
+            trackEvent({
+              category: 'Mappa',
+              action: 'click',
+              name: 'Provincia',
+              value: feature.properties.istat,
+            })
           }
 
           if (feature.properties.adm === 8) {
@@ -68,6 +82,12 @@ const Italy = ({
             item = province.children.find(
               ({ com_istat }) => com_istat === geo_com_istat
             );
+            trackEvent({
+              category: 'Mappa',
+              action: 'click',
+              name: 'Comune',
+              value: feature.properties.istat,
+            })
           }
 
           if (item) {
