@@ -3,21 +3,32 @@ import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Tooltip from "@material-ui/core/Tooltip";
 import config from "../../../configuration.json";
+import {useMatomo} from "@datapunt/matomo-tracker-react";
 
-const ToolTipButton = ({ title, href, tooltip }) => (
-  <Tooltip title={tooltip}>
-    <Button
-      variant="contained"
-      href={href}
-      target="_blank"
-      startIcon={<SaveIcon />}
-      className={styles.button}
-      color="primary"
-    >
-      {title}
-    </Button>
-  </Tooltip>
-);
+const ToolTipButton = ({ title, href, tooltip, istat }) => {
+  const { trackEvent,  } = useMatomo();
+
+  return (
+    <Tooltip title={tooltip}>
+      <Button
+        variant="contained"
+        href={href}
+        target="_blank"
+        startIcon={<SaveIcon />}
+        className={styles.button}
+        color="primary"
+        onClick={() => trackEvent({
+          category: 'Download',
+          action: 'click',
+          name: title,
+          value: istat,
+        })}
+      >
+        {title}
+      </Button>
+    </Tooltip>
+  );
+}
 
 const DownloadItems = ({ selectedFeature }) => {
   if (!selectedFeature?.properties) {
@@ -38,6 +49,7 @@ const DownloadItems = ({ selectedFeature }) => {
           tooltip="OGC GeoPackage"
           href={config.basePathFiles + "/" + properties[".gpkg"]}
           title="GPKG"
+          istat={properties.istat}
         />
       )}
       {properties[".osm.pbf"] && (
@@ -45,6 +57,7 @@ const DownloadItems = ({ selectedFeature }) => {
           tooltip="Protocolbuffer binary format"
           href={config.basePathFiles + "/" + properties[".osm.pbf"]}
           title="PBF"
+          istat={properties.istat}
         />
       )}
       {properties[".obf"] && (
@@ -52,6 +65,7 @@ const DownloadItems = ({ selectedFeature }) => {
           tooltip="OsmAnd OBF Format"
           href={config.basePathFiles + "/" + properties[".obf"]}
           title="OsmAnd OBF"
+          istat={properties.istat}
         />
       )}
     </div>

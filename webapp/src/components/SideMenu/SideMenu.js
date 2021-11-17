@@ -10,6 +10,7 @@ import { search } from "./filter";
 import DownloadItems from "./DownloadItems";
 import styles from "./SideMenu.module.css";
 import { parentItem } from "../../helpers";
+import {useMatomo} from "@datapunt/matomo-tracker-react";
 
 const scrollToElement = (element) =>
   element.scrollIntoView({
@@ -27,6 +28,7 @@ const SideMenu = ({
   const [selected, setSelected] = useState([parentItem]);
   const [searchFilter, setSearchFilter] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const { trackEvent } = useMatomo();
 
   const resetFilter = () => {
     setSearchFilter([]);
@@ -130,6 +132,26 @@ const SideMenu = ({
           setExpanded(toExpand);
           node.preventExpand = true;
           setSelectedTreeItem(node);
+          let name = null;
+          let value = null;
+          if (node.reg_istat) {
+            name = 'Regione';
+            value = node.reg_istat;
+          }
+          if (node.prov_istat) {
+            name = 'Provincia';
+            value = node.prov_istat;
+          }
+          if (node.com_istat) {
+            name = 'Comune';
+            value = node.com_istat;
+          }
+          trackEvent({
+            category: 'MenuLaterale',
+            action: 'click',
+            name,
+            value,
+          })
 
           setTimeout(() => {
             scrollToElement(event.target);
@@ -142,6 +164,11 @@ const SideMenu = ({
   };
 
   const searchDebounced = useDebouncedCallback((value) => {
+    trackEvent({
+      category: 'Filtri',
+      action: 'search',
+      name: value,
+    })
     searchNode(value);
   }, 500);
   const showDownload = selectedFeature?.properties?.[".gpkg"];
