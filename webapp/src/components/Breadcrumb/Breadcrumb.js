@@ -106,6 +106,7 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
               <a href="https://gisdev.io">GISdevio Srl</a>.
             </p>
             <p>I dati sono aggiornati con frequenza giornaliera.</p>
+            <p>Consulta la <a href="https://www.wikimedia.it/cookie-policy/">Privacy Policy</a>.</p>
           </div>
         </Modal>
       </div>
