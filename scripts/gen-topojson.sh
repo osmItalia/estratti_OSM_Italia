@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -exuo pipefail
 
 conn_str="postgres://osm:osm@127.0.0.1/osm"
 basedir="/srv/estratti/output"
