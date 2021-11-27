@@ -5,6 +5,8 @@ set -exuo pipefail
 conn_str="postgres://osm:osm@127.0.0.1/osm"
 basedir="/srv/estratti/output"
 
+psql_custom="psql -qAtX $conn_str"
+
 # Match entires - files
 
 cd "$basedir"
@@ -13,7 +15,7 @@ find 'boundaries/poly' -name '[0-9]*_*.poly' -type f |
     xargs -L1 -I% -d '\n' sh -c \
     'poly2geojson < "%" > $(dirname "%")/$(basename "%" .poly).geojson'
 
-cat << EOF | psql -qAtX "$conn_str"
+cat << EOF | $psql_custom
 drop materialized view if exists files_agg;
 drop table if exists files;
 create table files (istat varchar, extension varchar, path varchar);
@@ -27,11 +29,11 @@ do
     filename=$(basename "$path")
     istat=${filename%%_*}
     echo "$istat;\"$(readlink -f $path)\""
-done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV DELIMITER ';' QUOTE '\"'"
+done | $psql_custom -c "\copy boundaries_geojson FROM STDIN WITH CSV DELIMITER ';' QUOTE '\"'"
 
 # Add id_parent_istat column
 
-cat << EOF | psql -qAtX "$conn_str"
+cat << EOF | $psql_custom
 alter table boundaries add id_parent_istat varchar(8);
 update boundaries as b
   set id_parent_istat = (
@@ -66,7 +68,7 @@ update boundaries
    set id_parent_istat = substring(istat, 0, 4)
  where id_adm = 8 and id_parent_istat = '$istat';
 EOF
-done | psql -qAtX "$conn_str"
+done | $psql_custom
 
 find 'dati/poly' -type f -not -name '*.log' |
 while read path
@@ -82,15 +84,15 @@ do
     then
         echo "030;$extension;\"$path\""
     fi
-done | psql -qAtX "$conn_str" -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
+done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
-psql -qAtX "$conn_str" -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
+$psql_custom -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
 
 cd -
 
 # Generate regions
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
@@ -114,7 +116,7 @@ mv limits_IT_regions{_topo,}.json
 
 # Generate provinces
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
@@ -139,7 +141,7 @@ mv limits_IT_provinces{_topo,}.json
 
 # Generate municipalities
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_municipalities.json
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_municipalities.json
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
@@ -167,7 +169,7 @@ mv limits_IT_municipalities{_topo,}.json
 
 # Generate provinces for each region
 
-(cat << EOF | psql -qAtX "$conn_str"
+(cat << EOF | $psql_custom
 select distinct p.istat
   from boundaries b
   join boundaries p
@@ -177,7 +179,7 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
+    cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
@@ -204,7 +206,7 @@ done
 
 # Generate municipalities for each province
 
-(cat << EOF | psql -qAtX "$conn_str"
+(cat << EOF | $psql_custom
 select distinct p.istat
   from boundaries b
   join boundaries p
@@ -214,7 +216,7 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
+    cat << EOF | $psql_custom | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
