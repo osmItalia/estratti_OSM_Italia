@@ -29,6 +29,17 @@ EOF
 #    echo "$istat;\"$(readlink -f $path)\""
 #done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
 
+# Add id_parent_istat column
+
+cat << EOF | psql -qAtX "$conn_str"
+alter table boundaries add id_parent_istat varchar(8);
+update boundaries as b
+  set id_parent_istat = (
+     select istat
+       from boundaries as p
+      where b.id_parent = p.id_osm);
+EOF
+
 # Create fake provinces
 
 for istat in 02 06
