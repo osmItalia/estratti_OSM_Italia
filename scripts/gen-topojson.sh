@@ -34,6 +34,7 @@ done | $psql_custom -c "\copy boundaries_geojson FROM STDIN WITH CSV DELIMITER '
 # Add id_parent_istat column
 
 cat << EOF | $psql_custom
+alter table boundaries drop column if exists id_parent_istat;
 alter table boundaries add id_parent_istat varchar(8);
 update boundaries as b
   set id_parent_istat = (
