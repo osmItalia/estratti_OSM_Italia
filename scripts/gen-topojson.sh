@@ -34,11 +34,18 @@ EOF
 for istat in 02 06
 do
   cat <<EOF
-insert into boundaries
-  (select 6 as id_adm,
+insert into boundaries (
+    id_adm,
+    id_osm,
+    name,
+    istat,
+    id_parent_istat,
+    geojson
+  )
+  (select 6,
           NULL,
           p.name,
-          substring(b.istat, 0, 4) as istat,
+          substring(b.istat, 0, 4),
           p.istat,
           p.geojson
      from boundaries b
