@@ -36,7 +36,7 @@ do
   cat <<EOF
 insert into boundaries
   (select 6 as id_adm,
-          p.id_osm,
+          NULL,
           p.name,
           substring(b.istat, 0, 4) as istat,
           p.istat,
