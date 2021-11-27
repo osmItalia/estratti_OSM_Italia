@@ -7,13 +7,17 @@ basedir="/srv/estratti/output"
 
 psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1"
 
-# Match entires - files
+### Match entires - files and generate fake provinces
+
+# Convert poly files to geojson
 
 cd "$basedir"
 
 find 'boundaries/poly' -name '[0-9]*_*.poly' -type f |
     xargs -L1 -I% -d '\n' sh -c \
     'poly2geojson < "%" > $(dirname "%")/$(basename "%" .poly).geojson'
+
+# Prepare tables
 
 cat << EOF | $psql_custom
 drop materialized view if exists files_agg;
@@ -22,6 +26,8 @@ create table files (istat varchar, extension varchar, path varchar);
 drop table if exists boundaries_geojson;
 create table boundaries_geojson (istat varchar, path varchar);
 EOF
+
+# Populate the boundaries_geojson table
 
 find 'boundaries/poly' -type f -name '*.geojson' |
 while read path
@@ -71,6 +77,8 @@ update boundaries
 EOF
 done | $psql_custom
 
+# Populate the files table
+
 find 'dati/poly' -type f -not -name '*.log' |
 while read path
 do
@@ -90,6 +98,8 @@ done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 $psql_custom -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
 
 cd -
+
+### Generate the limits_°.json files
 
 # Generate regions
 
