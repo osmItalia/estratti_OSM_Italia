@@ -39,7 +39,7 @@ do
     if [ "$istat" = "02" ] # Valle d'Aosta
     then
         echo "007;$extension;\"$path\""
-    elif [ "$istat" = "06" ] # Valle d'Aosta
+    elif [ "$istat" = "06" ] # Friuli-Venezia-Giulia
     then
         echo "030;$extension;\"$path\""
     fi
