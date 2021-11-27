@@ -17,17 +17,17 @@ cat << EOF | psql -qAtX "$conn_str"
 drop materialized view if exists files_agg;
 drop table if exists files;
 create table files (istat varchar, extension varchar, path varchar);
---drop table if exists boundaries_geojson;
---create table boundaries_geojson (istat varchar, path varchar);
+drop table if exists boundaries_geojson;
+create table boundaries_geojson (istat varchar, path varchar);
 EOF
 
-#find 'boundaries/poly' -type f -name '*.geojson' |
-#while read path
-#do
-#    filename=$(basename "$path")
-#    istat=${filename%%_*}
-#    echo "$istat;\"$(readlink -f $path)\""
-#done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
+find 'boundaries/poly' -type f -name '*.geojson' |
+while read path
+do
+    filename=$(basename "$path")
+    istat=${filename%%_*}
+    echo "$istat;\"$(readlink -f $path)\""
+done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
 
 # Add id_parent_istat column
 
