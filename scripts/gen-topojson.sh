@@ -113,8 +113,8 @@ cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_regions.
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
-            'type', geojson -> 'type',
-            'geometry', geojson -> 'geometry',
+            'type', geojson -> 'geometries' -> 0 -> 'type',
+            'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates',
             'properties', jsonb_build_object(
                 'name', name,
                 'osm', id_osm,
@@ -137,8 +137,8 @@ cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_province
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
-            'type', geojson -> 'type',
-            'geometry', geojson -> 'geometry',
+            'type', geojson -> 'geometries' -> 0 -> 'type',
+            'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates',
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -162,8 +162,8 @@ cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_municipa
 select jsonb_build_object(
         'type', 'FeatureCollection',
         'features', jsonb_agg(jsonb_build_object(
-            'type', b.geojson -> 'type',
-            'geometry', b.geojson -> 'geometry',
+            'type', b.geojson -> 'geometries' -> 0 -> 'type',
+            'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates',
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -200,8 +200,8 @@ do
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
+                'type', b.geojson -> 'geometries' -> 0 -> 'type',
+                'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates',
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
@@ -237,8 +237,8 @@ do
         select jsonb_build_object(
             'type', 'FeatureCollection',
             'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
+                'type', b.geojson -> 'geometries' -> 0 -> 'type',
+                'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates',
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
