@@ -27,7 +27,7 @@ do
     filename=$(basename "$path")
     istat=${filename%%_*}
     echo "$istat;\"$(readlink -f $path)\""
-done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
+done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV DELIMITER ';' QUOTE '\"'"
 
 # Add id_parent_istat column
 
