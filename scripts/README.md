@@ -173,16 +173,6 @@ do
 done
 ```
 
-Fake provinces:
-
-```
-insert INTO boundaries (select 6 as id_adm, p.id_osm, p.name, substring(b.istat, 0, 4) as istat, p.istat, p.geojson from boundaries b join boundaries p on b.id_parent_istat = p.istat where p.istat = '02' limit 1);
-update boundaries set id_parent_istat = substring(istat, 0, 4) where id_adm = 8 and id_parent_istat = '02';
-
-insert INTO boundaries (select 6 as id_adm, p.id_osm, p.name, substring(b.istat, 0, 4) as istat, p.istat, p.geojson from boundaries b join boundaries p on b.id_parent_istat = p.istat where p.istat = '06' limit 1);
-update boundaries set id_parent_istat = substring(istat, 0, 4) where id_adm = 8 and id_parent_istat = '06';
-```
-
 Additional setup that could be required on WM servers to run npm:
 
 ```

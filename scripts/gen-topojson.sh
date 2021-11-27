@@ -29,6 +29,27 @@ EOF
 #    echo "$istat;\"$(readlink -f $path)\""
 #done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
 
+# Create fake provinces
+
+for istat in 02 06
+do
+  cat <<EOF
+insert into boundaries
+  (select 6 as id_adm,
+          p.id_osm,
+          p.name,
+          substring(b.istat, 0, 4) as istat,
+          p.istat,
+          p.geojson
+     from boundaries b
+     join boundaries p on b.id_parent_istat = p.istat
+    where p.istat = '$istat' limit 1);
+update boundaries
+   set id_parent_istat = substring(istat, 0, 4)
+ where id_adm = 8 and id_parent_istat = '$istat';
+EOF
+done | psql -qAtX "$conn_str"
+
 find 'dati/poly' -type f -not -name '*.log' |
 while read path
 do
