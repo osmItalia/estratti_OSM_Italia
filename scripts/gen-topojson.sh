@@ -101,6 +101,12 @@ cd -
 
 ### Generate the limits_°.json files
 
+# Prepare tables
+
+cat << EOF | $psql_custom
+alter table boundaries alter column geojson type jsonb using geojson::jsonb;
+EOF
+
 # Generate regions
 
 cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
