@@ -50,12 +50,10 @@ update boundaries as b
 EOF
 
 # Create fake provinces
-
-for istat in 02 06
-do
-  cat <<EOF
+cat <<EOF | $psql_custom
+-- Valle d'Aosta
 delete from boundaries
- where id_adm = 6 and istat = '$istat';
+ where id_adm = 6 and id_parent_istat = '02';
 insert into boundaries (
     id_adm,
     id_osm,
@@ -66,18 +64,38 @@ insert into boundaries (
   )
   (select 6,
           NULL,
-          p.name,
-          substring(b.istat, 0, 4),
-          p.istat,
-          p.geojson
-     from boundaries b
-     join boundaries p on b.id_parent_istat = p.istat
-    where p.istat = '$istat' limit 1);
+          name,
+          '007',
+          istat,
+          geojson
+     from boundaries
+    where istat = '02' limit 1);
 update boundaries
-   set id_parent_istat = substring(istat, 0, 4)
- where id_adm = 8 and id_parent_istat = '$istat';
+   set id_parent_istat = '007'
+ where id_adm = 8 and id_parent_istat = '02';
+-- Friuli Venezia Giulia
+delete from boundaries
+ where id_adm = 6 and id_parent_istat = '06';
+insert into boundaries (
+    id_adm,
+    id_osm,
+    name,
+    istat,
+    id_parent_istat,
+    geojson
+  )
+  (select 6,
+          NULL,
+          name,
+          '032',
+          istat,
+          geojson
+     from boundaries
+    where istat = '06' limit 1);
+update boundaries
+   set id_parent_istat = '032'
+ where id_adm = 8 and id_parent_istat = '06';
 EOF
-done | $psql_custom
 
 # Populate the files table
 
@@ -93,7 +111,7 @@ do
         echo "007;$extension;\"$path\""
     elif [ "$istat" = "06" ] # Friuli-Venezia-Giulia
     then
-        echo "030;$extension;\"$path\""
+        echo "032;$extension;\"$path\""
     fi
 done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
