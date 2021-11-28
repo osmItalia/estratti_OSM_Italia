@@ -145,7 +145,7 @@ select jsonb_build_object(
                 'reg_istat_code', istat,
                 'adm', id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
  where b.id_adm = 4
  group by true;
 EOF
@@ -173,7 +173,7 @@ select jsonb_build_object(
                 'reg_istat_code', b.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
  where b.id_adm = 6
  group by true;
 EOF
@@ -202,7 +202,7 @@ select jsonb_build_object(
                 'reg_istat_code', p.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
   join boundaries p
     on b.id_parent_istat = p.istat
  where b.id_adm = 8
@@ -242,7 +242,7 @@ do
                     'reg_istat_code', p.istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
-      join files_agg f using (istat)
+      left join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
      where p.istat = '$istat'
@@ -283,7 +283,7 @@ do
                     'reg_istat_code', p.id_parent_istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
-      join files_agg f using (istat)
+      left join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
      where b.id_adm = 8 and p.id_adm = 6
