@@ -130,11 +130,11 @@ EOF
 # Generate regions
 
 cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
-select jsonb_build_object(
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
+        'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', jsonb_build_object(
+            'geometry', json_build_object(
                 'type', 'Polygon',
                 'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates'
             ),
@@ -157,11 +157,11 @@ mv limits_IT_regions{_topo,}.json
 # Generate provinces
 
 cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
-select jsonb_build_object(
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
+        'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', jsonb_build_object(
+            'geometry', json_build_object(
                 'type', 'Polygon',
                 'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates'
             ),
@@ -185,11 +185,11 @@ mv limits_IT_provinces{_topo,}.json
 # Generate municipalities
 
 cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_municipalities.json
-select jsonb_build_object(
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
+        'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', jsonb_build_object(
+            'geometry', json_build_object(
                 'type', 'Polygon',
                 'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
             ),
@@ -226,11 +226,11 @@ EOF
 while read istat
 do
     cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
-        select jsonb_build_object(
+        select json_build_object(
             'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
+            'features', json_agg(json_build_object(
                 'type', 'Feature',
-                'geometry', jsonb_build_object(
+                'geometry', json_build_object(
                     'type', 'Polygon',
                     'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
                 ),
@@ -266,11 +266,11 @@ EOF
 while read istat
 do
     cat << EOF | $psql_custom | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
-        select jsonb_build_object(
+        select json_build_object(
             'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
+            'features', json_agg(json_build_object(
                 'type', 'Feature',
-                'geometry', jsonb_build_object(
+                'geometry', json_build_object(
                     'type', 'Polygon',
                     'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
                 ),
