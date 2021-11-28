@@ -134,10 +134,7 @@ select json_build_object(
         'type', 'FeatureCollection',
         'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', json_build_object(
-                'type', 'Polygon',
-                'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates'
-            ),
+            'geometry', geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', name,
                 'osm', id_osm,
@@ -161,10 +158,7 @@ select json_build_object(
         'type', 'FeatureCollection',
         'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', json_build_object(
-                'type', 'Polygon',
-                'coordinates', geojson -> 'geometries' -> 0 -> 'coordinates'
-            ),
+            'geometry', b.geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -189,10 +183,7 @@ select json_build_object(
         'type', 'FeatureCollection',
         'features', json_agg(json_build_object(
             'type', 'Feature',
-            'geometry', json_build_object(
-                'type', 'Polygon',
-                'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
-            ),
+            'geometry', b.geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -230,10 +221,7 @@ do
             'type', 'FeatureCollection',
             'features', json_agg(json_build_object(
                 'type', 'Feature',
-                'geometry', json_build_object(
-                    'type', 'Polygon',
-                    'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
-                ),
+                'geometry', b.geojson -> 'geometries' -> 0,
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
@@ -270,10 +258,7 @@ do
             'type', 'FeatureCollection',
             'features', json_agg(json_build_object(
                 'type', 'Feature',
-                'geometry', json_build_object(
-                    'type', 'Polygon',
-                    'coordinates', b.geojson -> 'geometries' -> 0 -> 'coordinates'
-                ),
+                'geometry', b.geojson -> 'geometries' -> 0,
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
