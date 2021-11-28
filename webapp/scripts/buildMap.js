@@ -31,11 +31,13 @@ const fetchServerFiles = async ({
 
   const provincesMap = {};
   provincesJSON.objects.limits_IT_provinces.geometries.forEach(({properties})=>{
+    if (!properties) return;
     provincesMap[properties.istat]=properties.name
   });
   
   const municipalitiesList = [];
   municipalitiesJSON.objects.limits_IT_municipalities.geometries.forEach(({ properties }) => {
+    if (!properties) return;
     municipalitiesList.push({
           "name": properties.name,
           "reg_name": regionsMap[properties.reg_istat_code],
