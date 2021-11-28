@@ -5,7 +5,7 @@ set -exuo pipefail
 conn_str="postgres://osm:osm@127.0.0.1/osm"
 basedir="/srv/estratti/output"
 
-psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1"
+psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
 
 ### Match entires - files and generate fake provinces
 
