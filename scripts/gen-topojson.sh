@@ -54,6 +54,8 @@ EOF
 for istat in 02 06
 do
   cat <<EOF
+delete from boundaries
+ where id_adm = 6 and istat = '$istat';
 insert into boundaries (
     id_adm,
     id_osm,
