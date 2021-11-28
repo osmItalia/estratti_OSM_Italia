@@ -53,7 +53,7 @@ EOF
 cat <<EOF | $psql_custom
 -- Valle d'Aosta
 delete from boundaries
- where id_adm = 6 and id_parent_istat = '02';
+ where istat = '007';
 insert into boundaries (
     id_adm,
     id_osm,
@@ -75,7 +75,7 @@ update boundaries
  where id_adm = 8 and id_parent_istat = '02';
 -- Friuli Venezia Giulia
 delete from boundaries
- where id_adm = 6 and id_parent_istat = '06';
+ where istat = '032';
 insert into boundaries (
     id_adm,
     id_osm,
