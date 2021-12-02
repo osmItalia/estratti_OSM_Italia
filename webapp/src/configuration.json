@@ -15,5 +15,9 @@
         "configurations": {
             "disableCookies": true
         }
-    }
+    },
+    "houseNumberInterval": {
+        "years": 1
+    },
+    "houseNumberCount": 5
 }

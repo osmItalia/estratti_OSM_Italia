@@ -11,6 +11,7 @@ import DownloadItems from "./DownloadItems";
 import styles from "./SideMenu.module.css";
 import { parentItem } from "../../helpers";
 import {useMatomo} from "@datapunt/matomo-tracker-react";
+import ExtractHouseNumber from "./ExtractHouseNumbers";
 
 const scrollToElement = (element) =>
   element.scrollIntoView({
@@ -197,6 +198,7 @@ const SideMenu = ({
         {mapTree(italyTree)}
       </TreeView>
       <DownloadItems selectedFeature={selectedFeature} />
+      <ExtractHouseNumber selectedFeature={selectedFeature} />
     </div>
   );
 };
