@@ -4,44 +4,34 @@ import Button from "@material-ui/core/Button";
 import styles from "./ExtractHouseNumbers.module.css";
 import {useMatomo} from "@datapunt/matomo-tracker-react";
 import Modal from "@material-ui/core/Modal";
-import { sub, format } from 'date-fns';
+import { sub, format, startOfMonth } from 'date-fns';
 import clone from 'lodash/clone';
 import pick from 'lodash/pick';
 
-import config from '../../../configuration.json';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "./Graph";
 
 async function fetchData(featureCollection, setState) {
 
   const f = pick(clone(featureCollection), ['features', 'type'])
+  const end = sub(startOfMonth(new Date()), { months: 1 })
+  const start = sub(end, { years: 1 })
 
-  const times = new Array(config.houseNumberCount)
-    .fill(0)
-    .reduce((prev) => [...prev, sub(prev[prev.length - 1], config.houseNumberInterval)], [sub(new Date(), { days: 7 })])
+  const data = new FormData();
+  data.append('filter', 'addr:housenumber=*');
+  data.append('time', `${format(start, 'yyyy-MM-dd')}/${format(end, 'yyyy-MM-dd')}/P1M`);
+  data.append('bpolys', JSON.stringify(f));
 
-  const elements = times.map(time => {
-    const data = new FormData();
-    data.append('filter', 'addr:housenumber=*');
-    data.append('time', format(time, 'yyyy-MM-dd'));
-    data.append('bpolys', JSON.stringify(f));
-
-    return fetch(`${process.env.REACT_APP_ENTRYPOINT}/v1/elements/count/`, {
-      method: 'POST',
-      body: data,
-    }).then(res => res.json()).catch(res => null)
-  });
+  const res =await fetch(`${process.env.REACT_APP_ENTRYPOINT}/v1/elements/count/`, {
+    method: 'POST',
+    body: data,
+  }).then(res => res.json()).catch(res => null)
 
   try {
-    const responses = await Promise.all(elements);
-
-    const values = responses.map((data, index) => {
-      let y = 0
-      if (data?.result && data?.result?.length > 0 && data?.result[0].value) {
-        y = data.result[0].value;
-      }
-      return {x: times[index].getTime(), y}
-    })
+    const values = res.result.map(data => ({
+      x: new Date(data.timestamp).getTime(),
+      y: data.value
+    }))
 
     setState({
       data: values,
