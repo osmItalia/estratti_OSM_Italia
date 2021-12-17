@@ -89,7 +89,7 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
             <ul>
               <li>GPKG - OGC GeoPackage</li>
               <li> PBF - Protocolbuffer Binary Format </li>
-              <li>OSMAND OBF- OsmAnd Binary Maps Format</li>
+              <li>OSMAND OBF - OsmAnd Binary Maps Format</li>
             </ul>
             <p>
               È possibile estrarre i dati per ogni regione, provincia o comune

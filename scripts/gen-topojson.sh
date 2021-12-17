@@ -1,11 +1,15 @@
 #!/bin/bash
 
-set -ex
+set -exuo pipefail
 
 conn_str="postgres://osm:osm@127.0.0.1/osm"
 basedir="/srv/estratti/output"
 
-# Match entires - files
+psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
+
+### Match entires - files and generate fake provinces
+
+# Convert poly files to geojson
 
 cd "$basedir"
 
@@ -13,21 +17,87 @@ find 'boundaries/poly' -name '[0-9]*_*.poly' -type f |
     xargs -L1 -I% -d '\n' sh -c \
     'poly2geojson < "%" > $(dirname "%")/$(basename "%" .poly).geojson'
 
-cat << EOF | psql -qAtX "$conn_str"
+# Prepare tables
+
+cat << EOF | $psql_custom
 drop materialized view if exists files_agg;
 drop table if exists files;
 create table files (istat varchar, extension varchar, path varchar);
---drop table if exists boundaries_geojson;
---create table boundaries_geojson (istat varchar, path varchar);
+drop table if exists boundaries_geojson;
+create table boundaries_geojson (istat varchar, path varchar);
 EOF
 
-#find 'boundaries/poly' -type f -name '*.geojson' |
-#while read path
-#do
-#    filename=$(basename "$path")
-#    istat=${filename%%_*}
-#    echo "$istat;\"$(readlink -f $path)\""
-#done | psql -qAtX "$conn_str" -c "\copy boundaries_geojson FROM STDIN WITH CSV #DELIMITER ';' QUOTE '\"'"
+# Populate the boundaries_geojson table
+
+find 'boundaries/poly' -type f -name '*.geojson' |
+while read path
+do
+    filename=$(basename "$path")
+    istat=${filename%%_*}
+    echo "$istat;\"$(readlink -f $path)\""
+done | $psql_custom -c "\copy boundaries_geojson FROM STDIN WITH CSV DELIMITER ';' QUOTE '\"'"
+
+# Add id_parent_istat column
+
+cat << EOF | $psql_custom
+alter table boundaries drop column if exists id_parent_istat;
+alter table boundaries add id_parent_istat varchar(8);
+update boundaries as b
+  set id_parent_istat = (
+     select istat
+       from boundaries as p
+      where b.id_parent = p.id_osm);
+EOF
+
+# Create fake provinces
+cat <<EOF | $psql_custom
+-- Valle d'Aosta
+delete from boundaries
+ where istat = '007';
+insert into boundaries (
+    id_adm,
+    id_osm,
+    name,
+    istat,
+    id_parent_istat,
+    geojson
+  )
+  (select 6,
+          NULL,
+          name,
+          '007',
+          istat,
+          geojson
+     from boundaries
+    where istat = '02' limit 1);
+update boundaries
+   set id_parent_istat = '007'
+ where id_adm = 8 and id_parent_istat = '02';
+-- Friuli Venezia Giulia
+delete from boundaries
+ where istat = '032';
+insert into boundaries (
+    id_adm,
+    id_osm,
+    name,
+    istat,
+    id_parent_istat,
+    geojson
+  )
+  (select 6,
+          NULL,
+          name,
+          '032',
+          istat,
+          geojson
+     from boundaries
+    where istat = '06' limit 1);
+update boundaries
+   set id_parent_istat = '032'
+ where id_adm = 8 and id_parent_istat = '06';
+EOF
+
+# Populate the files table
 
 find 'dati/poly' -type f -not -name '*.log' |
 while read path
@@ -39,24 +109,32 @@ do
     if [ "$istat" = "02" ] # Valle d'Aosta
     then
         echo "007;$extension;\"$path\""
-    elif [ "$istat" = "06" ] # Valle d'Aosta
+    elif [ "$istat" = "06" ] # Friuli-Venezia-Giulia
     then
-        echo "030;$extension;\"$path\""
+        echo "032;$extension;\"$path\""
     fi
-done | psql -qAtX "$conn_str" -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
+done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
-psql -qAtX "$conn_str" -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
+$psql_custom -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
 
 cd -
 
+### Generate the limits_°.json files
+
+# Prepare tables
+
+cat << EOF | $psql_custom
+alter table boundaries alter column geojson type jsonb using geojson::jsonb;
+EOF
+
 # Generate regions
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
-select jsonb_build_object(
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_regions.json
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
-            'type', geojson -> 'type',
-            'geometry', geojson -> 'geometry',
+        'features', json_agg(json_build_object(
+            'type', 'Feature',
+            'geometry', geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', name,
                 'osm', id_osm,
@@ -64,7 +142,7 @@ select jsonb_build_object(
                 'reg_istat_code', istat,
                 'adm', id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
  where b.id_adm = 4
  group by true;
 EOF
@@ -75,12 +153,12 @@ mv limits_IT_regions{_topo,}.json
 
 # Generate provinces
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
-select jsonb_build_object(
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_provinces.json
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
-            'type', geojson -> 'type',
-            'geometry', geojson -> 'geometry',
+        'features', json_agg(json_build_object(
+            'type', 'Feature',
+            'geometry', b.geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -89,7 +167,7 @@ select jsonb_build_object(
                 'reg_istat_code', b.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
  where b.id_adm = 6
  group by true;
 EOF
@@ -100,12 +178,12 @@ mv limits_IT_provinces{_topo,}.json
 
 # Generate municipalities
 
-cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_IT_municipalities.json
-select jsonb_build_object(
+cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_IT_municipalities.json
+select json_build_object(
         'type', 'FeatureCollection',
-        'features', jsonb_agg(jsonb_build_object(
-            'type', b.geojson -> 'type',
-            'geometry', b.geojson -> 'geometry',
+        'features', json_agg(json_build_object(
+            'type', 'Feature',
+            'geometry', b.geojson -> 'geometries' -> 0,
             'properties', jsonb_build_object(
                 'name', b.name,
                 'osm', b.id_osm,
@@ -115,7 +193,7 @@ select jsonb_build_object(
                 'reg_istat_code', p.id_parent_istat,
                 'adm', b.id_adm) || f.downloads)))
   from boundaries b
-  join files_agg f using (istat)
+  left join files_agg f using (istat)
   join boundaries p
     on b.id_parent_istat = p.istat
  where b.id_adm = 8
@@ -128,7 +206,7 @@ mv limits_IT_municipalities{_topo,}.json
 
 # Generate provinces for each region
 
-(cat << EOF | psql -qAtX "$conn_str"
+(cat << EOF | $psql_custom
 select distinct p.istat
   from boundaries b
   join boundaries p
@@ -138,12 +216,12 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
-        select jsonb_build_object(
+    cat << EOF | $psql_custom | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
+        select json_build_object(
             'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
+            'features', json_agg(json_build_object(
+                'type', 'Feature',
+                'geometry', b.geojson -> 'geometries' -> 0,
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
@@ -152,7 +230,7 @@ do
                     'reg_istat_code', p.istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
-      join files_agg f using (istat)
+      left join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
      where p.istat = '$istat'
@@ -165,7 +243,7 @@ done
 
 # Generate municipalities for each province
 
-(cat << EOF | psql -qAtX "$conn_str"
+(cat << EOF | $psql_custom
 select distinct p.istat
   from boundaries b
   join boundaries p
@@ -175,12 +253,12 @@ EOF
 ) |
 while read istat
 do
-    cat << EOF | psql -qAtX "$conn_str" | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
-        select jsonb_build_object(
+    cat << EOF | $psql_custom | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
+        select json_build_object(
             'type', 'FeatureCollection',
-            'features', jsonb_agg(jsonb_build_object(
-                'type', b.geojson -> 'type',
-                'geometry', b.geojson -> 'geometry',
+            'features', json_agg(json_build_object(
+                'type', 'Feature',
+                'geometry', b.geojson -> 'geometries' -> 0,
                 'properties', jsonb_build_object(
                     'name', b.name,
                     'osm', b.id_osm,
@@ -190,7 +268,7 @@ do
                     'reg_istat_code', p.id_parent_istat,
                     'adm', b.id_adm) || f.downloads)))
       from boundaries b
-      join files_agg f using (istat)
+      left join files_agg f using (istat)
       join boundaries p
         on b.id_parent_istat = p.istat
      where b.id_adm = 8 and p.id_adm = 6
