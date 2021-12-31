@@ -29,7 +29,7 @@ async function fetchData(featureCollection, setState) {
 
   try {
     const values = res.result.map(data => ({
-      x: new Date(data.timestamp).getTime(),
+      x: data.timestamp,
       y: data.value
     }))
 
