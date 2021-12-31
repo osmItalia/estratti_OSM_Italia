@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 
 import {
   Chart as ChartJS,
@@ -6,12 +6,9 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import it from 'date-fns/locale/it';
 
 ChartJS.register(
   CategoryScale,
@@ -24,10 +21,6 @@ ChartJS.register(
 const options = {
   responsive: true,
 };
-
-
-
-let formatter = new Intl.NumberFormat('en', { notation: 'compact' });
 
 export default function Graph({ data }) {
   const values = data.map(d => d.y);
