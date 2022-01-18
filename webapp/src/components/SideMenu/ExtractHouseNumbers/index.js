@@ -18,7 +18,7 @@ async function fetchData(featureCollection, setState) {
   const start = sub(end, { years: 1 })
 
   const data = new FormData();
-  data.append('filter', 'addr:housenumber=*');
+  data.append('filter', 'addr:housenumber=* and type:node');
   data.append('time', `${format(start, 'yyyy-MM-dd')}/${format(end, 'yyyy-MM-dd')}/P1M`);
   data.append('bpolys', JSON.stringify(f));
 
