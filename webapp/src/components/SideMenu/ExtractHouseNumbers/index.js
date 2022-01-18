@@ -12,8 +12,17 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "./Graph";
 
 async function fetchData(featureCollection, setState) {
-
-  const f = pick(clone(featureCollection), ['features', 'type'])
+  let f = null;
+  if (featureCollection.type === 'Feature') {
+    f = {
+      type: 'FeatureCollection',
+      features: [
+        clone(featureCollection),
+      ]
+    }
+  } else if (featureCollection.type === 'FeatureCollection') {
+    f = pick(clone(featureCollection), ['features', 'type'])
+  }
   const end = sub(startOfMonth(new Date()), { months: 1 })
   const start = sub(end, { years: 1 })
 
