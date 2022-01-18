@@ -68,9 +68,26 @@ export default function ExtractHouseNumber({ selectedFeature }) {
   }
 
   const handleOpen = async () => {
+    let name = '';
+    let value = '';
+    const node = selectedFeature.properties;
+    if (node.reg_istat) {
+      name = 'Regione';
+      value = node.reg_istat;
+    }
+    if (node.prov_istat) {
+      name = 'Provincia';
+      value = node.prov_istat;
+    }
+    if (node.com_istat) {
+      name = 'Comune';
+      value = node.com_istat;
+    }
     trackEvent({
-      category: 'Breadcrumb',
+      category: 'HouseNumberStats',
       action: 'open',
+      name,
+      value,
     })
     setOpenModal(true);
     if (!state.data) {
@@ -80,10 +97,6 @@ export default function ExtractHouseNumber({ selectedFeature }) {
   };
 
   const handleClose = () => {
-    trackEvent({
-      category: 'Breadcrumb',
-      action: 'close',
-    })
     setOpenModal(false);
   };
 
