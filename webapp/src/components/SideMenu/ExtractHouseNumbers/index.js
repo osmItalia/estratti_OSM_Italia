@@ -112,6 +112,7 @@ export default function ExtractHouseNumber({ selectedFeature }) {
   return (
     <>
       <div className={styles.resultItem}>
+        <p>Analisi disponibili per {selectedFeature.properties.name}</p>
         <Button
           variant="contained"
           target="_blank"
@@ -124,7 +125,7 @@ export default function ExtractHouseNumber({ selectedFeature }) {
       </div>
       <Modal open={openModal} onClose={handleClose}>
         <div className={styles.modal}>
-          <h4>Numeri Civici</h4>
+          <h4>Andamento dei numeri civici {selectedFeature.properties.reg_istat ? 'in' : 'a' } {selectedFeature.properties.name} nell’ultimo anno</h4>
           {state.loading && <div className={styles.centerContent}><CircularProgress /></div>}
           <div>{state.data && <Graph data={state.data} />}</div>
           {state.error && <p>{state.error}</p>}
