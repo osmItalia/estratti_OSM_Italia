@@ -1,7 +1,6 @@
 #!/bin/bash -eu
 #
 
-WORK_DIR="/srv/estratti"
 COUNTRY_PBF="europe/italy-latest.osm.pbf"
 COUNTRY_STATE="europe/italy-updates/state.txt"
 

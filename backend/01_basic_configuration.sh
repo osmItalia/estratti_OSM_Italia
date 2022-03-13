@@ -2,7 +2,7 @@
 #
 
 mkdir -p $WORK_DIR
-pushd ~/estratti
+pushd $WORK_DIR
 mkdir -p {input/{osmand,pbf},output/{boundaries/{bbox/{comuni,province,regioni},poly/{comuni,province,regioni}},dati/{bbox/{comuni,province,regioni},poly/{comuni,province,regioni}},scripts}}
 pushd output/dati
 pushd bbox/comuni
