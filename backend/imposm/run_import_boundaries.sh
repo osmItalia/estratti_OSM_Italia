@@ -4,7 +4,8 @@ pushd $WORK_DIR/input/pbf
 wget http://download.geofabrik.de/europe/italy-latest.osm.pbf
 popd
 
-cat <<EOF > $PWD/config/estratti.json
+mkdir -p config
+cat <<EOF > config/estratti.json
 {
     "cachedir": "$SCRIPTS_DIR/imposm/cache/estratti",
     "connection": "postgis://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE",
