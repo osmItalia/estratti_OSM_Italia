@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import psycopg2
@@ -102,14 +102,14 @@ def create_script_poly():
         #print row
         (id_osm, name, istat, id_parent) = row
         if adm == 6:
-          if id_parent <> None:
+          if id_parent != None:
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent
             path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_poly.osm.pbf"'
             folder_osm = path_pbf
         elif adm == 8:
-          if id_parent <> None:
+          if id_parent != None:
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent
@@ -269,14 +269,14 @@ def create_script_bbox():
         #print row
         (id_osm, name, istat, id_parent) = row
         if adm == 6:
-          if id_parent <> None:
+          if id_parent != None:
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent
             path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_bbox.osm.pbf"'
             folder_osm = path_pbf
         elif adm == 8:
-          if id_parent <> None:
+          if id_parent != None:
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent

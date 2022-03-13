@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import psycopg2
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import time
 import datetime
-import urllib
-import urllib2
 import socket
 import os
 
@@ -30,39 +28,39 @@ def refresh_geometry (id_rel):
     'type':'submit'
     }
   headers = {'User-Agent': user_agent}
-	data = urllib.urlencode(values)
+  data = urllib.parse.urlencode(values)
 
-  req = urllib2.Request(url=url, data=data, headers=headers)
+  req = urllib.request.Request(url=url, data=data, headers=headers)
   try:
-    response = urllib2.urlopen(req) 
+    response = urllib.request.urlopen(req) 
     the_page = response.read()
     #print response.info()
     cur.execute("""UPDATE public.boundaries SET date=%s  WHERE id_osm=%s;""", (datetime.datetime.now().date(), id_osm,))
     conn.commit()
 
-  except urllib2.HTTPError, e:
-    print 'HTTP Error ERROR code => %s \n URL=> %s\n' % (e.code,url)
+  except urllib.error.HTTPError as e:
+    print('HTTP Error ERROR code => %s \n URL=> %s\n' % (e.code,url))
   pass
 	
 def get_wkt (id_osm):
-  params = urllib.urlencode({'id':id_osm,'params':0})
-  page = urllib.urlopen("http://polygons.openstreetmap.fr/get_wkt.py?%s" % params)
+  params = urllib.parse.urlencode({'id':id_osm,'params':0})
+  page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_wkt.py?%s" % params)
   time.sleep(1.0)
   #print page.read()
   cur.execute("""UPDATE public.boundaries SET geom=ST_Transform(ST_MULTI(ST_MakeValid(ST_GeomFromEWKT(%s))),3857) WHERE id_osm=%s;""", (page.read(), id_osm))
   conn.commit()
 
 def get_geojson (id_osm):
-  params = urllib.urlencode({'id':id_osm,'params':0})
-  page = urllib.urlopen("http://polygons.openstreetmap.fr/get_geojson.py?%s" % params)
+  params = urllib.parse.urlencode({'id':id_osm,'params':0})
+  page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_geojson.py?%s" % params)
   time.sleep(1.0)
   #print page.read()
   cur.execute("""UPDATE public.boundaries SET geojson=%s WHERE id_osm=%s;""", (page.read(), id_osm))
   conn.commit()
 
 def get_poly (id_osm):
-  params = urllib.urlencode({'id':id_osm,'params':0})
-  page = urllib.urlopen("http://polygons.openstreetmap.fr/get_poly.py?%s" % params)
+  params = urllib.parse.urlencode({'id':id_osm,'params':0})
+  page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_poly.py?%s" % params)
   time.sleep(1.0)
   #print page.read()
   cur.execute("""UPDATE public.boundaries SET poly=%s WHERE id_osm=%s;""", (page.read(), id_osm))
@@ -89,12 +87,12 @@ a_admincode = [2,4,6,8]
 #a_admincode = [2,4]
 #a_admincode = [8]
 for adm in a_admincode:
-  print adm
+  print(adm)
   cur.execute("""SELECT id, id_osm, istat FROM public.boundaries WHERE id_adm=%s AND flag=FALSE ORDER BY id_adm,istat;""", (adm,))
   rows = cur.fetchall()
   if len(rows) > 0:
     for row in rows: 
-      print row
+      print(row)
       (id,id_osm,istat) = row
       refresh_geometry (id_osm)
       get_wkt(id_osm)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import psycopg2
@@ -29,7 +29,7 @@ print ("Show me relations:")
 for row in rows:
   try:
     (id_parent,name) = check_id_provincia(row[0])
-    print(id_parent,name)
+    print((id_parent,name))
     print('')
     cur.execute("""UPDATE public.boundaries SET id_parent=%s WHERE id_osm=%s;""",(id_parent,row[0],))
     conn.commit()
