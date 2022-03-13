@@ -1,5 +1,4 @@
 #!/bin/bash -eu
-#
 
 mkdir -p $WORK_DIR
 pushd $WORK_DIR
@@ -24,7 +23,3 @@ pushd poly/regioni
 mkdir {geopackage,pbf}
 popd
 popd
-
-
-#
-

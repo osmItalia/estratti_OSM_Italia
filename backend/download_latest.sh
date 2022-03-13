@@ -1,5 +1,4 @@
 #!/bin/bash -eu
-#
 
 COUNTRY_PBF="europe/italy-latest.osm.pbf"
 COUNTRY_STATE="europe/italy-updates/state.txt"
@@ -7,10 +6,8 @@ COUNTRY_STATE="europe/italy-updates/state.txt"
 wget -O $WORK_DIR/input/pbf/$COUNTRY_PBF http://download.geofabrik.de/$COUNTRY_PBF
 wget -O $WORK_DIR/input/pbf/state.txt http://download.geofabrik.de/$COUNTRY_STATE
 
-
-
-cd $WORK_DIR/output/scripts;
-chmod +x *.sh;
+cd $WORK_DIR/output/scripts
+chmod +x *.sh
 
 ./regioni_poly.sh &> regioni_poly.log
 ./regioni_bbox.sh &> regioni_bbox.log
@@ -20,12 +17,8 @@ chmod +x *.sh;
 ./comuni_bbox.sh &> comuni_bbox.log
 
 # per estrarre in formato OSMAND
-cd $WORK_DIR/input/osmand;
+cd $WORK_DIR/input/osmand
 ./osmand-regioni.sh
-
-cd /srv/estratti/output/scripts;
-
-#
 
 cd /srv/estratti/output/scripts
 ./convert_regioni_poly.sh &> convert_regioni_poly.log
