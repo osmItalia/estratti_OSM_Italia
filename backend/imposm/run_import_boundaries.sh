@@ -15,9 +15,9 @@ cat <<EOF > $(pwd)/config/estratti.json
 EOF
 
 
-/usr/bin/imposm import -config $(pwd)/config/estratti.json --read $WORK_DIR/input/pbf/italy-latest.osm.pbf -overwritecache
-/usr/bin/imposm import -config $(pwd)/config/estratti.json -write -optimize
-/usr/bin/imposm import -config $(pwd)/config/estratti.json -deployproduction
+imposm import -config $(pwd)/config/estratti.json --read $WORK_DIR/input/pbf/italy-latest.osm.pbf -overwritecache
+imposm import -config $(pwd)/config/estratti.json -write -optimize
+imposm import -config $(pwd)/config/estratti.json -deployproduction
 
 
 
