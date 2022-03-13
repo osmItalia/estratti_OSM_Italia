@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 #
 
 WORK_DIR="/srv/estratti"

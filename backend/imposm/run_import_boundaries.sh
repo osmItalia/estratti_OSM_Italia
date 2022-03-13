@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 #
 
 pushd $WORK_DIR/input/pbf
