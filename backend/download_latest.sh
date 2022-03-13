@@ -4,9 +4,9 @@
 COUNTRY_PBF="europe/italy-latest.osm.pbf"
 COUNTRY_STATE="europe/italy-updates/state.txt"
 
-/usr/bin/wget -O $WORK_DIR/input/pbf/$COUNTRY_PBF http://download.geofabrik.de/$COUNTRY_PBF
+wget -O $WORK_DIR/input/pbf/$COUNTRY_PBF http://download.geofabrik.de/$COUNTRY_PBF
+wget -O $WORK_DIR/input/pbf/state.txt http://download.geofabrik.de/$COUNTRY_STATE
 
-/usr/bin/wget -O $WORK_DIR/input/pbf/state.txt http://download.geofabrik.de/$COUNTRY_STATE
 
 
 cd $WORK_DIR/output/scripts;
