@@ -1,0 +1,42 @@
+:local(.resultItem) {
+  margin: 0px 0px 0px 20px;
+  max-height: 20vh;
+}
+:local(.resultItem p) {
+  margin: 10px 0px 0px 10px;
+}
+:local(.button) {
+  margin: 10px !important;
+}
+
+.modal {
+  font-size: large;
+  top: 52%;
+  left: 51%;
+  transform: translate(-52%, -51%);
+  position: absolute;
+  width: 700px;
+  background-color: rgb(237, 237, 237);
+  border: 1px solid rgb(201, 201, 201);
+  padding: 16px;
+}
+.modal a {
+  color: var(--mainColor1);
+}
+.modal:focus {
+  outline: none;
+}
+
+.hint {
+  background: var(--mainColor1);
+  color: #fff;
+  padding: .3rem 1rem;
+  border-radius: 5px;
+}
+
+.centerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}

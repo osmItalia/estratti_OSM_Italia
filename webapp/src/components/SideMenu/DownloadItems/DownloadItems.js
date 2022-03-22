@@ -43,7 +43,7 @@ const DownloadItems = ({ selectedFeature }) => {
 
   return (
     <div className={styles.resultItem}>
-      <p>Estratti disponibili per {properties.name}</p>
+      <p>Formati disponibili per {properties.name}</p>
       {properties[".gpkg"] && (
         <ToolTipButton
           tooltip="OGC GeoPackage"
