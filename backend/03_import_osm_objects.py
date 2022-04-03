@@ -1,8 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import psycopg2
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import time
 import os
 
@@ -22,7 +22,7 @@ def check_record(id_adm):
   rows = cur.fetchall()
   if len(rows) > 0:
     for row in rows:
-      print row 
+      print(row) 
       (id_rel, name, istat, short_name, adm_level) = row
       cur.execute("""SELECT id_osm FROM public.boundaries WHERE id_osm=%s;""", (id_rel,))
       records = cur.fetchall()
@@ -30,14 +30,14 @@ def check_record(id_adm):
         cur.execute("""UPDATE public.boundaries SET flag=TRUE, istat=%s, short_name=left(%s,3), id_adm=%s WHERE id_osm=%s;""", (istat,short_name,adm_level,id_rel,))
         conn.commit()
       else:
-        print "Insert !!"
+        print("Insert !!")
         cur.execute("""INSERT INTO boundaries (id_osm, id_adm, istat, name, short_name) VALUES (%s,%s,%s,%s,left(%s,3))""", (id_rel, adm_level, istat, name, short_name))
         conn.commit()
 
 
 a_admincode = [2,4,6,8]
 for adm in a_admincode:
-  print adm
+  print(adm)
   check_record(adm)
 
 conn.close() 

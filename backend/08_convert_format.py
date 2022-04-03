@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-#
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import os
 
@@ -14,8 +14,8 @@ def crea_script (type,place):
   #print type,' - ',place
   folder_dati = folder_output + type + '/' + place + '/pbf/'
   file_script = file_script_base + place + '_' + type + '.sh'
-  print folder_dati
-  print file_script
+  print(folder_dati)
+  print(file_script)
   out_file = open(file_script, 'w')
   out_file.write('#!/bin/bash\n#\n\n')
 
@@ -87,6 +87,6 @@ for ty_item in type:
     #print '\t',pl_item
     crea_script(ty_item,pl_item)
 
-print "Finito !!\n"
+print("Finito !!\n")
 #
 
