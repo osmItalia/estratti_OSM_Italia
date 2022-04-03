@@ -1,25 +1,8 @@
 #!/bin/bash -eu
 
-mkdir -p $WORK_DIR
-pushd $WORK_DIR
-mkdir -p {input/{osmand,pbf},output/{boundaries/{bbox/{comuni,province,regioni},poly/{comuni,province,regioni}},dati/{bbox/{comuni,province,regioni},poly/{comuni,province,regioni}},scripts}}
-pushd output/dati
-pushd bbox/comuni
-mkdir {geopackage,pbf}
-popd
-pushd bbox/province
-mkdir {geopackage,pbf}
-popd
-pushd bbox/regioni
-mkdir {geopackage,pbf}
-popd
-pushd poly/comuni
-mkdir {geopackage,pbf}
-popd
-pushd poly/province
-mkdir {geopackage,pbf}
-popd
-pushd poly/regioni
-mkdir {geopackage,pbf}
-popd
-popd
+mkdir -p "$WORK_DIR"
+cd "$_"
+mkdir -p input/{osmand,pbf}
+mkdir -p output/scripts
+mkdir -p output/boundaries/{bbox,poly}/{comuni,province,regioni}
+mkdir -p output/dati/{bbox,poly}/{comuni,province,regioni}/{geopackage,pbf}
