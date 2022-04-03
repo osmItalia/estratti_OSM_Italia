@@ -1,7 +1,7 @@
 -- Name: boundaries; Type: TABLE; Schema: public; Owner: OSM; Tablespace: 
 --
 
-CREATE TABLE public.boundaries (
+CREATE TABLE IF NOT EXISTS public.boundaries (
 	id serial,
 	date date,
 	flag boolean DEFAULT FALSE,
@@ -19,5 +19,5 @@ CREATE TABLE public.boundaries (
 
 ALTER TABLE public.boundaries OWNER TO "osm";
 
-CREATE UNIQUE INDEX boundaries_id_osm_idx ON boundaries (id_osm);
+CREATE UNIQUE INDEX IF NOT EXISTS boundaries_id_osm_idx ON boundaries (id_osm);
 
