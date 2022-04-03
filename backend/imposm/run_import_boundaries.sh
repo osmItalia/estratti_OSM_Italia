@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 pushd $WORK_DIR/input/pbf
-wget http://download.geofabrik.de/europe/italy-latest.osm.pbf
+wget -N http://download.geofabrik.de/europe/italy-latest.osm.pbf
 popd
 
 mkdir -p config
