@@ -20,7 +20,9 @@ apt-get install \
     `# estratti (imposm)` \
     golang libgeos-dev libleveldb-dev \
     `# OsmAndMapCreator` \
-    openjdk-17-jre-headless
+    openjdk-17-jre-headless \
+    `# download_latest.sh` \
+    gdal-bin
 ```
 
 ### Imposm
@@ -72,14 +74,14 @@ mkdir batch-files
 cat << EOF > batch-files/regioni-batch.xml
 <?xml version="1.0" encoding="utf-8"?>
 <batch_process>
-        <process_attributes mapZooms="" renderingTypesFile="" 
+        <process_attributes mapZooms="" renderingTypesFile=""
                 zoomWaySmoothness="" osmDbDialect="sqlite" mapDbDialect="sqlite" />
-        <process directory_for_osm_files="/srv/estratti/output/dati/poly/regioni/pbf" 
-                directory_for_index_files="/srv/estratti/output/dati/poly/regioni/obf" 
-                directory_for_generation="/srv/input/osmand/tmp"
-                skipExistingIndexesAt="/srv/input/osmand/tmp" 
-                indexPOI="true" indexRouting="true" indexMap="true"     
-                indexTransport="true" indexAddress="true"/>             
+        <process directory_for_osm_files="$WORK_DIR/output/dati/poly/regioni/pbf"
+                directory_for_index_files="$WORK_DIR/output/dati/poly/regioni/obf"
+                directory_for_generation="$WORK_DIR/input/osmand/tmp"
+                skipExistingIndexesAt="$WORK_DIR/input/osmand/tmp"
+                indexPOI="true" indexRouting="true" indexMap="true"
+                indexTransport="true" indexAddress="true"/>
 </batch_process>
 EOF
 cd -
@@ -97,6 +99,8 @@ find "$WORK_DIR" -type f -name "*.sh" -exec chmod +x "{}" \;
 mkdir -p "$WORK_DIR"/input/pbf/europe/
 ./download_latest.sh
 ```
+
+Note: it looks like there is a circular dependency between `download_latest.sh` and `08_convert_format.py`.
 
 ### Web
 

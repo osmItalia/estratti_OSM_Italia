@@ -21,7 +21,7 @@ chmod +x *.sh
 cd $WORK_DIR/input/osmand
 ./osmand-regioni.sh
 
-cd /srv/estratti/output/scripts
+cd $WORK_DIR/output/scripts
 ./convert_regioni_poly.sh
 ./convert_regioni_bbox.sh
 ./convert_province_poly.sh
