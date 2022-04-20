@@ -85,6 +85,8 @@ cat << EOF > batch-files/regioni-batch.xml
 </batch_process>
 EOF
 cd -
+mkdir -p "$WORK_DIR"/input/osmand/tmp
+mkdir -p "$WORK_DIR"/output/dati/poly/regioni/{pbf,obf}
 ```
 
 #### Run
