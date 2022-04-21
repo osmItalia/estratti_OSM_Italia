@@ -20,7 +20,7 @@ apt-get install \
     `# estratti (imposm)` \
     golang libgeos-dev libleveldb-dev \
     `# OsmAndMapCreator` \
-    openjdk-17-jre-headless \
+    openjdk-11-jre-headless \
     `# download_latest.sh` \
     gdal-bin
 ```
