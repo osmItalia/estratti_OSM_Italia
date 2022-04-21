@@ -10,6 +10,7 @@ wget -O "$WORK_DIR/input/pbf/state.txt" "https://download.geofabrik.de/$COUNTRY_
 cd "$WORK_DIR/output/scripts"
 chmod +x *.sh
 
+# estrazione italy-latest.pbf -> ${ente}.pbf
 bash -eu ./regioni_poly.sh
 bash -eu ./province_poly.sh
 bash -eu ./comuni_poly.sh
@@ -22,6 +23,7 @@ bash -eu ./comuni_poly.sh
 cd "$WORK_DIR/input/osmand"
 bash -eu ./osmand-regioni.sh
 
+# conversione pbf -> gpkg
 cd "$WORK_DIR/output/scripts"
 bash -eu ./convert_regioni_poly.sh
 bash -eu ./convert_province_poly.sh
