@@ -67,7 +67,8 @@ wget https://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip
 unzip OsmAndMapCreator-main
 rm OsmAndMapCreator-main.zip
 cat << EOF > osmand-regioni.sh
-java -Djava.util.logging.config.file=logging.properties -Xms64M -Xmx12G -cp "./OsmAndMapCreator.jar:lib/OsmAnd-core.jar:./lib/*.jar" "net.osmand.util.IndexBatchCreator" batch-files/regioni-batch.xml
+#!/bin/bash
+exec java --add-opens java.base/java.lang=ALL-UNNAMED -Djava.util.logging.config.file=logging.properties -Xms64M -Xmx12G -cp "./OsmAndMapCreator.jar:lib/OsmAnd-core.jar:./lib/*.jar" "net.osmand.util.IndexBatchCreator" batch-files/regioni-batch.xml
 EOF
 chmod +x osmand-regioni.sh
 mkdir batch-files
