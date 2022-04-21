@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-pushd $WORK_DIR/input/pbf
+pushd "$WORK_DIR"/input/pbf
 wget -N http://download.geofabrik.de/europe/italy-latest.osm.pbf
 popd
 
@@ -13,6 +13,6 @@ cat <<EOF > config/estratti.json
 }
 EOF
 
-imposm import -config $PWD/config/estratti.json --read $WORK_DIR/input/pbf/italy-latest.osm.pbf -overwritecache
-imposm import -config $PWD/config/estratti.json -write -optimize
-imposm import -config $PWD/config/estratti.json -deployproduction
+imposm import -config "$PWD"/config/estratti.json --read "$WORK_DIR"/input/pbf/italy-latest.osm.pbf -overwritecache
+imposm import -config "$PWD"/config/estratti.json -write -optimize
+imposm import -config "$PWD"/config/estratti.json -deployproduction
