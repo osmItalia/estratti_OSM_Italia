@@ -107,8 +107,6 @@ mkdir -p "$WORK_DIR"/input/pbf/europe/
 ./download_latest.sh
 ```
 
-Note: it looks like there is a circular dependency between `download_latest.sh` and `08_convert_format.py`.
-
 ### Web
 
 ```bash
