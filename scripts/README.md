@@ -10,12 +10,13 @@ npm install n -g
 export PATH="/usr/local/bin/:$PATH"
 ```
 
-## mapshaper
+## mapshaper and topojson
 
-Install mapshaper:
+Install mapshaper and topgjson:
 
 ```
 npm install mapshaper -g
+npm install topojson -g
 ```
 
 ## poly2geojson
