@@ -107,6 +107,10 @@ mkdir -p "$WORK_DIR"/input/pbf/europe/
 ./download_latest.sh
 ```
 
+#### gen-topojson.sh
+
+Follow `scripts/README.md`.
+
 ### Web
 
 ```bash
