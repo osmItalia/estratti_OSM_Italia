@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 conn_str="postgres://osm:osm@127.0.0.1/osm"
-basedir="/srv/estratti/output"
+basedir="$WORK_DIR/output"
 
 psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
 
@@ -14,7 +14,7 @@ psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
 cd "$basedir"
 
 find 'boundaries/poly' -name '[0-9]*_*.poly' -type f |
-    xargs -L1 -I% -d '\n' sh -c \
+    xargs -I% -d '\n' sh -c \
     'poly2geojson < "%" > $(dirname "%")/$(basename "%" .poly).geojson'
 
 # Prepare tables
