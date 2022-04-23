@@ -66,7 +66,7 @@ def get_poly (id_osm):
 def check_id_regione (id_osm):
   #print(id_osm)
   cur.execute("""SELECT a.id_osm, a.name FROM public.boundaries AS a 
-    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_Buffer(b.geom,-1000))
+    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_Buffer(b.geom,-500))
     WHERE a.id_adm=4 AND b.id_osm="""+str(id_osm)+""";""")
   #print cur.fetchone()
   return cur.fetchone()

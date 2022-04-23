@@ -16,7 +16,7 @@ cur = conn.cursor()
 def check_id_regione (id_rel):
   print(id_rel)
   cur.execute("""SELECT a.id_osm, a.name FROM public.boundaries AS a 
-    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_Buffer(b.geom,-7500))
+    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_PointOnSurface(b.geom))
     WHERE a.id_adm=4 AND b.id_osm="""+str(id_rel)+""";""")
   #print cur.fetchone()
   return cur.fetchone()

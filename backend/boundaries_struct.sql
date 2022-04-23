@@ -21,3 +21,4 @@ ALTER TABLE public.boundaries OWNER TO "osm";
 
 CREATE UNIQUE INDEX IF NOT EXISTS boundaries_id_osm_idx ON boundaries (id_osm);
 
+CREATE INDEX IF NOT EXISTS boundaries_geom_idx ON boundaries USING gist (geom);
