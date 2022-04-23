@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-import codecs
 import os
 
 HOST = os.getenv('PGHOST')
@@ -91,8 +90,7 @@ def create_script_poly():
       string_gj = folder + "comuni_geojson.sh"
       folder_poly_loc = folder_poly + "comuni/"
       folder_data_loc = folder_data + "comuni/pbf/"
-    #file_out = open(string, 'w')
-    file_out = codecs.open(string, 'w', encoding='utf8')
+    file_out = open(string, 'w')
     file_out.write('#!/bin/bash\n'+'#\n\n')
 
     cur.execute("""SELECT id_osm, name, istat, id_parent FROM public.boundaries WHERE id_adm=%s AND flag=TRUE AND poly<>'';""",(adm,))
@@ -128,7 +126,7 @@ def create_script_poly():
         file_out.write(string)
         if adm >= 4:
           string = folder_poly_loc + istat + "_" + name.replace('/','-') + "_poly.json"
-          out_file2 = codecs.open(string, 'w', encoding='utf8')
+          out_file2 = open(string, 'w')
           out_file2.write('{\n\t"extracts": [\n\t{\n')
           string = folder_data_loc + istat + "_" + name.replace('/','-') + '_poly.osm.pbf'
           out_file2.write('\t\t\t"output": "'+ string +'",\n')
@@ -258,8 +256,7 @@ def create_script_bbox():
       path_data = "../dati/bbox/comuni/pbf/"
       path_data_par = "../dati/bbox/province/pbf/"
       string = folder + "comuni_bbox.sh"
-    #file_out = open(string, 'w')
-    file_out = codecs.open(string, 'w', encoding='utf8')
+    file_out = open(string, 'w')
     file_out.write('#!/bin/bash\n'+'#\n\n')
 
     cur.execute("""SELECT id_osm, name, istat, id_parent FROM public.boundaries WHERE id_adm=%s AND flag=TRUE AND poly<>'';""",(adm,))
