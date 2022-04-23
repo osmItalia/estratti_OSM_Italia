@@ -118,7 +118,7 @@ cp nginx/default.conf /etc/nginx/sites-enabled/default
 systemctl start nginx
 systemctl enable nginx
 
-cd frontend
+cd webapp
 npm install
 npm run build
 ```
