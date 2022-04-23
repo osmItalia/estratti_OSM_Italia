@@ -27,14 +27,12 @@ rows = cur.fetchall()
 
 print ("Show me relations:")
 for row in rows:
-  try:
+    print(row[1])
     (id_parent,name) = check_id_provincia(row[0])
     print((id_parent,name))
     print('')
     cur.execute("""UPDATE public.boundaries SET id_parent=%s WHERE id_osm=%s;""",(id_parent,row[0],))
     conn.commit()
-  except:
-    pass
 
 conn.commit()
 conn.close() 

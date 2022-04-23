@@ -27,7 +27,7 @@ rows = cur.fetchall()
 
 print ("Show me relations:")
 for row in rows:
-  #print row
+  print(row[1])
   (id_parent,name) = check_id_regione(row[0])
   #print check_id_regione(row[0])
   print(id_parent)
