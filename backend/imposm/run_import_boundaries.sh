@@ -7,9 +7,9 @@ popd
 mkdir -p config
 cat <<EOF > config/estratti.json
 {
-    "cachedir": "$SCRIPTS_DIR/imposm/cache/estratti",
+    "cachedir": "$PWD/imposm/cache/estratti",
     "connection": "postgis://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE",
-    "mapping": "$SCRIPTS_DIR/imposm/mapping/estratti.yml"
+    "mapping": "$PWD/imposm/mapping/estratti.yml"
 }
 EOF
 
