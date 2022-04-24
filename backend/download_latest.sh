@@ -1,5 +1,9 @@
 #!/bin/bash -eu
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "$SCRIPT_DIR/estratti_osm-it.env"
+
 COUNTRY_PBF="europe/italy-latest.osm.pbf"
 COUNTRY_STATE="europe/italy-updates/state.txt"
 
