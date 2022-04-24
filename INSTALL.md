@@ -122,6 +122,8 @@ Follow `scripts/README.md`.
 
 ### Web
 
+Modify `default` accordingly to your needs.
+
 ```bash
 cp nginx/default.conf /etc/nginx/sites-enabled/default
 systemctl start nginx
