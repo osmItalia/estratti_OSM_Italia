@@ -107,6 +107,15 @@ mkdir -p "$WORK_DIR"/input/pbf/europe/
 ./download_latest.sh
 ```
 
+#### Workaround Sardegna
+
+Should be executed between step 3 and 4 and it relies on some files that have been previously saved on the server.
+
+```bash
+psql -c "\copy boundaries FROM '/srv/Sud Sardegna/sudsardegna.tsv' WITH NULL AS ''";
+cp "/srv/Sud Sardegna/111_Sud Sardegna.poly" "$WORK_DIR"/output/boundaries/poly/province/
+```
+
 #### gen-topojson.sh
 
 Follow `scripts/README.md`.
