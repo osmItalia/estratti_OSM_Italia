@@ -134,3 +134,9 @@ npm install
 npm run build
 ```
 
+### crontab (example)
+
+```
+0 2 * * * /srv/estratti_OSM_Italia/backend/download_latest.sh
+```
+
