@@ -72,6 +72,10 @@ insert into boundaries (
 update boundaries
    set id_parent_istat = '007'
  where id_adm = 8 and id_parent_istat = '02';
+-- Sardegna
+update boundaries
+   set id_parent_istat = '111'
+ where id_adm = 8 and id_parent_istat = '20';
 EOF
 
 # Populate the files table
