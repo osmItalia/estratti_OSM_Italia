@@ -85,7 +85,7 @@ do
     echo "$istat;$extension;\"$path\""
     if [ "$istat" = "02" ] # Valle d'Aosta
     then
-        echo "032;$extension;\"$path\""
+        echo "007;$extension;\"$path\""
     fi
 done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
