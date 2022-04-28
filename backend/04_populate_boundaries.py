@@ -11,6 +11,8 @@ import os
 timeout = 20
 socket.setdefaulttimeout(timeout)
 
+WAIT=.1
+
 HOST = os.getenv('PGHOST')
 DB = os.getenv('PGDATABASE')
 USER = os.getenv('PGUSER')
@@ -23,14 +25,9 @@ cur = conn.cursor()
 def refresh_geometry (id_rel):
   url = 'http://polygons.openstreetmap.fr/?id='+str(id_rel)
   user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
-  values = {  'name':'refresh',
-    'refresh':'Refresh original geometry',
-    'type':'submit'
-    }
   headers = {'User-Agent': user_agent}
-  data = urllib.parse.urlencode(values)
 
-  req = urllib.request.Request(url=url, data=data, headers=headers)
+  req = urllib.request.Request(url=url, headers=headers)
   try:
     response = urllib.request.urlopen(req) 
     the_page = response.read()
@@ -45,25 +42,25 @@ def refresh_geometry (id_rel):
 def get_wkt (id_osm):
   params = urllib.parse.urlencode({'id':id_osm,'params':0})
   page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_wkt.py?%s" % params)
-  time.sleep(1.0)
+  time.sleep(WAIT)
   #print page.read()
-  cur.execute("""UPDATE public.boundaries SET geom=ST_Transform(ST_MULTI(ST_MakeValid(ST_GeomFromEWKT(%s))),3857) WHERE id_osm=%s;""", (page.read(), id_osm))
+  cur.execute("""UPDATE public.boundaries SET geom=ST_Transform(ST_MULTI(ST_MakeValid(ST_GeomFromEWKT(%s))),3857) WHERE id_osm=%s;""", (page.read().decode('utf-8'), id_osm))
   conn.commit()
 
 def get_geojson (id_osm):
   params = urllib.parse.urlencode({'id':id_osm,'params':0})
   page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_geojson.py?%s" % params)
-  time.sleep(1.0)
+  time.sleep(WAIT)
   #print page.read()
-  cur.execute("""UPDATE public.boundaries SET geojson=%s WHERE id_osm=%s;""", (page.read(), id_osm))
+  cur.execute("""UPDATE public.boundaries SET geojson=%s WHERE id_osm=%s;""", (page.read().decode('utf-8'), id_osm))
   conn.commit()
 
 def get_poly (id_osm):
   params = urllib.parse.urlencode({'id':id_osm,'params':0})
   page = urllib.request.urlopen("http://polygons.openstreetmap.fr/get_poly.py?%s" % params)
-  time.sleep(1.0)
+  time.sleep(WAIT)
   #print page.read()
-  cur.execute("""UPDATE public.boundaries SET poly=%s WHERE id_osm=%s;""", (page.read(), id_osm))
+  cur.execute("""UPDATE public.boundaries SET poly=%s WHERE id_osm=%s;""", (page.read().decode('utf-8'), id_osm))
   conn.commit()
 
 def check_id_regione (id_osm):

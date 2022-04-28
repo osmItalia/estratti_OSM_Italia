@@ -3,7 +3,6 @@
 set -exuo pipefail
 
 conn_str="postgres://osm:osm@127.0.0.1/osm"
-basedir="/srv/estratti/output"
 
 psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
 
@@ -11,10 +10,10 @@ psql_custom="psql -qAtX $conn_str -v ON_ERROR_STOP=1 -1"
 
 # Convert poly files to geojson
 
-cd "$basedir"
+cd "$WORK_DIR/output"
 
 find 'boundaries/poly' -name '[0-9]*_*.poly' -type f |
-    xargs -L1 -I% -d '\n' sh -c \
+    xargs -I% -d '\n' sh -c \
     'poly2geojson < "%" > $(dirname "%")/$(basename "%" .poly).geojson'
 
 # Prepare tables
@@ -73,28 +72,10 @@ insert into boundaries (
 update boundaries
    set id_parent_istat = '007'
  where id_adm = 8 and id_parent_istat = '02';
--- Friuli Venezia Giulia
-delete from boundaries
- where istat = '032';
-insert into boundaries (
-    id_adm,
-    id_osm,
-    name,
-    istat,
-    id_parent_istat,
-    geojson
-  )
-  (select 6,
-          NULL,
-          name,
-          '032',
-          istat,
-          geojson
-     from boundaries
-    where istat = '06' limit 1);
+-- Sardegna
 update boundaries
-   set id_parent_istat = '032'
- where id_adm = 8 and id_parent_istat = '06';
+   set id_parent_istat = '111'
+ where id_adm = 8 and id_parent_istat = '20';
 EOF
 
 # Populate the files table
@@ -109,15 +90,12 @@ do
     if [ "$istat" = "02" ] # Valle d'Aosta
     then
         echo "007;$extension;\"$path\""
-    elif [ "$istat" = "06" ] # Friuli-Venezia-Giulia
-    then
-        echo "032;$extension;\"$path\""
     fi
 done | $psql_custom -c "\copy files FROM STDIN WITH CSV DELIMITER ';'"
 
 $psql_custom -c "create materialized view files_agg as (select istat, jsonb_object_agg(extension, path) as downloads from files where istat <> '' group by istat);"
 
-cd -
+cd "$WORK_DIR/output/boundaries/poly"
 
 ### Generate the limits_°.json files
 
