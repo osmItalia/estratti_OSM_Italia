@@ -16,7 +16,7 @@ cur = conn.cursor()
 def check_id_provincia (id_rel):
   print(id_rel)
   cur.execute("""SELECT a.id_osm, a.name FROM public.boundaries AS a
-    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_Buffer(b.geom,-750))
+    JOIN public.boundaries AS b ON ST_Contains(a.geom, ST_PointOnSurface(b.geom))
     WHERE (a.id_adm=6 OR a.id_adm=4) AND b.id_osm="""+str(id_rel)+""";""")
   #print cur.fetchone()
   return cur.fetchone()
@@ -27,14 +27,12 @@ rows = cur.fetchall()
 
 print ("Show me relations:")
 for row in rows:
-  try:
+    print(row[1])
     (id_parent,name) = check_id_provincia(row[0])
     print((id_parent,name))
     print('')
     cur.execute("""UPDATE public.boundaries SET id_parent=%s WHERE id_osm=%s;""",(id_parent,row[0],))
     conn.commit()
-  except:
-    pass
 
 conn.commit()
 conn.close() 

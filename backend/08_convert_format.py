@@ -5,7 +5,7 @@ import os
 
 WORK_DIR = os.environ.get('WORK_DIR')
 
-type = ['poly','bbox']
+type = ['poly']
 place = ['regioni','province','comuni']
 folder_output = "%s/output/dati/" % (WORK_DIR)
 file_script_base = "%s/output/scripts/convert_" % (WORK_DIR)

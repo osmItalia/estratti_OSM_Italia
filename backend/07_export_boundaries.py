@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-import codecs
 import os
 
 HOST = os.getenv('PGHOST')
@@ -36,7 +35,7 @@ def create_poly():
     if len(rows) > 0:
       for row in rows: 
         (id_osm, name, istat, poly) = row
-        string = folder + istat + "_" + name.decode('utf8').replace('/','-') + ".poly"
+        string = folder + istat + "_" + name.replace('/','-') + ".poly"
         out_file = open(string, 'w')
         #print id_osm, name, istat
         out_file.write(poly)
@@ -46,7 +45,7 @@ def create_poly():
     #if len(rows) > 0:
     #  for row in rows: 
     #    (id_osm, name, istat, geojson) = row
-    #    string = folder + istat + "_" + name.decode('utf8').replace('/','-') + ".geojson"
+    #    string = folder + istat + "_" + name.replace('/','-') + ".geojson"
     #    out_file = open(string, 'w')
     #    #print id_osm, name, istat
     #    out_file.write(geojson)
@@ -91,8 +90,7 @@ def create_script_poly():
       string_gj = folder + "comuni_geojson.sh"
       folder_poly_loc = folder_poly + "comuni/"
       folder_data_loc = folder_data + "comuni/pbf/"
-    #file_out = open(string, 'w')
-    file_out = codecs.open(string, 'w', encoding='utf8')
+    file_out = open(string, 'w')
     file_out.write('#!/bin/bash\n'+'#\n\n')
 
     cur.execute("""SELECT id_osm, name, istat, id_parent FROM public.boundaries WHERE id_adm=%s AND flag=TRUE AND poly<>'';""",(adm,))
@@ -106,7 +104,7 @@ def create_script_poly():
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent
-            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_poly.osm.pbf"'
+            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_poly.osm.pbf"'
             folder_osm = path_pbf
         elif adm == 8:
           if id_parent != None:
@@ -117,24 +115,24 @@ def create_script_poly():
               path_data_par = "../dati/poly/regioni/pbf/"
             elif id_adm_par == 6:
               path_data_par = "../dati/poly/province/pbf/"
-            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_poly.osm.pbf"'
+            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_poly.osm.pbf"'
             folder_osm = path_pbf
-        #string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
-        string = 'osmium extract --config="' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.json" --overwrite -f pbf -o "' + path_data + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
-        string = path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.poly'
+        #string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
+        string = 'osmium extract --config="' + path_poly + istat + "_" + name.replace('/','-') + '.json" --overwrite -f pbf -o "' + path_data + istat + "_" + name.replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
+        string = path_poly + istat + "_" + name.replace('/','-') + '.poly'
         file_out.write('echo "' + string + '"\n')
-        string = 'osmium extract --config="' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.json" --overwrite ' + folder_osm + '\n'
+        string = 'osmium extract --config="' + path_poly + istat + "_" + name.replace('/','-') + '_poly.json" --overwrite ' + folder_osm + '\n'
         #print string
         file_out.write(string)
         if adm >= 4:
-          string = folder_poly_loc + istat + "_" + name.decode('utf8').replace('/','-') + "_poly.json"
-          out_file2 = codecs.open(string, 'w', encoding='utf8')
+          string = folder_poly_loc + istat + "_" + name.replace('/','-') + "_poly.json"
+          out_file2 = open(string, 'w')
           out_file2.write('{\n\t"extracts": [\n\t{\n')
-          string = folder_data_loc + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf'
+          string = folder_data_loc + istat + "_" + name.replace('/','-') + '_poly.osm.pbf'
           out_file2.write('\t\t\t"output": "'+ string +'",\n')
           out_file2.write('\t\t\t"output_format": "pbf",\n')
           out_file2.write('\t\t\t"multipolygon": {\n')
-          str_poly = folder_poly_loc + istat + "_" + name.decode('utf8').replace('/','-') + ".poly"
+          str_poly = folder_poly_loc + istat + "_" + name.replace('/','-') + ".poly"
           string2 = '\t\t\t\t"file_name": "' + str_poly + '",\n'
           out_file2.write(string2)
           out_file2.write('\t\t\t\t"file_type": "poly"\n\t\t\t}\n')
@@ -159,7 +157,7 @@ def create_script_poly():
 #            cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
 #            parent  = cur.fetchone()
 #            (name_par, istat_par, id_adm_par) = parent
-#            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_poly.osm.pbf"'
+#            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_poly.osm.pbf"'
 #            folder_osm = path_pbf
 #        elif adm == 8:
 #          if id_parent <> None:
@@ -170,24 +168,24 @@ def create_script_poly():
 #              path_data_par = "../dati/poly/regioni/pbf/"
 #            elif id_adm_par == 6:
 #              path_data_par = "../dati/poly/province/pbf/"
-#            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_poly.osm.pbf"'
+#            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_poly.osm.pbf"'
 #            folder_osm = path_pbf
-#        #string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
-#        #string = 'osmium extract --config="' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.json" --overwrite -f pbf -o "' + path_data + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
-#        string = path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.poly'
+#        #string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
+#        #string = 'osmium extract --config="' + path_poly + istat + "_" + name.replace('/','-') + '.json" --overwrite -f pbf -o "' + path_data + istat + "_" + name.replace('/','-') + '_poly.osm.pbf" ' + folder_osm + '\n'
+#        string = path_poly + istat + "_" + name.replace('/','-') + '.poly'
 #        file_out.write('echo "' + string + '"\n')
-#        string = 'osmium extract --config="' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '_geojson.json" --overwrite ' + folder_osm + '\n'
+#        string = 'osmium extract --config="' + path_poly + istat + "_" + name.replace('/','-') + '_geojson.json" --overwrite ' + folder_osm + '\n'
 #        #print string
 #        file_out.write(string)
 #        if adm >= 4:
-#          string = folder_poly_loc + istat + "_" + name.decode('utf8').replace('/','-') + "_geojson.json"
+#          string = folder_poly_loc + istat + "_" + name.replace('/','-') + "_geojson.json"
 #          out_file2 = codecs.open(string, 'w', encoding='utf8')
 #          out_file2.write('{\n\t"extracts": [\n\t{\n')
-#          string = folder_data_loc + istat + "_" + name.decode('utf8').replace('/','-') + '_poly.osm.pbf'
+#          string = folder_data_loc + istat + "_" + name.replace('/','-') + '_poly.osm.pbf'
 #          out_file2.write('\t\t\t"output": "'+ string +'",\n')
 #          out_file2.write('\t\t\t"output_format": "pbf",\n')
 #          out_file2.write('\t\t\t"multipolygon": {\n')
-#          str_poly = folder_poly_loc + istat + "_" + name.decode('utf8').replace('/','-') + ".geojson"
+#          str_poly = folder_poly_loc + istat + "_" + name.replace('/','-') + ".geojson"
 #          string2 = '\t\t\t\t"file_name": "' + str_poly + '",\n'
 #          out_file2.write(string2)
 #          out_file2.write('\t\t\t\t"file_type": "geojson"\n\t\t\t}\n')
@@ -218,7 +216,7 @@ def create_bbox():
     if len(rows) > 0:
       for row in rows: 
         (id_osm, name, istat, XMax, XMin, YMax, YMin) = row
-        string = folder + istat + "_" + name.decode('utf8').replace('/','-') + ".poly"
+        string = folder + istat + "_" + name.replace('/','-') + ".poly"
         out_file = open(string, 'w')
         #print id_osm, name, istat
         out_file.write('poligon\n')
@@ -258,8 +256,7 @@ def create_script_bbox():
       path_data = "../dati/bbox/comuni/pbf/"
       path_data_par = "../dati/bbox/province/pbf/"
       string = folder + "comuni_bbox.sh"
-    #file_out = open(string, 'w')
-    file_out = codecs.open(string, 'w', encoding='utf8')
+    file_out = open(string, 'w')
     file_out.write('#!/bin/bash\n'+'#\n\n')
 
     cur.execute("""SELECT id_osm, name, istat, id_parent FROM public.boundaries WHERE id_adm=%s AND flag=TRUE AND poly<>'';""",(adm,))
@@ -273,7 +270,7 @@ def create_script_bbox():
             cur.execute("""SELECT name, istat, id_adm FROM public.boundaries WHERE id_osm=%s;""",(id_parent,))
             parent  = cur.fetchone()
             (name_par, istat_par, id_adm_par) = parent
-            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_bbox.osm.pbf"'
+            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_bbox.osm.pbf"'
             folder_osm = path_pbf
         elif adm == 8:
           if id_parent != None:
@@ -284,9 +281,9 @@ def create_script_bbox():
               path_data_par = "../dati/bbox/regioni/pbf/"
             elif id_adm_par == 6:
               path_data_par = "../dati/bbox/province/pbf/"
-            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.decode('utf8').replace('/','-') + '_bbox.osm.pbf"'
+            path_pbf = '"' + path_data_par + istat_par + "_" + name_par.replace('/','-') + '_bbox.osm.pbf"'
             folder_osm = path_pbf
-        string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.decode('utf8').replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.decode('utf8').replace('/','-') + '_bbox.osm.pbf" ' + folder_osm + '\n'
+        string = 'osmium extract --polygon "' + path_poly + istat + "_" + name.replace('/','-') + '.poly" --overwrite -f pbf -o "' + path_data + istat + "_" + name.replace('/','-') + '_bbox.osm.pbf" ' + folder_osm + '\n'
         #print string
         file_out.write(string)
 

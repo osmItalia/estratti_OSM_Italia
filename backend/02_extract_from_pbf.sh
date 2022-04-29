@@ -1,18 +1,5 @@
-#!/bin/bash
-#
+#!/bin/bash -eu
 
-#!/bin/bash
-#
-
-pushd $SCRIPTS_DIR/imposm
-
+psql -1 -v "ON_ERROR_STOP=1" -f boundaries_struct.sql
+cd imposm
 ./run_import_boundaries.sh
-
-popd
-
-psql < boundaries_struct.sql
-
-
-
-#
-

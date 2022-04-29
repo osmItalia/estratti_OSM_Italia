@@ -1,36 +1,38 @@
-#!/bin/bash
-#
+#!/bin/bash -eu
 
-WORK_DIR="/srv/estratti"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "$SCRIPT_DIR/estratti_osm-it.env"
+
 COUNTRY_PBF="europe/italy-latest.osm.pbf"
 COUNTRY_STATE="europe/italy-updates/state.txt"
 
-/usr/bin/wget -O $WORK_DIR/input/pbf/$COUNTRY_PBF http://download.geofabrik.de/$COUNTRY_PBF
+cd "$WORK_DIR/input/pbf/"
+wget -N "https://download.geofabrik.de/$COUNTRY_PBF"
+wget -O "$WORK_DIR/input/pbf/state.txt" "https://download.geofabrik.de/$COUNTRY_STATE"
 
-/usr/bin/wget -O $WORK_DIR/input/pbf/state.txt http://download.geofabrik.de/$COUNTRY_STATE
+cd "$WORK_DIR/output/scripts"
+chmod +x *.sh
 
+# estrazione italy-latest.pbf -> ${ente}.pbf
+bash -eu ./regioni_poly.sh
+bash -eu ./province_poly.sh
+bash -eu ./comuni_poly.sh
 
-cd $WORK_DIR/output/scripts;
-chmod +x *.sh;
-
-nohup ./regioni_poly.sh > regioni_poly.log;
-nohup ./regioni_bbox.sh > regioni_bbox.log;
-nohup ./province_poly.sh > province_poly.log;
-nohup ./province_bbox.sh > province_bbox.log;
-nohup ./comuni_poly.sh > comuni_poly.log;
-nohup ./comuni_bbox.sh > comuni_bbox.log;
+#bash -eu ./regioni_bbox.sh
+#bash -eu ./province_bbox.sh
+#bash -eu ./comuni_bbox.sh
 
 # per estrarre in formato OSMAND
-cd $WORK_DIR/input/osmand;
-./osmand-regioni.sh
+cd "$WORK_DIR/input/osmand"
+bash -eu ./osmand-regioni.sh
 
-cd /srv/estratti/output/scripts;
-nohup ./convert_regioni_poly.sh > convert_regioni_poly.log;
-nohup ./convert_regioni_bbox.sh > convert_regioni_bbox.log;
-nohup ./convert_province_poly.sh > convert_province_poly.log;
-nohup ./convert_province_bbox.sh > convert_province_bbox.log;
-nohup ./convert_comuni_poly.sh > convert_comuni_poly.log;
-nohup ./convert_comuni_bbox.sh > convert_comuni_bbox.log;
+# conversione pbf -> gpkg
+cd "$WORK_DIR/output/scripts"
+bash -eu ./convert_regioni_poly.sh
+bash -eu ./convert_province_poly.sh
+bash -eu ./convert_comuni_poly.sh
 
-#
-
+#bash -eu ./convert_regioni_bbox.sh
+#bash -eu ./convert_province_bbox.sh
+#bash -eu ./convert_comuni_bbox.sh
