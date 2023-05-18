@@ -48,7 +48,7 @@ const Italy = ({
 
           let item = null;
 
-          if (feature.properties.adm === 4) {
+          if (parseInt(feature.properties.adm) === 4) {
             item = italyTree.children.find(
               ({ reg_istat }) => reg_istat === feature.properties.istat
             );
@@ -60,7 +60,7 @@ const Italy = ({
             })
           }
 
-          if (feature.properties.adm === 6) {
+          if (parseInt(feature.properties.adm) === 6) {
             const geo_prov_istat = feature.properties.istat;
             item = region.children.find(
               ({ prov_istat }) => prov_istat === geo_prov_istat
@@ -73,7 +73,7 @@ const Italy = ({
             })
           }
 
-          if (feature.properties.adm === 8) {
+          if (parseInt(feature.properties.adm) === 8) {
             const geo_prov_istat = currentGeoJSON.prov_istat;
             const geo_com_istat = feature.properties.istat;
             const province = region.children.find(
