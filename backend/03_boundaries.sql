@@ -1,5 +1,6 @@
 .echo on
 .load mod_spatialite
+pragma trusted_schema=1;
 begin;
 
 -- Aggiunta codici ISTAT proince sarde
