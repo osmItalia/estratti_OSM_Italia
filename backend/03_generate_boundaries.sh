@@ -13,6 +13,6 @@ osmium tags-filter "$WORK_DIR/input/pbf/italy-latest.osm.pbf" \
     -lco FID=osm \
     -nln boundaries \
     -where "cast(admin_level as integer) in (4, 6, 8)" \
-    "$OUTPUT/boundaries.sqlite" /vsistdin/ multipolygons
+    "$OUTPUT/boundaries.sqlite" "/vsistdin?buffer_limit=-1" multipolygons
 
 sqlite3 -bail "$OUTPUT/boundaries.sqlite" < "$SCRIPTS_DIR/03_boundaries.sql"
