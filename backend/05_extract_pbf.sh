@@ -11,7 +11,7 @@ do
     osmium extract --overwrite \
         --polygon="$file" \
         --output="$OUTPUT/dati/poly/$type/pbf/$name.osm.pbf" \
-        "$WORK_DIR/input/pbf/italy-latest.osm.pbf"
+        "$WORK_DIR/input/pbf/latest.osm.pbf"
 done
 
 for file in "$OUTPUT"/boundaries/poly/province/*.geojson

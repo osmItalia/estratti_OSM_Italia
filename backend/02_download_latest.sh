@@ -1,8 +1,11 @@
 #!/bin/bash -eu
 
-COUNTRY_PBF="europe/italy-latest.osm.pbf"
-COUNTRY_STATE="europe/italy-updates/state.txt"
+COUNTRY="europe/italy"
+OUTPUT="latest.osm.pbf"
 
 cd "$WORK_DIR/input/pbf/"
-wget -N "https://download.geofabrik.de/$COUNTRY_PBF"
-wget -O "$WORK_DIR/input/pbf/state.txt" "https://download.geofabrik.de/$COUNTRY_STATE"
+if test -e "$OUTPUT"
+then opts=(-z "$OUTPUT")
+else opts=()
+fi
+curl "https://download.geofabrik.de/$COUNTRY-latest.osm.pbf" -o "$OUTPUT" "${opts[@]}"

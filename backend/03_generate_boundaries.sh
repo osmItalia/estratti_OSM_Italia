@@ -4,7 +4,7 @@ set -eEuxo pipefail
 
 OUTPUT="$WORK_DIR/output"
 
-osmium tags-filter "$WORK_DIR/input/pbf/italy-latest.osm.pbf" \
+osmium tags-filter "$WORK_DIR/input/pbf/latest.osm.pbf" \
   r/boundary=administrative -f pbf -o - |
     ogr2ogr \
     -dsco SPATIALITE=YES \

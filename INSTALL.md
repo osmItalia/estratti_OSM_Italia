@@ -9,7 +9,7 @@ Everything is run inside `/srv`, if not specified otherwise.
 ```bash
 apt-get install \
     `# generic`
-    git wget sqlite3 libsqlite3-mod-spatialite
+    git curl sqlite3 libsqlite3-mod-spatialite
     `# web app`
     npm \
     nginx libnginx-mod-http-lua \
