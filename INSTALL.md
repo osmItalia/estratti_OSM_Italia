@@ -66,6 +66,7 @@ npm --prefix=$NPM_PREFIX install topojson-server
 #### Run
 
 ```bash
+source estratti_osm-it.env
 ./run.sh
 ```
 

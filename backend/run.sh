@@ -4,8 +4,6 @@ set -eExuo pipefail
 
 cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"
 
-source estratti_osm-it.env
-
 ./01_basic_configuration.sh
 ./02_download_latest.sh
 ./03_generate_boundaries.sh
