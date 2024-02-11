@@ -3,7 +3,8 @@
 COUNTRY="europe/italy"
 OUTPUT="latest.osm.pbf"
 
-cd "$WORK_DIR/input/pbf/"
+mkdir -p "$WORK_DIR/input/pbf"
+cd "$_"
 if test -e "$OUTPUT"
 then opts=(-z "$OUTPUT")
 else opts=()

@@ -2,7 +2,6 @@
 
 cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"
 
-./01_basic_configuration.sh
 ./02_download_latest.sh
 ./03_generate_boundaries.sh
 ./04_generate_geojson.sh

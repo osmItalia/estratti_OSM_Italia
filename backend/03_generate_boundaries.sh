@@ -2,6 +2,7 @@
 set -o pipefail
 
 OUTPUT="$WORK_DIR/output"
+mkdir -p "$OUTPUT"
 
 osmium tags-filter "$WORK_DIR/input/pbf/latest.osm.pbf" \
   r/boundary=administrative -f pbf -o - |

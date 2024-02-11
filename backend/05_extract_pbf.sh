@@ -3,6 +3,8 @@ set -o pipefail
 
 OUTPUT="$WORK_DIR/output"
 
+mkdir -p "$OUTPUT"/dati/poly/{comuni,province,regioni}/pbf
+
 for file in "$OUTPUT"/boundaries/poly/regioni/*.geojson
 do
     name="$(basename "$file" .geojson)"
