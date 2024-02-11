@@ -1,6 +1,5 @@
-#!/usr/bin/bash
-
-set -eEuxo pipefail
+#!/bin/bash -eux
+set -o pipefail
 
 OUTPUT="$WORK_DIR/output"
 

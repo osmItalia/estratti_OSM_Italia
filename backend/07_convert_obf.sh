@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -eEuxo pipefail
+#!/bin/bash -eux
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 OUTPUT="$WORK_DIR/output"

@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -eExuo pipefail
+#!/bin/bash -eux
 
 cd -- "$( dirname -- "${BASH_SOURCE[0]}" )"
 

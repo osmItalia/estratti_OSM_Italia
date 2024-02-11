@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 COUNTRY="europe/italy"
 OUTPUT="latest.osm.pbf"

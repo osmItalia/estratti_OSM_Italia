@@ -1,6 +1,5 @@
-#!/bin/bash
-
-set -eExuo pipefail
+#!/bin/bash -eux
+set -o pipefail
 
 OUTPUT=""$WORK_DIR"/output"
 PATH=""$NPM_PREFIX"/node_modules/.bin/:$PATH"

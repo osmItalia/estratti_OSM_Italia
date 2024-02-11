@@ -1,6 +1,4 @@
-#!/usr/bin/bash
-
-set -eEuxo pipefail
+#!/bin/bash -eux
 
 OUTPUT="$WORK_DIR/output"
 cd "$OUTPUT/boundaries/poly"
