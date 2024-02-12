@@ -1,4 +1,3 @@
-.echo on
 .load mod_spatialite
 pragma trusted_schema=1;
 begin;
@@ -33,7 +32,7 @@ delete from boundaries where ref_istat is null;
 -- Creazione colonna aggiuntiva per il nome dei file, senza caratteri speciali
 alter table boundaries add column "filename" varchar;
 update boundaries
-   set filename = ref_istat || '_' || replace(replace(name, '/', '-'), '.', '');
+   set filename = ref_istat || '_' || replace(replace(replace(name, '/', '-'), '.', ''), ' ', '_');
 
 -- Creazione colonne aggiuntive ISTAT
 alter table boundaries add column "com_istat_code" varchar;

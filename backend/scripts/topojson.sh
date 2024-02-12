@@ -1,11 +1,12 @@
 #!/bin/bash -eux
 set -o pipefail
 
-OUTPUT=""$WORK_DIR"/output"
-PATH=""$NPM_PREFIX"/node_modules/.bin/:$PATH"
-sqlite_custom="sqlite3 -bail "$OUTPUT/boundaries.sqlite""
+OUTPUT="$1"
+DATABASE="$2"
 
-cd ""$OUTPUT"/boundaries/poly"
+sqlite_custom="sqlite3 -bail "$DATABASE""
+
+cd "$OUTPUT"
 
 # Generate regions
 
@@ -22,9 +23,9 @@ select json_object(
                 'istat', ref_istat,
                 'reg_istat_code', reg_istat_code,
                 'adm', admin_level,
-                '.osm.pbf', 'dati/poly/regioni/pbf/' || filename || '.osm.pbf',
-                '.gpkg', 'dati/poly/regioni/gpkg/' || filename || '.gpkg',
-                '.obf', 'dati/poly/regioni/obf/' || filename || '.obf'
+                '.osm.pbf', 'pbf/regioni/' || filename || '.osm.pbf',
+                '.gpkg', 'gpkg/regioni/' || filename || '.gpkg',
+                '.obf', 'obf/regioni/' || filename || '.obf'
              )
          ))
        )
@@ -52,8 +53,8 @@ select json_object(
                 'reg_istat_code', reg_istat_code,
                 'prov_istat_code', pro_istat_code,
                 'adm', admin_level,
-                '.osm.pbf', 'dati/poly/province/pbf/' || filename || '.osm.pbf',
-                '.gpkg', 'dati/poly/province/gpkg/' || filename || '.gpkg'
+                '.osm.pbf', 'pbf/province/' || filename || '.osm.pbf',
+                '.gpkg', 'gpkg/province/' || filename || '.gpkg'
              )
          ))
        )
@@ -83,8 +84,8 @@ select json_object(
                 'prov_istat_code', pro_istat_code,
                 'com_istat_code', com_istat_code,
                 'adm', admin_level,
-                '.osm.pbf', 'dati/poly/comuni/pbf/' || filename || '.osm.pbf',
-                '.gpkg', 'dati/poly/comuni/gpkg/' || filename || '.gpkg'
+                '.osm.pbf', 'pbf/comuni/' || filename || '.osm.pbf',
+                '.gpkg', 'gpkg/comuni/' || filename || '.gpkg'
              )
          ))
        )
@@ -121,8 +122,8 @@ select json_object(
                 'reg_istat_code', reg_istat_code,
                 'prov_istat_code', pro_istat_code,
                 'adm', admin_level,
-                '.osm.pbf', 'dati/poly/province/pbf/' || filename || '.osm.pbf',
-                '.gpkg', 'dati/poly/province/gpkg/' || filename || '.gpkg'
+                '.osm.pbf', 'pbf/province/' || filename || '.osm.pbf',
+                '.gpkg', 'gpkg/province/' || filename || '.gpkg'
              )
          ))
        )
@@ -159,8 +160,8 @@ select json_object(
                 'reg_istat_code', reg_istat_code,
                 'prov_istat_code', pro_istat_code,
                 'adm', admin_level,
-                '.osm.pbf', 'dati/poly/comuni/pbf/' || filename || '.osm.pbf',
-                '.gpkg', 'dati/poly/comuni/gpkg/' || filename || '.gpkg'
+                '.osm.pbf', 'pbf/comuni/' || filename || '.osm.pbf',
+                '.gpkg', 'gpkg/comuni/' || filename || '.gpkg'
              )
          ))
        )

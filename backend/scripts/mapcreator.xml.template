@@ -2,10 +2,10 @@
 <batch_process>
         <process_attributes mapZooms="" renderingTypesFile=""
                 zoomWaySmoothness="" osmDbDialect="sqlite" mapDbDialect="sqlite" />
-        <process directory_for_osm_files="$WORK_DIR/output/dati/poly/regioni/pbf"
-                directory_for_index_files="$WORK_DIR/output/dati/poly/regioni/obf"
-                directory_for_generation="$WORK_DIR/input/osmand/tmp"
-                skipExistingIndexesAt="$WORK_DIR/input/osmand/tmp"
+        <process directory_for_osm_files="$PBF_REGIONI_DIR"
+                directory_for_index_files="$OBF_REGIONI_DIR"
+                directory_for_generation="$MAPCREATOR_TMP"
+                skipExistingIndexesAt="$MAPCREATOR_TMP"
                 indexPOI="true" indexRouting="true" indexMap="true"
                 indexTransport="true" indexAddress="true" />
 </batch_process>

@@ -1,4 +1,3 @@
-.echo on
 .load mod_spatialite
 
 select writefile(
@@ -14,4 +13,5 @@ select writefile(
             'geometry', json(asgeojson(geometry))
           )
       )
- from boundaries;
+ from boundaries
+;
