@@ -1,5 +1,5 @@
 COUNTRY ?= europe/italy
-WORK_DIR ?= ${HOME}/estratti
+WORK_DIR ?= $(abspath ../data)
 
 SCRIPTS = scripts
 	
@@ -29,10 +29,12 @@ NPM_PREFIX = $(OUTPUT)/npm
 TOPOJSON_DIR = $(OUTPUT)/topojson
 TOPOJSON = $(TOPOJSON_DIR)/.dirstamp
 
-.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson clean
+WEBAPP_DIR = ../webapp/src/static/boundaries
+
+.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson webapp clean
 .SUFFIXES:
 
-all: pbf gpkg obf topojson
+all: pbf gpkg obf topojson webapp
 setup: setup_mapcreator setup_topojson
 
 dir_guard=@mkdir -p $(@D)
@@ -112,6 +114,16 @@ $(TOPOJSON): $(BOUNDARIES_GEOJSON)
 	export PATH="$(NPM_PREFIX)/node_modules/.bin/:$$PATH" && $(SCRIPTS)/topojson.sh $(TOPOJSON_DIR) $(BOUNDARIES_DATABASE)
 
 topojson: $(TOPOJSON)
+
+$(WEBAPP_DIR)/municipalities.json: $(BOUNDARIES_DATABASE) $(SCRIPTS)/municipalities.sql
+	$(dir_guard)
+	sqlite3 -bail "$<" < $(abspath $(word 2,$^)) > "$@"
+
+$(WEBAPP_DIR)/%.json: $(TOPOJSON_DIR)/%.json
+	$(dir_guard)
+	cp "$<" "$@"
+
+webapp: $(WEBAPP_DIR)/municipalities.json $(WEBAPP_DIR)/limits_IT_regions.json $(WEBAPP_DIR)/limits_IT_provinces.json
 
 clean:
 	rm -rf $(WORK_DIR)

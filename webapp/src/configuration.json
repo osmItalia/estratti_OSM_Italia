@@ -1,8 +1,6 @@
 {
-    "basePathFiles": "https://osmit-estratti.wmcloud.org",
-    "basePathApp": "https://osmit-estratti.wmcloud.org",
-    "inputFilesPath": "/boundaries/poly/",
-    "outputFilesPath": "/output/",
+    "basePathFiles": "/output",
+    "inputFilesPath": "/output/topojson/",
     "municipalities": "limits_IT_municipalities.json",
     "provinces": "limits_IT_provinces.json",
     "regions": "limits_IT_regions.json",

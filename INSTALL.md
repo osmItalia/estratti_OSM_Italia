@@ -1,10 +1,21 @@
 # Setup
 
+Prerequisites:
+- docker
+- docker compose
+- git
+
 ## Clone repository
 
 ```bash
 git clone https://github.com/osmItalia/estratti_OSM_Italia.git
 cd estratti_OSM_Italia
+```
+
+## Run using Docker
+
+```bash
+docker compose up --build
 ```
 
 ## Run without Docker
