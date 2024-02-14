@@ -29,6 +29,19 @@ cd backend/
 nix-shell --pure
 make setup
 make pbf
-make -j8
+make -j$(nproc)
+make webapp
 ```
+
+### Frontend
+
+Configure NGINX by customizing `nginx/default.conf`. Adjust `src/configuration.json` if needed (read more at `frontend/README.md`).
+
+```bash
+cd frontend/
+npm install
+npm run build
+```
+
+The contents of `build/` should be served by NGINX.
 
