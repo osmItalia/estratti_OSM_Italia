@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<batch_process>
+        <process_attributes mapZooms="" renderingTypesFile=""
+                zoomWaySmoothness="" osmDbDialect="sqlite" mapDbDialect="sqlite" />
+        <process directory_for_osm_files="$PBF_REGIONI_DIR"
+                directory_for_index_files="$OBF_REGIONI_DIR"
+                directory_for_generation="$MAPCREATOR_TMP"
+                skipExistingIndexesAt="$MAPCREATOR_TMP"
+                indexPOI="true" indexRouting="true" indexMap="true"
+                indexTransport="true" indexAddress="true" />
+</batch_process>

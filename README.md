@@ -3,7 +3,6 @@ Repository sul lavoro svolto per [Wikimedia Italia](https://www.wikimedia.it/) c
 
 La repository include tre directory:
 - backend: sistema di generazione degli estratti e dei topojson semplificati con relazioni tra i vari enti (vedasi `run.sh`)
-- nginx: contiene un template per la configuratione del web server e un sistema per l'aggiunta della data di creazione del file al nome del file stesso per il download
 - webapp: webapp per il download degli estratti
 
 Il file `INSTALL.md` contiene le informazioni per installare i requisiti e configurare il sistema.

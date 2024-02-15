@@ -26,9 +26,8 @@
     "use-debounce": "^5.2.0"
   },
   "scripts": {
-    "build-map": "node ./scripts/buildMap",
     "start": "react-scripts start",
-    "build": "npm run build-map; react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",

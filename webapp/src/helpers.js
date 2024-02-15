@@ -58,8 +58,7 @@ export const getMunicipalitiesForProvinceIstatCode = async (
       ({ properties }) => properties.istat === provinceIstatCode
     ) ?? {};
 
-  const fileName = `${config.basePathApp +
-    config.inputFilesPath}limits_P_${provinceIstatCode}_municipalities.json`;
+  const fileName = `${config.inputFilesPath}limits_P_${provinceIstatCode}_municipalities.json`;
   const fileFetched = await fetch(fileName);
   const municipalities = await fileFetched.json();
   return [
