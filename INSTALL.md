@@ -15,7 +15,7 @@ cd estratti_OSM_Italia
 ## Run using Docker
 
 ```bash
-docker compose up --build
+docker compose up
 ```
 
 ## Run without Docker
@@ -25,8 +25,8 @@ docker compose up --build
 It is suggested to use `nix` or `nix-portable` to create an environment with the dependencies installed
 
 ```bash
-cd backend/
 nix-shell --pure
+cd backend
 make setup
 make pbf
 make -j$(nproc)
@@ -35,10 +35,10 @@ make webapp
 
 ### Frontend
 
-Configure NGINX by customizing `nginx/default.conf`. Adjust `src/configuration.json` if needed (read more at `frontend/README.md`).
+Configure NGINX by customizing `nginx/default.conf`. Adjust `src/configuration.json` if needed (read more at `webapp/README.md`).
 
 ```bash
-cd frontend/
+cd webapp/
 npm install
 npm run build
 ```
