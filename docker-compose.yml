@@ -1,5 +1,6 @@
 services:
   backend:
+    image: ghcr.io/osmitalia/estratti_osm_italia-backend:main
     build: backend
     #command: anacron -dfn # force run
     restart: always
@@ -7,6 +8,7 @@ services:
     - ./data:/data
     - ./data/log:/var/log/estratti
   webapp:
+    image: ghcr.io/osmitalia/estratti_osm_italia-webapp:main
     build: webapp
     ports:
     - 8000:80
