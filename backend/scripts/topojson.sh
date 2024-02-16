@@ -4,7 +4,7 @@ set -o pipefail
 OUTPUT="$1"
 DATABASE="$2"
 
-sqlite_custom="sqlite3 -bail "$DATABASE""
+sqlite_custom="sqlite3 -bail $DATABASE"
 
 cd "$OUTPUT"
 
@@ -106,9 +106,9 @@ select ref_istat
  where admin_level = 4;
 EOF
 ) |
-while read istat
+while read -r istat
 do
-    cat << EOF | $sqlite_custom | mapshaper -i - -simplify 0.005 -o limits_R_${istat}_provinces.json
+    cat << EOF | $sqlite_custom | mapshaper -i - -simplify 0.005 -o limits_R_"$istat"_provinces.json
 .load mod_spatialite
 select json_object(
          'type', 'FeatureCollection',
@@ -131,8 +131,8 @@ select json_object(
  where reg_istat_code = '$istat' and admin_level = 6
  group by true;
 EOF
-    geo2topo limits_R_${istat}_provinces.json -o limits_R_${istat}_provinces_topo.json
-    mv limits_R_${istat}_provinces{_topo,}.json
+    geo2topo limits_R_"$istat"_provinces.json -o limits_R_"$istat"_provinces_topo.json
+    mv limits_R_"$istat"_provinces{_topo,}.json
 done
 
 
@@ -144,9 +144,9 @@ select ref_istat
  where admin_level = 6;
 EOF
 ) |
-while read istat
+while read -r istat
 do
-    cat << EOF | $sqlite_custom | mapshaper -i - -simplify 5% -o limits_P_${istat}_municipalities.json
+    cat << EOF | $sqlite_custom | mapshaper -i - -simplify 5% -o limits_P_"$istat"_municipalities.json
 .load mod_spatialite
 select json_object(
          'type', 'FeatureCollection',
@@ -169,6 +169,6 @@ select json_object(
  where pro_istat_code = '$istat' and admin_level = 8
  group by true;
 EOF
-    geo2topo limits_P_${istat}_municipalities.json -o limits_P_${istat}_municipalities_topo.json
-    mv limits_P_${istat}_municipalities{_topo,}.json
+    geo2topo limits_P_"$istat"_municipalities.json -o limits_P_"$istat"_municipalities_topo.json
+    mv limits_P_"$istat"_municipalities{_topo,}.json
 done

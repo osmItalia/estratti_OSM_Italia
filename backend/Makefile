@@ -81,7 +81,7 @@ pbf: $(PBF_REGIONI) $(PBF_PROVINCE) $(PBF_COMUNI)
 
 $(GPKG_DIR)/%.gpkg: $(PBF_DIR)/%.osm.pbf
 	$(dir_guard)
-	rm -f $(@F)
+	rm -f "$(@F)"
 	ogr2ogr -f GPKG -dsco VERSION=1.2 "$@" "$<" >/dev/null
 
 PBF_FILES = $(wildcard $(PBF_DIR)/*/*.osm.pbf)

@@ -20,5 +20,5 @@ EOF
     osmium extract --overwrite \
         --polygon="$file" \
         --output="$OUTPUT/$name.osm.pbf" \
-        "$OUTPUT"/../province/"$parent.osm.pbf"
+        "$OUTPUT/../province/$parent.osm.pbf"
 done
