@@ -25,7 +25,7 @@ PBF_REGIONI_DIR = $(dir $(PBF_REGIONI))
 OBF_REGIONI = $(subst /pbf/,/obf/,$(PBF_REGIONI))
 OBF_REGIONI_DIR = $(dir $(OBF_REGIONI))
 
-NPM_PREFIX = $(OUTPUT)/npm
+NPM_PREFIX = $(WORK_DIR)/npm
 TOPOJSON_DIR = $(OUTPUT)/topojson
 TOPOJSON = $(TOPOJSON_DIR)/.dirstamp
 

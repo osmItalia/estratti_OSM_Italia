@@ -5,7 +5,8 @@ services:
     #command: anacron -dfn # force run
     restart: always
     volumes:
-    - ./data:/data
+    - ./data/input:/data/input
+    - ./data/output:/data/output
     - ./data/log:/var/log/estratti
   webapp:
     image: ghcr.io/osmitalia/estratti_osm_italia-webapp:main
