@@ -96,7 +96,7 @@ setup_mapcreator:
 	mkdir -p $(MAPCREATOR_DIR)
 	curl -s $(MAPCREATOR_URL) | bsdtar -xvf- -C $(MAPCREATOR_DIR)
 
-$(OBF_REGIONI): $(MAPCREATOR_CONF) pbf
+$(OBF_REGIONI): $(MAPCREATOR_CONF) $(PBF_REGIONI)
 	$(dir_guard)
 	$(SCRIPTS)/mapcreator.sh $(MAPCREATOR_DIR) $<
 	$(SCRIPTS)/mapcreator_rename.sh $(dir $@) $(SCRIPTS)/mapcreator_rename.sed
