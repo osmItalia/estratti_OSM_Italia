@@ -125,5 +125,7 @@ $(WEBAPP_DIR)/%.json: $(TOPOJSON_DIR)/%.json
 
 webapp: $(WEBAPP_DIR)/municipalities.json $(WEBAPP_DIR)/limits_IT_regions.json $(WEBAPP_DIR)/limits_IT_provinces.json
 
+include garmin.mk
+
 clean:
 	rm -rf $(WORK_DIR)
