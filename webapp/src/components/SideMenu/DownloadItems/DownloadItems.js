@@ -37,7 +37,7 @@ const DownloadItems = ({ selectedFeature }) => {
 
   const { properties } = selectedFeature;
 
-  if (!properties[".gpkg"] && !properties[".osm.pbf"] && !properties[".obf"]) {
+  if (!properties[".gpkg"] && !properties[".osm.pbf"] && !properties[".obf"] && !properties[".tar.gz"]) {
     return null;
   }
 
@@ -65,6 +65,14 @@ const DownloadItems = ({ selectedFeature }) => {
           tooltip="OsmAnd OBF Format"
           href={config.basePathFiles + "/" + properties[".obf"]}
           title="OsmAnd OBF"
+          istat={properties.istat}
+        />
+      )}
+      {properties[".tar.gz"] && (
+        <ToolTipButton
+          tooltip="Garmin Format"
+          href={config.basePathFiles + "/" + properties[".tar.gz"]}
+          title="Garmin"
           istat={properties.istat}
         />
       )}

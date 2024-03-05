@@ -25,7 +25,8 @@ select json_object(
                 'adm', admin_level,
                 '.osm.pbf', 'pbf/regioni/' || filename || '.osm.pbf',
                 '.gpkg', 'gpkg/regioni/' || filename || '.gpkg',
-                '.obf', 'obf/regioni/' || filename || '.obf'
+                '.obf', 'obf/regioni/' || filename || '.obf',
+                '.tar.gz', 'garmin/regioni/' || filename || '.tar.gz'
              )
          ))
        )

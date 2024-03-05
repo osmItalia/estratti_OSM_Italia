@@ -15,12 +15,14 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
         gdal-bin \
         `# mapshaper, topojson` \
         npm \
+        `# garmin styles` \
+        git \
         && \
    rm /etc/cron.daily/apt-compat /etc/cron.daily/dpkg
 
 WORKDIR /root
 # https://github.com/moby/moby/issues/17175
-COPY Makefile .
+COPY Makefile garmin.mk .
 RUN make setup
 
 COPY scripts/ scripts/

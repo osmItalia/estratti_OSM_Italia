@@ -31,6 +31,8 @@ pkgs.mkShellNoCC {
     # mapshaper and topojson
     nodePackages.npm
     nodejs-slim_21
+    # garmin styles
+    git
   ];
   shellHook = ''
     export LD_LIBRARY_PATH="${lib-path}"
