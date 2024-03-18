@@ -106,6 +106,13 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
               <a href="https://gisdev.io">GISdevio Srl</a>.
             </p>
             <p>I dati sono aggiornati con frequenza giornaliera.</p>
+            <p>
+              Il codice sorgente è disponibile su{" "}
+              <a href="https://github.com/osmItalia/estratti_OSM_Italia">
+                github.com/osmItalia/estratti_OSM_Italia
+              </a>
+              , ed è rilasciato con licenza AGPLv3.
+            </p>
             <p>Consulta la <a href="https://www.wikimedia.it/cookie-policy/">Privacy Policy</a>.</p>
           </div>
         </Modal>
