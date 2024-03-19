@@ -28,4 +28,6 @@ RUN make setup
 COPY scripts/ scripts/
 COPY cronjob.sh /etc/cron.daily/estratti
 
+ENV LC_ALL=C.utf8
+
 CMD ["anacron", "-d"]
