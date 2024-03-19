@@ -1,9 +1,9 @@
-MKGMAP_URL ?= https://www.mkgmap.org.uk/download/mkgmap-r4917.tar.gz
+MKGMAP_URL ?= https://www.mkgmap.org.uk/download/mkgmap-latest.tar.gz
 MKGMAP_DIR = $(WORK_DIR)/mkgmap
 MKGMAP = $(MKGMAP_DIR)/mkgmap.jar
 MKGMAP_XMX = 8G
 MKGMAP_PRIORITY = 10
-SPLITTER_URL ?= https://www.mkgmap.org.uk/download/splitter-r653.jar
+SPLITTER_URL ?= https://www.mkgmap.org.uk/download/splitter-latest.jar
 SPLITTER = $(MKGMAP_DIR)/splitter.jar
 SEA_URL = https://www.thkukuk.de/osm/data/sea-latest.zip
 SEA_DIR = $(MKGMAP_DIR)/sea
