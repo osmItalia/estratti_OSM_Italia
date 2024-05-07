@@ -24,10 +24,10 @@ NATION = $(notdir $(patsubst %/,%,$COUNTRY))
 
 $(MKGMAP):
 	$(dir_guard)
-	curl -s "$(MKGMAP_URL)" | bsdtar --strip-components 1 -xf- -C "$(MKGMAP_DIR)"
+	curl -sL "$(MKGMAP_URL)" | bsdtar --strip-components 1 -xf- -C "$(MKGMAP_DIR)"
 
 $(SPLITTER): $(MKGMAP)
-	curl -s "$(SPLITTER_URL)" -o "$@"
+	curl -sL "$(SPLITTER_URL)" -o "$@"
 
 $(SEA):
 	$(dir_guard)
