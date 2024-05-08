@@ -88,8 +88,9 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
             </p>
             <ul>
               <li>GPKG - OGC GeoPackage</li>
-              <li> PBF - Protocolbuffer Binary Format </li>
+              <li>PBF - Protocolbuffer Binary Format </li>
               <li>OSMAND OBF - OsmAnd Binary Maps Format</li>
+              <li>Garmin TAR.GZ - Garmin Format</li>
             </ul>
             <p>
               È possibile estrarre i dati per ogni regione, provincia o comune
