@@ -2,7 +2,7 @@
 pragma trusted_schema=1;
 begin;
 
--- Aggiunta codici ISTAT proince sarde
+-- Aggiunta codici ISTAT province sarde
 update boundaries
    set ref_istat = '104'
  where name = 'Nord-Est Sardegna';
