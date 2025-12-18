@@ -10,7 +10,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
         `# pbf` \
         osmium-tool \
         `# OsmAndMapCreator` \
-        libarchive-tools openjdk-17-jre-headless \
+        libarchive-tools openjdk-21-jre-headless \
         `# boundaries, gpkg` \
         gdal-bin \
         `# mapshaper, topojson` \
