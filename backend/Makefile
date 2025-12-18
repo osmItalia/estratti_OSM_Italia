@@ -40,9 +40,9 @@ setup: setup_mapcreator setup_topojson
 dir_guard=@mkdir -p $(@D)
 
 ifeq ($(wildcard $(LATEST)),) 
-	CURL_OPTS = 
+	CURL_OPTS = -L
 else 
-	CURL_OPTS = -z $(LATEST)
+	CURL_OPTS = -Lz $(LATEST)
 endif 
 
 .DELETE_ON_ERROR: ;
