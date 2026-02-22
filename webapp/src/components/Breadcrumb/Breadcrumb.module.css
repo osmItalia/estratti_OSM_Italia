@@ -58,13 +58,20 @@ p.breadItem:hover {
   height: 50px;
 }
 
-.buttonContainer {
+.buttonGeneralContainer {
   display: flex;
   align-items: flex-end;
   flex-direction: column;
   flex: 1;
   align-self: center;
   margin-right: 20px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  gap: 8px;
 }
 .modal {
   font-size: large;

@@ -13,5 +13,10 @@
         "configurations": {
             "disableCookies": true
         }
+    },
+    "i18n": {
+        "defaultLanguage": "it",
+        "supportedLanguages": ["it", "en"],
+        "translationsPath": "./locales/"
     }
 }

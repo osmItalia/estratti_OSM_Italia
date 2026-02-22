@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
 import TextField from "@material-ui/core/TextField";
@@ -29,6 +30,7 @@ const SideMenu = ({
   const [selected, setSelected] = useState([parentItem]);
   const [searchFilter, setSearchFilter] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const { t } = useTranslation();
   const { trackEvent } = useMatomo();
 
   const resetFilter = () => {
@@ -177,7 +179,7 @@ const SideMenu = ({
   return (
     <div className={styles.sideMenu}>
       <TextField
-        label="Cerca"
+        label={t("searchLabel")}
         type="search"
         value={searchValue}
         onChange={(e) => {

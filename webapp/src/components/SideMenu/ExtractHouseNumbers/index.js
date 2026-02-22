@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { useTranslation } from 'react-i18next';
 
 import Button from "@material-ui/core/Button";
 import styles from "./ExtractHouseNumbers.module.css";
@@ -11,7 +12,7 @@ import pick from 'lodash/pick';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "./Graph";
 
-async function fetchData(featureCollection, setState) {
+async function fetchData(featureCollection, setState, t) {
   let f = null;
   if (featureCollection.type === 'Feature') {
     f = {
@@ -52,7 +53,7 @@ async function fetchData(featureCollection, setState) {
     setState({
       data: null,
       loading: false,
-      error: 'Si è verificato un\'errore',
+      error: t("errorFetchingData"),
     })
   }
 }
@@ -63,6 +64,7 @@ export default function ExtractHouseNumber({ selectedFeature }) {
     loading: false,
     data: null,
   });
+  const { t } = useTranslation();
   const { trackEvent } = useMatomo();
 
   useEffect(() => {
@@ -76,20 +78,20 @@ export default function ExtractHouseNumber({ selectedFeature }) {
     return null;
   }
 
-  const handleOpen = async () => {
+  const handleOpen = async (t) => {
     let name = '';
     let value = '';
     const node = selectedFeature.properties;
     if (node.reg_istat) {
-      name = 'Regione';
+      name = t("region");
       value = node.reg_istat;
     }
     if (node.prov_istat) {
-      name = 'Provincia';
+      name = t("province");
       value = node.prov_istat;
     }
     if (node.com_istat) {
-      name = 'Comune';
+      name = t("municipality");
       value = node.com_istat;
     }
     trackEvent({
@@ -101,7 +103,7 @@ export default function ExtractHouseNumber({ selectedFeature }) {
     setOpenModal(true);
     if (!state.data) {
       setState({ loading: true });
-      await fetchData(selectedFeature, setState);
+      await fetchData(selectedFeature, setState, t);
     }
   };
 
@@ -112,20 +114,20 @@ export default function ExtractHouseNumber({ selectedFeature }) {
   return (
     <>
       <div className={styles.resultItem}>
-        <p>Analisi disponibili per {selectedFeature.properties.name}</p>
+        <p>{t("availableAnalysesFor")} {selectedFeature.properties.name}</p>
         <Button
           variant="contained"
           target="_blank"
           className={styles.button}
           color="primary"
-          onClick={handleOpen}
+          onClick={() => handleOpen(t)}
         >
-          Numeri Civici
+          {t("houseNumbers")}
         </Button>
       </div>
       <Modal open={openModal} onClose={handleClose}>
         <div className={styles.modal}>
-          <h4>Andamento dei numeri civici {selectedFeature.properties.reg_istat ? 'in' : 'a' } {selectedFeature.properties.name} nell’ultimo anno</h4>
+          <h4>{t("houseNumberChange")} {selectedFeature.properties.reg_istat ? t("in") : t("at")} {selectedFeature.properties.name} {t("lastYear")}</h4>
           {state.loading && <div className={styles.centerContent}><CircularProgress /></div>}
           <div>{state.data && <Graph data={state.data} />}</div>
           {state.error && <p>{state.error}</p>}
