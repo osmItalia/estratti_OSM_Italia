@@ -23,7 +23,15 @@ async function fetchData(featureCollection, setState) {
   } else if (featureCollection.type === 'FeatureCollection') {
     f = pick(clone(featureCollection), ['features', 'type'])
   }
-  const end = sub(startOfMonth(new Date()), { months: 1 })
+  let dataEnd
+  try {
+    const metadata = await fetch(`${process.env.REACT_APP_ENTRYPOINT}/v1/metadata`)
+      .then(res => res.json())
+    dataEnd = new Date(metadata.extractRegion.temporalExtent.toTimestamp)
+  } catch (e) {
+    dataEnd = sub(startOfMonth(new Date()), { months: 2 })
+  }
+  const end = startOfMonth(dataEnd)
   const start = sub(end, { years: 1 })
 
   const data = new FormData();
