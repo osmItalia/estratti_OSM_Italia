@@ -2,19 +2,20 @@
 pragma trusted_schema=1;
 begin;
 
--- Aggiunta codici ISTAT province sarde
-update boundaries
-   set ref_istat = '104'
- where name = 'Nord-Est Sardegna';
-update boundaries
-   set ref_istat = '105'
- where name = 'Ogliastra';
-update boundaries
-   set ref_istat = '106'
- where name = 'Medio Campidano';
-update boundaries
-   set ref_istat = '107'
- where name = 'Sulcis Iglesiente';
+-- Aggiunta codici ISTAT province sarde 
+-- Non piu' necessario nel 2026 
+-- update boundaries
+--    set ref_istat = '104'
+--  where name = 'Nord-Est Sardegna';
+-- update boundaries
+--    set ref_istat = '105'
+--  where name = 'Ogliastra';
+-- update boundaries
+--    set ref_istat = '106'
+--  where name = 'Medio Campidano';
+-- update boundaries
+--    set ref_istat = '107'
+--  where name = 'Sulcis Iglesiente'
 
 -- Creazione proincia fittizia della Valle d'Aosta
 insert into boundaries (osm, name, ref_istat, admin_level, GEOMETRY)
