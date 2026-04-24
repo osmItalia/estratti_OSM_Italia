@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from "./DownloadItems.module.css";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
@@ -31,10 +32,12 @@ const ToolTipButton = ({ title, href, tooltip, istat }) => {
 }
 
 const DownloadItems = ({ selectedFeature }) => {
+  const { t } = useTranslation();
+
   if (!selectedFeature?.properties) {
     return null;
   }
-
+  
   const { properties } = selectedFeature;
 
   if (!properties[".gpkg"] && !properties[".osm.pbf"] && !properties[".obf"] && !properties[".tar.gz"]) {
@@ -43,7 +46,7 @@ const DownloadItems = ({ selectedFeature }) => {
 
   return (
     <div className={styles.resultItem}>
-      <p>Formati disponibili per {properties.name}</p>
+      <p>{t("availableFormatsFor")} {properties.name}</p>
       {properties[".gpkg"] && (
         <ToolTipButton
           tooltip="OGC GeoPackage"

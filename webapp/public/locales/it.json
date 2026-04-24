@@ -1,0 +1,46 @@
+{
+    "appTitle": "Estratti OpenStreetMap Italia",
+    "info": "Info",
+    "infoText": {
+        "p1": "Estratti OpenStreetMap Italia è un servizio che permette di estrarre dati relativi all’Italia presenti nel database OpenStreetMap.",
+        "p2": "I dati sono disponibili a seconda della scala in diversi formati: ",
+        "li1": "GPKG - OGC GeoPackage",
+        "li2": "PBF - Protocolbuffer Binary Format",
+        "li3": "OSMAND OBF - OsmAnd Binary Maps Format",
+        "li4": "Garmin TAR.GZ - Garmin Format",
+        "p3": "È possibile estrarre i dati per ogni regione, provincia o comune italiani.",
+        "p4": {
+            "t1": "Lo sviluppo del servizio è stato finanziato da",
+            "a1": "Wikimedia Italia",
+            "t2": ", capitolo locale italiano della",
+            "a2": "OpenStreetMap Foundation",
+            "t3": ", e il lavoro è stato realizzato da",
+            "a3": "GISdevio Srl",
+            "t4": "."
+        },
+        "p5": "I dati sono aggiornati con frequenza giornaliera.",
+        "p6": {
+            "t1": "Il codice sorgente è disponibile su",
+            "a1": "github.com/osmItalia/estratti_OSM_Italia",
+            "t2": ", ed è rilasciato con licenza AGPLv3."
+        },
+        "p7": {
+            "t1": "Consulta la ",
+            "a1": "Privacy Policy",
+            "t2": "."
+        }
+    },
+    "searchLabel": "Cerca",
+    "availableFormatsFor": "Formati disponibili per",
+    "quantity": "Quantità",
+    "errorFetchingData": "Si è verificato un errore",
+    "region": "Regione",
+    "province": "Provincia",
+    "municipality": "Comune",
+    "availableAnalysesFor": "Analisi disponibili per",
+    "houseNumbers": "Numeri Civici",
+    "houseNumberChange": "Andamento dei numeri civici",
+    "in": "in",
+    "at": "a",
+    "lastYear": "nell’ultimo anno"
+}
