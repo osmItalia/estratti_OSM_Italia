@@ -1,0 +1,46 @@
+{
+    "appTitle": "OpenStreetMap Italy Extracts",
+    "info": "Info",
+    "infoText": {
+        "p1": "OpenStreetMap Italy Extracts is a service that allows you to extract data related to Italy present in the OpenStreetMap database.",
+        "p2": "The data is available depending on the scale in different formats: ",
+        "li1": "GPKG - OGC GeoPackage",
+        "li2": "PBF - Protocolbuffer Binary Format",
+        "li3": "OSMAND OBF - OsmAnd Binary Maps Format",
+        "li4": "Garmin TAR.GZ - Garmin Format",
+        "p3": "You can extract data for each Italian region, province or municipality.",
+        "p4": {
+            "t1": "The development of the service was funded by",
+            "a1": "Wikimedia Italia",
+            "t2": ", local chapter of the",
+            "a2": "OpenStreetMap Foundation",
+            "t3": ", and the work was carried out by",
+            "a3": "GISdevio Srl",
+            "t4": "."
+        },
+        "p5": "The data is updated daily.",
+        "p6": {
+            "t1": "The source code is available on",
+            "a1": "github.com/osmItalia/estratti_OSM_Italia",
+            "t2": ", and is released under AGPLv3 license."
+        },
+        "p7": {
+            "t1": 	"Consult the ",
+           	"a1":"Privacy Policy",
+			"t2":"."
+		}
+    },
+    "searchLabel": "Search",
+    "availableFormatsFor": "Available formats for",
+    "quantity": "Quantity",
+    "errorFetchingData": "An error occurred while fetching data",
+    "region": "Region",
+    "province": "Province",
+    "municipality": "Municipality",
+    "availableAnalysesFor": "Available analyses for",
+    "houseNumbers": "House Numbers",
+    "houseNumberChange": "House numbers change",
+    "in": "in",
+    "at": "at",
+    "lastYear": "in the last year"
+}

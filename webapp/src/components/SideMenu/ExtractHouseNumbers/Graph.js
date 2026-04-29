@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 
 import {
   Chart as ChartJS,
@@ -25,6 +26,7 @@ const options = {
 export default function Graph({ data }) {
   const values = data.map(d => d.y);
   const labels = data.map(d => d.x.split('T')[0]);
+  const { t } = useTranslation();
   
   return (
     <Line 
@@ -33,7 +35,7 @@ export default function Graph({ data }) {
         labels,
         datasets: [
           {
-            label: 'Quantità',
+            label: t("quantity"),
             data: values,
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgba(255, 99, 132, 0.5)',

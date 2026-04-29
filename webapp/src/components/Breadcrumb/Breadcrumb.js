@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import styles from "./Breadcrumb.module.css";
 import logo from "../../static/assets/logo-wikimedia.png";
 import Modal from "@material-ui/core/Modal";
@@ -8,6 +9,7 @@ import {useMatomo} from "@datapunt/matomo-tracker-react";
 
 const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
   const [openModal, setOpenModal] = useState(false);
+  const { t, i18n } = useTranslation();
   const { trackEvent } = useMatomo();
 
   const handleOpen = () => {
@@ -45,7 +47,7 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
         <img src={logo} alt="wikimedia" />
       </a>
       <a className={styles.appTitle} href=".">
-        <h1>Estratti OpenStreetMap Italia</h1>
+        <h1>{t("appTitle")}</h1>
       </a>
 
       {breadcrumbData.map((node, index) => {
@@ -67,56 +69,63 @@ const Breadcrumb = ({ selectedTreeItem, setSelectedTreeItem }) => {
           </p>
         );
       })}
-      <div className={styles.buttonContainer}>
-        <Button
-          variant="contained"
-          onClick={handleOpen}
-          startIcon={<InfoIcon />}
-          color="primary"
-        >
-          Info
-        </Button>
-        <Modal open={openModal} onClose={handleClose}>
-          <div className={styles.modal}>
-            <p>
-              Estratti OpenStreetMap Italia è un servizio che permette di
-              estrarre dati relativi all’Italia presenti nel database
-              OpenStreetMap.
-            </p>
-            <p>
-              I dati sono disponibili a seconda della scala in diversi formati:{" "}
-            </p>
-            <ul>
-              <li>GPKG - OGC GeoPackage</li>
-              <li>PBF - Protocolbuffer Binary Format </li>
-              <li>OSMAND OBF - OsmAnd Binary Maps Format</li>
-              <li>Garmin TAR.GZ - Garmin Format</li>
-            </ul>
-            <p>
-              È possibile estrarre i dati per ogni regione, provincia o comune
-              italiani.
-            </p>
-            <p>
-              Lo sviluppo del servizio è stato finanziato da{" "}
-              <a href="https://www.wikimedia.it">Wikimedia Italia</a>, capitolo
-              locale italiano della{" "}
-              <a href="https://wiki.osmfoundation.org/wiki/Main_Page">
-                OpenStreetMap Foundation
-              </a>
-              , e il lavoro è stato realizzato da{" "}
-              <a href="https://gisdev.io">GISdevio Srl</a>.
-            </p>
-            <p>I dati sono aggiornati con frequenza giornaliera.</p>
-            <p>
-              Il codice sorgente è disponibile su{" "}
-              <a href="https://github.com/osmItalia/estratti_OSM_Italia">
-                github.com/osmItalia/estratti_OSM_Italia
-              </a>
-              , ed è rilasciato con licenza AGPLv3.
-            </p>
-            <p>Consulta la <a href="https://www.wikimedia.it/cookie-policy/">Privacy Policy</a>.</p>
-          </div>
-        </Modal>
+      <div className={styles.buttonGeneralContainer}>
+        <div className={styles.buttonContainer}>
+          <Button
+            variant="outlined"
+            onClick={() => i18n.changeLanguage(i18n.language == "it" ? "en" : "it")}
+          >
+            🇮🇹🔄🇬🇧
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpen}
+            startIcon={<InfoIcon />}
+            color="primary"
+          >
+            {t("info")}
+          </Button>
+          <Modal open={openModal} onClose={handleClose}>
+            <div className={styles.modal}>
+              <p>
+                {t("infoText.p1")}
+              </p>
+              <p>
+                {t("infoText.p2")}
+              </p>
+              <ul>
+                <li>{t("infoText.li1")}</li>
+                <li>{t("infoText.li2")}</li>
+                <li>{t("infoText.li3")}</li>
+                <li>{t("infoText.li4")}</li>
+              </ul>
+              <p>
+                {t("infoText.p3")}{" "}
+              </p>
+              <p>
+                {t("infoText.p4.t1")}{" "}
+                <a href="https://www.wikimedia.it">{t("infoText.p4.a1")}</a>
+                {t("infoText.p4.t2")}{" "}
+                <a href="https://wiki.osmfoundation.org/wiki/Main_Page">{t("infoText.p4.a2")}</a>
+                {t("infoText.p4.t3")}{" "}
+                <a href="https://gisdev.io">{t("infoText.p4.a3")}</a>
+                {t("infoText.p4.t4")}
+              </p>
+              <p>{t("infoText.p5")}</p>
+              <p>
+                {t("infoText.p6.t1")}{" "}
+                <a href="https://github.com/osmItalia/estratti_OSM_Italia">
+                  {t("infoText.p6.a1")}
+                </a>
+                {t("infoText.p6.t2")}
+              </p>
+              <p>{t("infoText.p7.t1")}{" "}
+                <a href="https://www.wikimedia.it/cookie-policy/">{t("infoText.p7.a1")}</a>
+                {t("infoText.p7.t2")}
+              </p>
+            </div>
+          </Modal>
+        </div>
       </div>
     </div>
   );
