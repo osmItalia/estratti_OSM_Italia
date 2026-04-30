@@ -2,14 +2,20 @@
 #
 # Simple cronjob for anacron
 
-set -eu
-
 logfile="/var/log/estratti/last"
 
 mkdir -p "$(dirname $logfile)"
 exec >> "$logfile"
 exec 2>&1
 
-make -C /root setup_garmin_data
-make -C /root pbf
-make -C /root -j$(nproc)
+OPTS="-C /root --keep-going"
+
+make $OPTS setup_garmin_data
+
+make $OPTS pbf
+
+make $OPTS obf -j$(nproc)
+make $OPTS gpkg -j$(nproc)
+
+make $OPTS topojson
+make $OPTS webapp
