@@ -99,7 +99,7 @@ setup_mapcreator:
 $(OBF_REGIONI): $(MAPCREATOR_CONF) $(PBF_REGIONI)
 	$(dir_guard)
 	$(SCRIPTS)/mapcreator.sh $(MAPCREATOR_DIR) $<
-	$(SCRIPTS)/mapcreator_rename.sh $(dir $@) $(SCRIPTS)/mapcreator_rename.sed
+	$(SCRIPTS)/mapcreator_rename.sh $(dir $@) $(PBF_REGIONI_DIR)
 	touch $@
 
 obf: $(OBF_REGIONI)

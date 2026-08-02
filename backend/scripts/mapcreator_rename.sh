@@ -1,13 +1,19 @@
 #!/bin/bash -eux
 
 OUTPUT="$1"
-RENAME_RULE="$2"
+PBF_DIR="$2"
 
-for file in "$OUTPUT"/*
+for pbf in "$PBF_DIR"/*.osm.pbf
 do
-    newfile="$(echo "$file" | sed -Ef "$RENAME_RULE")"
-    if [ "$file" != "$newfile" ]
-    then
-        mv -f "$file" "$newfile"
-    fi
+    base="$(basename "$pbf" .osm.pbf)"
+    lower="$(printf '%s' "$base" | tr '[:upper:]' '[:lower:]')"
+    for ext in obf "obf.gen.log"
+    do
+        src="$OUTPUT/${lower}_2.$ext"
+        dst="$OUTPUT/${base}.$ext"
+        if [ -f "$src" ]
+        then
+            mv -f "$src" "$dst"
+        fi
+    done
 done
