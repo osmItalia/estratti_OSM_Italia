@@ -16,6 +16,7 @@ make $OPTS pbf
 
 make $OPTS obf -j$(nproc)
 make $OPTS gpkg -j$(nproc)
+make $OPTS garmin_regioni
 
 make $OPTS topojson
 make $OPTS webapp
