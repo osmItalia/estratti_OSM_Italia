@@ -6,7 +6,9 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && \
     apt-get install -yq --no-install-recommends \
         `# generic` \
-        curl gettext make anacron sqlite3 libsqlite3-mod-spatialite \
+        curl gettext make anacron sqlite3 libsqlite3-mod-spatialite python3 \
+        `# failure reports, mailed by anacron` \
+        msmtp-mta \
         `# pbf` \
         osmium-tool \
         `# OsmAndMapCreator` \
@@ -27,6 +29,8 @@ RUN make setup
 
 COPY scripts/ scripts/
 COPY cronjob.sh /etc/cron.daily/estratti
+COPY healthcheck.py .
+COPY msmtprc /etc/msmtprc
 
 ENV LC_ALL=C.utf8
 

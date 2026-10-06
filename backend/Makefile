@@ -31,7 +31,7 @@ TOPOJSON = $(TOPOJSON_DIR)/.dirstamp
 
 WEBAPP_DIR = ../webapp/src/static/boundaries
 
-.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson webapp clean
+.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson webapp healthcheck clean
 .SUFFIXES:
 
 all: pbf gpkg obf topojson webapp
@@ -124,6 +124,9 @@ $(WEBAPP_DIR)/%.json: $(TOPOJSON_DIR)/%.json
 	cp "$<" "$@"
 
 webapp: $(WEBAPP_DIR)/municipalities.json $(WEBAPP_DIR)/limits_IT_regions.json $(WEBAPP_DIR)/limits_IT_provinces.json
+
+healthcheck:
+	@./healthcheck.py $(WORK_DIR)
 
 include garmin.mk
 

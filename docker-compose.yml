@@ -4,6 +4,10 @@ services:
     build: backend
     #command: anacron -dfn # force run
     restart: always
+    #environment:
+    #  MAILTO: someone@example.org
+    #  HEALTHCHECK_NEWER_THAN_DAYS: 2
+    #  HEALTHCHECK_PREVIEW_MAX_LINES: 50
     volumes:
     - ./data/input:/data/input
     - ./data/output:/data/output
