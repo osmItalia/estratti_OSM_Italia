@@ -34,4 +34,4 @@ COPY msmtprc /etc/msmtprc
 
 ENV LC_ALL=C.utf8
 
-CMD ["anacron", "-d"]
+CMD ["bash", "-c", "while true; do anacron -dn; sleep 1h; done"]

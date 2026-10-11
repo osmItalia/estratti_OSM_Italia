@@ -2,7 +2,6 @@ services:
   backend:
     image: ghcr.io/osmitalia/estratti_osm_italia-backend:main
     build: backend
-    #command: anacron -dfn # force run
     restart: always
     #environment:
     #  MAILTO: someone@example.org
@@ -12,6 +11,7 @@ services:
     - ./data/input:/data/input
     - ./data/output:/data/output
     - ./data/log:/var/log/estratti
+    - ./data/anacron:/var/spool/anacron
   webapp:
     image: ghcr.io/osmitalia/estratti_osm_italia-webapp:main
     build: webapp
