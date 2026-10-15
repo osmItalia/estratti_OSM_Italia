@@ -11,6 +11,8 @@ log_dir = Path(os.environ.get("LOG_DIR", "/var/log/estratti"))
 state = Path(os.environ.get("HEALTHCHECK_STATE_FILE", log_dir / "healthcheck.state"))
 newer_than = timedelta(days=int(os.environ.get("HEALTHCHECK_NEWER_THAN_DAYS", 2)))
 preview_max_lines = int(os.environ.get("HEALTHCHECK_PREVIEW_MAX_LINES", 50))
+heartbeat_every = timedelta(days=int(os.environ.get("HEARTBEAT_DAYS", 30)))
+heartbeat = log_dir / "heartbeat.state"
 out = work / "output"
 problems = {}
 
@@ -64,3 +66,13 @@ if problems != previous:
     state.parent.mkdir(parents=True, exist_ok=True)
     with open(state, "w") as file:
         json.dump(problems, file, indent=0, sort_keys=True)
+    heartbeat.touch()
+elif heartbeat_every and (
+    not heartbeat.exists()
+    or datetime.now() - datetime.fromtimestamp(heartbeat.stat().st_mtime) > heartbeat_every
+):
+    print(f"[Estratti OSM Italia] Heartbeat: {len(problems)} problemi")
+    print("\nQuesto messaggio conferma che l'invio delle email funziona.")
+    print(f"Log completo: {log_dir}/last")
+    heartbeat.parent.mkdir(parents=True, exist_ok=True)
+    heartbeat.touch()

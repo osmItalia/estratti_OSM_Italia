@@ -8,6 +8,7 @@ services:
     #  MAIL_REPLY_TO: someone@example.org
     #  HEALTHCHECK_NEWER_THAN_DAYS: 2
     #  HEALTHCHECK_PREVIEW_MAX_LINES: 50
+    #  HEARTBEAT_DAYS: 30
     volumes:
     - ./data/input:/data/input
     - ./data/output:/data/output
