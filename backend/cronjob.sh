@@ -27,3 +27,7 @@ OPTS="-C /root --keep-going"
 if [ -n "$MAILTO" ]; then
     make $OPTS --no-print-directory healthcheck
 fi
+
+if [ -n "$PING_URL" ]; then
+    curl -fsS -m 10 --retry 3 -o /dev/null "$PING_URL" || true
+fi
