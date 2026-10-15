@@ -31,6 +31,7 @@ COPY scripts/ scripts/
 COPY cronjob.sh /etc/cron.daily/estratti
 COPY healthcheck.py .
 COPY msmtprc /etc/msmtprc
+RUN mkdir -p /var/log/estratti
 COPY sendmail-wrapper /usr/sbin/sendmail
 
 ENV LC_ALL=C.utf8
