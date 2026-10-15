@@ -5,6 +5,7 @@ services:
     restart: always
     #environment:
     #  MAILTO: someone@example.org
+    #  MAIL_REPLY_TO: someone@example.org
     #  HEALTHCHECK_NEWER_THAN_DAYS: 2
     #  HEALTHCHECK_PREVIEW_MAX_LINES: 50
     volumes:

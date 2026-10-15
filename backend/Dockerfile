@@ -8,7 +8,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
         `# generic` \
         curl gettext make anacron sqlite3 libsqlite3-mod-spatialite python3 \
         `# failure reports, mailed by anacron` \
-        msmtp-mta \
+        msmtp \
         `# pbf` \
         osmium-tool \
         `# OsmAndMapCreator` \
@@ -31,6 +31,7 @@ COPY scripts/ scripts/
 COPY cronjob.sh /etc/cron.daily/estratti
 COPY healthcheck.py .
 COPY msmtprc /etc/msmtprc
+COPY sendmail-wrapper /usr/sbin/sendmail
 
 ENV LC_ALL=C.utf8
 
