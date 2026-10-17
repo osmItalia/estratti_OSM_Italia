@@ -130,9 +130,8 @@ webapp: $(WEBAPP_DIR)/municipalities.json $(WEBAPP_DIR)/limits_IT_regions.json $
 healthcheck:
 	@./healthcheck.py $(WORK_DIR)
 
-TRASH ?=
-clean_orphans:
-	./$(SCRIPTS)/clean_output.sh $(BOUNDARIES_DATABASE) $(OUTPUT) $(TRASH)
+clean_orphans: $(BOUNDARIES_DATABASE)
+	./$(SCRIPTS)/clean_output.sh $(BOUNDARIES_DATABASE) $(OUTPUT)
 
 include garmin.mk
 
