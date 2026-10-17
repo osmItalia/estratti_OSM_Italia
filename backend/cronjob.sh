@@ -21,6 +21,7 @@ OPTS="-C /root --keep-going"
 
     make $OPTS topojson
     make $OPTS webapp
+    make $OPTS clean_orphans
     echo "[$(date -Is)] Fine generazione"
 } > "$logfile" 2>&1
 

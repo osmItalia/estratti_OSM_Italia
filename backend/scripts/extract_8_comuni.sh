@@ -4,6 +4,8 @@ OUTPUT="$1"
 DATABASE="$2"
 BOUNDARIES="$3"
 
+skipped=0
+
 for file in "$BOUNDARIES"/comuni/*.geojson
 do
     name="$(basename "$file" .geojson)"
@@ -17,8 +19,16 @@ do
                and c.ref_istat = '$ref_istat'
 EOF
     } | sqlite3 -bail "$DATABASE")"
-    osmium extract --overwrite \
-        --polygon="$file" \
-        --output="$OUTPUT/$name.osm.pbf" \
-        "$OUTPUT/../province/$parent.osm.pbf"
+    if ! osmium extract --overwrite \
+            --polygon="$file" \
+            --output="$OUTPUT/$name.osm.pbf" \
+            "$OUTPUT/../province/$parent.osm.pbf"
+    then
+        echo "Attenzione: estrazione di $name (provincia: '${parent:-non trovata}') fallita, saltata" >&2
+        skipped=$((skipped + 1))
+    fi
 done
+
+if [ "$skipped" -gt 0 ]; then
+    echo "Attenzione: $skipped estratti di comuni saltati" >&2
+fi

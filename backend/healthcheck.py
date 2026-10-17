@@ -13,8 +13,24 @@ newer_than = timedelta(days=int(os.environ.get("HEALTHCHECK_NEWER_THAN_DAYS", 2)
 preview_max_lines = int(os.environ.get("HEALTHCHECK_PREVIEW_MAX_LINES", 50))
 heartbeat_every = timedelta(days=int(os.environ.get("HEARTBEAT_DAYS", 30)))
 heartbeat = log_dir / "heartbeat.state"
+counts_state = Path(os.environ.get("HEALTHCHECK_COUNTS_FILE", log_dir / "counts.state"))
 out = work / "output"
 problems = {}
+counts = {}
+labels = {"regions": "regioni", "provinces": "province", "municipalities": "comuni"}
+
+
+def load(path):
+    if not path.exists():
+        return {}
+    with open(path) as file:
+        return json.load(file)
+
+
+def save(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as file:
+        json.dump(data, file, indent=0, sort_keys=True)
 
 
 def check(path):
@@ -24,11 +40,8 @@ def check(path):
         problems[path] = f"non aggiornato da più di {newer_than.days} giorni"
 
 
-if state.exists():
-    with open(state) as file:
-        previous = json.load(file)
-else:
-    previous = {}
+previous = load(state)
+previous_counts = load(counts_state)
 
 unreadable = False
 for name in ("regions", "provinces", "municipalities"):
@@ -46,6 +59,12 @@ for name in ("regions", "provinces", "municipalities"):
             for key, path in geometry["properties"].items():
                 if key.startswith("."):
                     check(path)
+    count = sum(len(obj["geometries"]) for obj in objects.values())
+    if previous_counts.get(name, count) != count:
+        problems[topojson] = f"numero di {labels[name]} cambiato: {previous_counts[name]} -> {count}"
+    counts[name] = count
+
+save(counts_state, previous_counts | counts)
 
 if unreadable:
     problems = {**previous, **problems}
@@ -63,9 +82,7 @@ if problems != previous:
     if len(changes) > preview_max_lines:
         print(f"- ... e altri {len(changes) - preview_max_lines} cambiamenti")
     print(f"\nLog completo: {log_dir}/last")
-    state.parent.mkdir(parents=True, exist_ok=True)
-    with open(state, "w") as file:
-        json.dump(problems, file, indent=0, sort_keys=True)
+    save(state, problems)
     heartbeat.touch()
 elif heartbeat_every and (
     not heartbeat.exists()

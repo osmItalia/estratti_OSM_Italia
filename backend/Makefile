@@ -31,7 +31,7 @@ TOPOJSON = $(TOPOJSON_DIR)/.dirstamp
 
 WEBAPP_DIR = ../webapp/src/static/boundaries
 
-.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson webapp healthcheck clean
+.PHONY: all latest pbf gpkg obf setup setup_mapcreator setup_topojson topojson webapp healthcheck clean_orphans clean
 .SUFFIXES:
 
 all: pbf gpkg obf topojson webapp
@@ -59,6 +59,8 @@ $(BOUNDARIES_DATABASE): $(LATEST) $(SCRIPTS)/boundaries.ini $(SCRIPTS)/boundarie
 
 $(BOUNDARIES_GEOJSON): $(BOUNDARIES_DATABASE) $(SCRIPTS)/boundaries_geojson.sql
 	$(dir_guard)
+	rm -rf $(BOUNDARIES_GEOJSON_DIR)/regioni $(BOUNDARIES_GEOJSON_DIR)/province $(BOUNDARIES_GEOJSON_DIR)/comuni
+	mkdir -p $(BOUNDARIES_GEOJSON_DIR)/regioni $(BOUNDARIES_GEOJSON_DIR)/province $(BOUNDARIES_GEOJSON_DIR)/comuni
 	cd $(dir $@) && sqlite3 -bail "$<" < $(abspath $(word 2,$^))
 	touch $@
 
@@ -127,6 +129,10 @@ webapp: $(WEBAPP_DIR)/municipalities.json $(WEBAPP_DIR)/limits_IT_regions.json $
 
 healthcheck:
 	@./healthcheck.py $(WORK_DIR)
+
+TRASH ?=
+clean_orphans:
+	./$(SCRIPTS)/clean_output.sh $(BOUNDARIES_DATABASE) $(OUTPUT) $(TRASH)
 
 include garmin.mk
 
