@@ -17,6 +17,7 @@ counts_state = Path(os.environ.get("HEALTHCHECK_COUNTS_FILE", log_dir / "counts.
 out = work / "output"
 problems = {}
 counts = {}
+events = []
 labels = {"regions": "regioni", "provinces": "province", "municipalities": "comuni"}
 
 
@@ -61,7 +62,7 @@ for name in ("regions", "provinces", "municipalities"):
                     check(path)
     count = sum(len(obj["geometries"]) for obj in objects.values())
     if previous_counts.get(name, count) != count:
-        problems[topojson] = f"numero di {labels[name]} cambiato: {previous_counts[name]} -> {count}"
+        events.append(f"numero di {labels[name]} cambiato: {previous_counts[name]} -> {count}: {topojson}")
     counts[name] = count
 
 save(counts_state, previous_counts | counts)
@@ -69,8 +70,8 @@ save(counts_state, previous_counts | counts)
 if unreadable:
     problems = {**previous, **problems}
 
-if problems != previous:
-    changes = [
+if problems != previous or events:
+    changes = events + [
         f"{previous.get(path, 'ok')} -> {problems.get(path, 'ok')}: {path}"
         for path in sorted(problems.keys() | previous.keys())
         if problems.get(path) != previous.get(path)
